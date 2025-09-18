@@ -1,0 +1,18 @@
+body{
+    background-image: url("https://www.libertyflagpoles.com/cdn/shop/products/AdobeStock_68262838.jpg?v=1752197082&width=1200");
+    background-size: 300px;
+}
+
+h1{
+    color: blue;
+    text-align: center;
+}
+
+.center{
+    margin: auto;
+    width: 50%;
+    border: 5px dashed white;
+    background: #0011ff;
+    background: linear-gradient(90deg,rgba(0, 17, 255, 1) 0%, rgba(255, 255, 255, 1) 50%, rgba(255, 0, 0, 1) 100%);
+    padding: 10px;
+}
