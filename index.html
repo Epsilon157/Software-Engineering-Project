@@ -6,15 +6,37 @@
     <link rel="stylesheet" href="stylesheet.css">
     <title>Soonerview</title>
 </head>
-<body>
-    <div class = "center" style="height: 1000px">
-        <h1><img src="https://r73.cooltext.com/rendered/cooltext491340759923002.gif"></h1>
-        <h1><img src="https://r74.cooltext.com/rendered/cooltext491340849858686.gif"></h1>
-        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/c/c5/Pistol_Pete.svg/250px-Pistol_Pete.svg.png" style="width: 1000px; height: 200px;"
 
+<body>
+    <div class="topnav" id="myTopnav">
+        <a href="#home" class="active">Home</a>
+        <a href="./measure/measure.html">About</a>
+        <a href="#about">Account</a>
+        <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+            <i class="fa fa-bars"></i>
+        </a>
     </div>
+
+    <hr>
+
+    <div>
+        <h2 style = "text-align: center;"><b>Welcome to Soonerview!</b></h2>
+    </div>
+
+    <script>
+        function myFunction() {
+            //Referenced from https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_topnav
+            var x = document.getElementById("myTopnav");
+            if (x.className === "topnav") {
+                x.className += " responsive";
+            } else {
+                x.className = "topnav";
+            }
+        }
+    </script>
 </body>
-<script>console.log("From html")</script>
-<script src = "../test.js"></script>
-<script>helloWorld()</script>
+
+    <script>console.log("From html")</script>
+    <script src = "../test.js"></script>
+    <script>helloWorld()</script>
 </html>

@@ -1,18 +1,70 @@
 body{
-    background-image: url("https://www.libertyflagpoles.com/cdn/shop/products/AdobeStock_68262838.jpg?v=1752197082&width=1200");
-    background-size: 300px;
+    background-color: rgb(241, 237, 227);
 }
 
 h1{
-    color: blue;
+    color: black;
     text-align: center;
+}
+
+hr{
+    border-top: 2px solid #661616;
 }
 
 .center{
     margin: auto;
-    width: 50%;
-    border: 5px dashed white;
-    background: #0011ff;
-    background: linear-gradient(90deg,rgba(0, 17, 255, 1) 0%, rgba(255, 255, 255, 1) 50%, rgba(255, 0, 0, 1) 100%);
+    width: 80%;
+    background: rgb(241, 232, 227);
     padding: 10px;
+}
+
+.topnav {
+    overflow: hidden;
+    /*background-color: #333;*/
+}
+
+.topnav a {
+    float: left;
+    display: block;
+    color: #000000;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+}
+
+.topnav a:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+.topnav a.active {
+    background-color: #661616;
+    color: white;
+}
+
+.topnav .icon {
+    display: none;
+}
+
+@media screen and (max-width: 600px) {
+  .topnav a:not(:first-child) {display: none;}
+  .topnav a.icon {
+    float: right;
+    display: block;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .topnav.responsive {position: relative;}
+  .topnav.responsive .icon {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  .topnav.responsive a {
+    float: none;
+    display: block;
+    text-align: left;
+  }
 }
