@@ -45,6 +45,7 @@ hr{
 
 .topnav .icon {
     display: none;
+    color: #000000;
 }
 
 @media screen and (max-width: 600px) {
