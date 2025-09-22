@@ -5,4 +5,6 @@
         console.log('New button clicked!');
     });
 
+    document.body.appendChild(newButton);
+
     document.querySelector('.my-button').appendChild(newButton);
