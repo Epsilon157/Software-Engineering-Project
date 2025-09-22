@@ -7,4 +7,4 @@
 
     document.body.appendChild(newButton);
 
-    document.querySelector('.my-button').appendChild(newButton);
+    document.querySelector('my-button').appendChild(newButton);
