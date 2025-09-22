@@ -5,4 +5,4 @@
         console.log('New button clicked!');
     });
 
-    document.querySelector('.button-container').appendChild(newButton);
+    document.querySelector('.my-button').appendChild(newButton);
