@@ -15,6 +15,6 @@ for (let i=0; i<10; i++){
     x.classList.add('measure-button');
     x.textContent = "Button " + i;
     
-    document.body.appendChild(x);
+    document.getElementById("measure-list").appendChild(x);
 }
 
