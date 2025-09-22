@@ -10,6 +10,10 @@ for (let i=0; i<10; i++){
     document.body.appendChild(newButton);
 
     document.querySelector('my-button').appendChild(newButton);*/
-    var x = document.createElement("BUTTON"); 
+
+    var x = document.createElement("BUTTON");
+    var t = document.createTextNode("Click me");
+    x.appendChild(t);
+    document.body.appendChild(x);
 }
 
