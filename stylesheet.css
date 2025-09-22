@@ -14,7 +14,6 @@ hr{
 .center{
     margin: auto;
     width: 80%;
-    background: rgb(241, 232, 227);
     padding: 10px;
 }
 
@@ -71,5 +70,22 @@ hr{
 }
 
 .measure-button{
-  text-align: center;
+  margin: auto;
+}
+
+.container {
+    display: flex; /* Enables Flexbox for the container */
+    justify-content: space-around; /* Distributes space evenly around items */
+    align-items: center; /* Vertically centers items within the container */
+    width: 100%; /* Ensures container takes full width */
+    height: 200px; /* Example height for the container */
+}
+
+.section {
+    flex: 1; /* Allows sections to grow and shrink proportionally */
+    padding: 10px;
+    margin: 5px;
+    color: rgb(0, 0, 0);
+    text-align: center;
+    border: #661616 solid 1px;
 }
