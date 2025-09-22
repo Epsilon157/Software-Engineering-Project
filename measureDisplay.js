@@ -1,3 +1,4 @@
+for (let i=0; i<10; i++){
     const newButton = document.createElement('button');
     newButton.textContent = 'New Button';
     newButton.classList.add('my-button'); // Apply existing CSS class
@@ -8,3 +9,5 @@
     document.body.appendChild(newButton);
 
     document.querySelector('my-button').appendChild(newButton);
+}
+
