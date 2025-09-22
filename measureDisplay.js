@@ -1,5 +1,5 @@
 for (let i=0; i<10; i++){
-    const newButton = document.createElement('button');
+    newButton = document.createElement('button');
     newButton.textContent = 'Test Button';
     newButton.classList.add('my-button'); // Apply existing CSS class
     newButton.addEventListener('click', () => {
