@@ -82,6 +82,19 @@ hr{
   width: 100%;
 }
 
+.left-right-button{
+  background-color: #ffffff;
+  border: none;
+  color: rgb(0, 0, 0);
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  width: 50%;
+}
+
 .container {
     display: flex; /* Enables Flexbox for the container */
     justify-content: space-around; /* Distributes space evenly around items */
