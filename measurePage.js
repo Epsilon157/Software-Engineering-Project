@@ -8,14 +8,23 @@ const id = urlParams.get('voteid');
 export async function onRequest(context) {
   // Prepare a query
   const { results } = await context.env.DB
-    .prepare("SELECT * FROM legislators WHERE people_id > ?")
+    .prepare("SELECT people_id FROM legislators WHERE people_id > ?")
     .bind(25000)
     .all();
 
-  document.getElementById('billID').textContent = 'Bill: ' + id;
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <head><title>User Info</title></head>
+      <body>
+        <h1>User Details</h1>
+        <p id="userName">${results?.people_id || "Not found"}</p>
+      </body>
+    </html>
+  `;
 
-  return new Response(JSON.stringify(results), {
-    headers: { "Content-Type": "application/json" },
+  return new Response(html, {
+    headers: { "Content-Type": "text/html" },
   });
 }
 
