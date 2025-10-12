@@ -1,0 +1,1 @@
+This folder contains the built output assets for the worker "software-engineering-project" generated at 2025-10-12T23:14:09.803Z.
