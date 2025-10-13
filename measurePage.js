@@ -1,6 +1,6 @@
 //import * as pdfjsLib from 'https://mozilla.github.io/pdf.js/build/pdf.mjs';
-//import { onRequest } from "./api/query";
-
+import { onRequest } from "./api/query.js";
+onRequest();
 const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get('voteid');
 
