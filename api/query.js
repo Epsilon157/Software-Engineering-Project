@@ -12,6 +12,6 @@ export async function onRequest(context) {
   });
 }
 
-export function onRequest(context) {
+export function onRequest2(context) {
   return new Response("Hello, world!");
 }
