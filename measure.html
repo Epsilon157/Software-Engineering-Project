@@ -40,8 +40,7 @@
         <hr>
 
         <script>
-        async function loadMessages() {
-        try {
+        window.onload = function loadMessages() {
         const res = await fetch('query');
         const data = await res.json();
 
@@ -51,9 +50,6 @@
           li.textContent = row.content;
           list.appendChild(li);
         });
-        }  catch (err) {
-        console.error(err);
-        }
         }
 
         loadMessages();
