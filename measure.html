@@ -28,15 +28,7 @@
             <p id = "county" style = "margin: 0 20px;">County: </p>
             <p id = "date" style = "margin: 0 20px;">Date: </p>
         </div>
-        <p id = "description"><script>
-            /*async function getUsers() {
-                const response = await fetch('/api/query');
-                const data = await response.json();
-                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
-            }
-
-            getUsers();*/
-        </script></p>
+        
 
         <img src="https://www.shutterstock.com/image-illustration/oklahoma-state-map-eyes-mouth-260nw-1264953079.jpg" style="display: block; margin: auto;">
 
@@ -46,6 +38,26 @@
         <p id = "nay"></p>
 
         <hr>
+
+        <script>
+        async function loadMessages() {
+        try {
+        const res = await fetch('query');
+        const data = await res.json();
+
+        const list = document.getElementById('messages');
+        (data.results || []).forEach(row => {
+          const li = document.createElement('li');
+          li.textContent = row.content;
+          list.appendChild(li);
+        });
+        }  catch (err) {
+        console.error(err);
+        }
+        }
+
+        loadMessages();
+        </script>
 
         <h3>AI Overview: </h3>
     </div>
