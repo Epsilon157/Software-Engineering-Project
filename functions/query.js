@@ -1,4 +1,3 @@
-export async function onRequestGet({ env }) {
-  const result = await env.DB.prepare("SELECT * FROM legislators").all();
-  return Response.json(result);
+export function onRequest(context) {
+  return new Response("Hello, world!");
 }
