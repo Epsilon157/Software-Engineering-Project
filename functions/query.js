@@ -1,5 +1,8 @@
 export async function onRequestGet({ env }) {
-  const result = await env.DB.prepare("CREATE TEMP VIEW IF NOT EXISTS toReturn AS SELECT primary_author, date, measure_number, desc, FROM measures, votes").all();
+  const urlParams = new URLSearchParams(window.location.search);
+  const id = urlParams.get('voteid');
+  
+  const result = await env.DB.prepare(" CREATE TEMP VIEW IF NOT EXISTS toReturn AS SELECT primary_author, date, measure_number, desc, FROM measures, votes").all();
   return Response.json(result);
 }
 /*
