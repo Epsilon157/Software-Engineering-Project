@@ -1,5 +1,5 @@
-PRAGMA foreign_keys=OFF;
-BEGIN TRANSACTION;
+-- PRAGMA foreign_keys=OFF;
+-- BEGIN TRANSACTION;
 CREATE TABLE IF NOT EXISTS "terms" (
                 start_date DATE NOT NULL,
                 end_date DATE,
@@ -158,4 +158,4 @@ INSERT INTO terms VALUES('2025-01-01','2025-07-01',25481,'Republican','13','Sena
 INSERT INTO terms VALUES('2025-05-21','2025-07-01',26469,'Republican','8','Senate');
 INSERT INTO terms VALUES('2025-01-01','2025-07-01',20813,'Democratic','40','Senate');
 DELETE FROM sqlite_sequence;
-COMMIT;
+-- COMMIT;

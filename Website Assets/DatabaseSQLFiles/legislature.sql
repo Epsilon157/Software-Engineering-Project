@@ -1,5 +1,5 @@
-PRAGMA foreign_keys=OFF;
-BEGIN TRANSACTION;
+-- PRAGMA foreign_keys=OFF;
+-- BEGIN TRANSACTION;
 CREATE TABLE legislators (
             people_id INTEGER PRIMARY KEY,
             name TEXT NOT NULL
@@ -153,4 +153,4 @@ INSERT INTO legislators VALUES(25479,'Kendal Sacchieri');
 INSERT INTO legislators VALUES(25480,'Lisa Standridge');
 INSERT INTO legislators VALUES(25481,'Jonathan Wingard');
 INSERT INTO legislators VALUES(26469,'Bryan Logan');
-COMMIT;
+-- COMMIT;
