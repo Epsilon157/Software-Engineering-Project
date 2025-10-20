@@ -1,6 +1,6 @@
 -- PRAGMA foreign_keys=OFF;
 -- BEGIN TRANSACTION;
-CREATE TABLE votes (
+CREATE TABLE IF NOT EXISTS votes (
     roll_call_id INTEGER PRIMARY KEY,
     bill_id INTEGER,
     desc TEXT,
