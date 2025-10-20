@@ -2,7 +2,9 @@ export async function onRequestGet({ env }) {
   const urlParams = new URLSearchParams(window.location.search);
   const id = urlParams.get('voteid');
 
-  const result = await env.DB.prepare("SELECT desc FROM votes WHERE roll_call_id = ${id};").all();
+  const query = "SELECT desc FROM votes WHERE roll_call_id = " + id + ";";
+
+  const result = await env.DB.prepare(query).all();
   return Response.json(result);
 }
 /*
