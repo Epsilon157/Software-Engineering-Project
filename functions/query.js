@@ -1,10 +1,5 @@
 export async function onRequestGet({ env }) {
-  const urlParams = new URLSearchParams(window.location.search);
-  //const id = urlParams.get('voteid');
-
-  const query = "SELECT * from votes;";
-
-  const result = await env.DB.prepare("SELECT * from votes").all();
+  const result = await env.DB.prepare("SELECT * FROM votes").all();
   return Response.json(result);
 }
 /*
