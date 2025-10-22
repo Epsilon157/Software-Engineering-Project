@@ -64,7 +64,7 @@
         const list = document.getElementById('messages');
         (data.results || []).forEach(row => {
           const li = document.createElement('li');
-          li.textContent = row.bill_id;
+          li.textContent = row.desc;
           list.appendChild(li);
         });
         }
