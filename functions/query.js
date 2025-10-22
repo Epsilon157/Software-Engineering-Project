@@ -4,7 +4,7 @@ export async function onRequestGet({ env }) {
 
   const query = "SELECT * from votes;";
 
-  const result = await env.DB.prepare("SELECT * from votes;").all();
+  const result = await env.DB.prepare("SELECT * from votes").all();
   return Response.json(result);
 }
 /*
