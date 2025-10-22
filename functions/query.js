@@ -2,7 +2,7 @@ export async function onRequestGet({ env }) {
   const urlParams = new URLSearchParams(window.location.search);
   const id = urlParams.get('voteid');
 
-  const query = "SELECT desc FROM votes WHERE roll_call_id = 1471208;";
+  const query = "SELECT * from votes;";
 
   const result = await env.DB.prepare(query).all();
   return Response.json(result);
