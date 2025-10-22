@@ -1,6 +1,6 @@
 export async function onRequestGet({ env }) {
-  const urlParams = new URLSearchParams(window.location.search);
-  const id = urlParams.get('peopleid');
+  const url = new URL(request.url);
+  const id = url.searchParams.get("peopleid");
 
   const result = await env.DB.prepare("SELECT name FROM legislators WHERE people_id = ?")
   .bind(id)
