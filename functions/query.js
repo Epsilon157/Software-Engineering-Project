@@ -1,8 +1,8 @@
 export async function onRequestGet({ env }) {
-  const urlParams = new URLSearchParams(window.location.search);
-  const id = urlParams.get('people_id');
+  //const urlParams = new URLSearchParams(window.location.search);
+  //const id = urlParams.get('people_id');
 
-  const result = await env.DB.prepare("SELECT name FROM legislators WHERE people_id = ${id}").all();
+  const result = await env.DB.prepare("SELECT name FROM legislators").all();
   return Response.json(result);
 }
 /*
