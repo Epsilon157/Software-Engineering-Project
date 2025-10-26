@@ -1,5 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
+<!--Link Leaflet stylesheet-->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,7 +36,7 @@
         </div>
         
 
-        <img src="https://www.shutterstock.com/image-illustration/oklahoma-state-map-eyes-mouth-260nw-1264953079.jpg" style="display: block; margin: auto;">
+        <div id="map"></div>
 
         <h3>Yea</h3>
         <p id = "yea"></p>
@@ -71,6 +77,14 @@
 
         loadMessages();
     </script>
+
+    <!--run Leaflet setup script-->
+     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+    <!--run mapDisplay script-->
+     <script src="mapDisplay.js"></script>
 </body>
 
 </html>
