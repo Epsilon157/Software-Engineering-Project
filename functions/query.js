@@ -5,7 +5,7 @@ export async function onRequestGet({ request, env }) {
   const sqlQuery = "SELECT L.name, V1.date, V1.yea_votes, V1.nay_votes, V1.chamber, V1.desc FROM votes_1 AS V1 WHERE bill_id = ? INNER JOIN measures AS M ON V1.bill_id = M.bill_id INNER JOIN legislators AS L ON M.primary_author = L.people_id;";
   const sqlQuery2 = ""
 
-  const result = await env.DB.prepare("SELECT v1.bill_id, v1.desc, v1.date, v1.yea_votes, v1.nay_votes, v1.chamber, m.measure_number, m.measure_type, m.primary_author, c.people_id AS coauthor_id, l.name FROM votes_1 AS v1 INNER JOIN measures AS m ON v1.bill_id = m.bill_id INNER JOIN coauthors AS c ON v1.bill_id = c.bill_id INNER JOIN legislators AS l ON c.people_id = l.people_id WHERE v1.roll_call_id = ?;")
+  const result = await env.DB.prepare("SELECT v1.bill_id, v1.desc, v1.date, v1.yea_votes, v1.nay_votes, v1.chamber, m.measure_number, m.measure_type, m.primary_author, json_group_array('coathor_id', c.people_id, 'name', l.name) FROM votes_1 AS v1 INNER JOIN measures AS m ON v1.bill_id = m.bill_id INNER JOIN coauthors AS c ON v1.bill_id = c.bill_id INNER JOIN legislators AS l ON c.people_id = l.people_id WHERE v1.roll_call_id = ?;")
   .bind(id)
   .all();
   return Response.json(result);
