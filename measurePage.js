@@ -11,6 +11,7 @@ async function loadMeasurePage() {
 
     (data.results || []).forEach(row => {
         document.getElementById('header').textContent = `2025 Session > ${row.chamber} > ${row.measure_number}`;
+        document.getElementById('coauthors').textContent = `Coauthors: ${row.coauthors.map(coauthors => String(coauthors.name))}`;
         document.getElementById('date').textContent = `Date: ${row.date}`;
         document.getElementById('desc').textContent = `Description: ${row.desc}`;
         document.getElementById('yeaheader').textContent = `Yea: ${row.yea_votes}`;
