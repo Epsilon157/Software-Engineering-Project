@@ -62,22 +62,6 @@
         }
     </script>
 
-    <script>
-        async function loadMessages() {
-        const res = await fetch('query');
-        const data = await res.json();
-
-        const list = document.getElementById('messages');
-        (data.results || []).forEach(row => {
-          const li = document.createElement('li');
-          li.textContent = row.desc;
-          list.appendChild(li);
-        });
-        }
-
-        loadMessages();
-    </script>
-
     <!--run Leaflet setup script-->
      <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
