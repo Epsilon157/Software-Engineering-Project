@@ -2,8 +2,10 @@ export async function onRequestGet({ request, env }) {
   const url = new URL(request.url);
   const id = url.searchParams.get("bill_id");
 
-  const result = await env.DB.prepare("SELECT L.name, V1.date, V1.yea_votes, V1.nay_votes, V1.chamber, V1.desc FROM votes_1 AS V1 WHERE bill_id = ? INNER JOIN measures AS M ON V1.bill_id = M.bill_id INNER JOIN legislators AS L ON M.primary_author = L.people_id;")
-  .bind(id)
+  const sqlQuery = "SELECT L.name, V1.date, V1.yea_votes, V1.nay_votes, V1.chamber, V1.desc FROM votes_1 AS V1 WHERE bill_id = ? INNER JOIN measures AS M ON V1.bill_id = M.bill_id INNER JOIN legislators AS L ON M.primary_author = L.people_id;";
+
+  const result = await env.DB.prepare("SELECT * FROM votes_1;")
+  //.bind(id)
   .all();
   return Response.json(result);
 }
