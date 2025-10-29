@@ -19,8 +19,8 @@ async function loadMessages() {
 
 loadMessages();
 
-const res = await fetch('d1-tutorial.aidenmaner.workers.dev');
-const data = await res.json();
+//const res = await fetch('d1-tutorial.aidenmaner.workers.dev');
+//const data = await res.json();
 
 
 /*
