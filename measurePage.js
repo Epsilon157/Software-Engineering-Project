@@ -12,7 +12,7 @@ async function loadMeasurePage() {
     (data.results || []).forEach(row => {
         document.getElementById('header').textContent = `2025 Session > ${row.chamber} > ${row.measure_number}`;
         document.getElementById('date').textContent = `Date: ${row.date}`;
-        document.getElementById('desc').textContent = `Description: ${row.date}`;
+        document.getElementById('desc').textContent = `Description: ${row.desc}`;
         document.getElementById('yeaheader').textContent = `Yea: ${row.yea_votes}`;
         document.getElementById('nayheader').textContent = `Nay: ${row.nay_votes}`;
     });
