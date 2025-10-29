@@ -114,4 +114,7 @@ hr{
     border: #661616 solid 1px;
 }
 
-#map { height: 600px; }
+#map { 
+  height: 600px;
+  
+}

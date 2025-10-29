@@ -11,6 +11,8 @@ async function loadMeasurePage() {
 
     (data.results || []).forEach(row => {
         document.getElementById('date').textContent = `Date: ${row.date}`;
+        document.getElementById('yea').textContent = `Yea: ${row.yea_votes}`;
+        document.getElementById('nay').textContent = `Nay: ${row.nay_votes}`;
     });
 }
 
