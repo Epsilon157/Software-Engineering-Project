@@ -5,7 +5,7 @@
 const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get('voteid');
 
-document.createElement('p').textContent = voteid;
+document.createElement('p').textContent = id;
 
 async function loadMessages() {
     const res = await fetch('query?vote_id=${id}');
