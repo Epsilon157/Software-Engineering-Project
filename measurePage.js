@@ -6,7 +6,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get('voteid');
 
 async function loadMessages() {
-    const res = await fetch('query');
+    const res = await fetch('query?vote_id=1471208');
     const data = await res.json();
 
     const list = document.getElementById('messages');
