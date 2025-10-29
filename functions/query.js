@@ -4,7 +4,7 @@ export async function onRequestGet({ request, env }) {
 
   const sqlQuery = "SELECT L.name, V1.date, V1.yea_votes, V1.nay_votes, V1.chamber, V1.desc FROM votes_1 AS V1 WHERE bill_id = ? INNER JOIN measures AS M ON V1.bill_id = M.bill_id INNER JOIN legislators AS L ON M.primary_author = L.people_id;";
 
-  const result = await env.DB.prepare("SELECT bill_id, desc, date, yea_votes, nay_votes, chamber FROM votes_1 WHERE roll_call_id = ?;")
+  const result = await env.DB.prepare("SELECT votes_1.bill_id, votes_1.desc, votes_1.date, votes_1.yea_votes, votes_1.nay_votes, votes_1.chamber, measures.measure_number FROM votes_1 WHERE roll_call_id = ? INNER JOIN measures ON votes_1.bill_id = measures.bill_id;")
   .bind(id)
   .all();
   return Response.json(result);
