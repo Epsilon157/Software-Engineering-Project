@@ -2,8 +2,8 @@
 //import { onRequest2 } from "./api/query";
 //onRequest2();
 
-const url = new URL(request.url);
-const id = url.searchParams.get("vote_id");
+const urlParams = new URLSearchParams(window.location.search);
+const id = urlParams.get('voteid');
 
 async function loadMessages() {
     const res = await fetch('query?vote_id=${id}');
