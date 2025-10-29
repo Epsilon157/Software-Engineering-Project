@@ -12,11 +12,8 @@ async function loadMessages() {
     const res = await fetch(`query?vote_id=${id}`);
     const data = await res.json();
 
-    const list = document.getElementById('messages');
     (data.results || []).forEach(row => {
-        const li = document.createElement('li');
-        li.textContent = row.desc;
-        list.appendChild(li);
+        document.getElementById('date').textContent = `Date: ${row.date}`;
     });
 }
 
