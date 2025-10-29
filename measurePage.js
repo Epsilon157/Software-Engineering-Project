@@ -5,10 +5,11 @@
 const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get('voteid');
 
-document.createElement('p').textContent = "Hello";
+let p = document.getElementById('billID');
+p.textContent = `Hello ${id}`;
 
 async function loadMessages() {
-    const res = await fetch('query?vote_id=${id}');
+    const res = await fetch(`query?vote_id=${id}`);
     const data = await res.json();
 
     const list = document.getElementById('messages');
