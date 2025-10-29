@@ -1,17 +1,19 @@
-//import * as pdfjsLib from 'https://mozilla.github.io/pdf.js/build/pdf.mjs';
-//import { onRequest2 } from "./api/query";
-//onRequest2();
 
+//Get URL parameters
 const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get('voteid');
+
 
 async function loadMeasurePage() {
     const res = await fetch(`query?vote_id=${id}`);
     const data = await res.json();
 
+    //Load data for measure page by ID lookup.
+    //TODO: Author, coauthor, yea/nay people, districts
+    //      Districts will be done recursively
     (data.results || []).forEach(row => {
         document.getElementById('header').textContent = `2025 Session > ${row.chamber} > ${row.measure_number}`;
-        document.getElementById('coauthors').textContent = `Coauthors: ${row.coauthors.map(coauthors => String(coauthors.name))}`;
+        //document.getElementById('coauthors').textContent = `Coauthors: ${row.coauthors.map(coauthors => String(coauthors.name))}`;
         document.getElementById('date').textContent = `Date: ${row.date}`;
         document.getElementById('desc').textContent = `Description: ${row.desc}`;
         document.getElementById('yeaheader').textContent = `Yea: ${row.yea_votes}`;
