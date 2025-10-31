@@ -1,7 +1,7 @@
 
 //Get URL parameters
 const urlParams = new URLSearchParams(window.location.search);
-const id = urlParams.get('voteid');
+const id = urlParams.get('vote_id');
 
 
 async function loadMeasurePage() {
