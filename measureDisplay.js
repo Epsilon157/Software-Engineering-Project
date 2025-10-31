@@ -24,7 +24,7 @@ async function loadSearchPage() {
     
     for(let i=1; i<=20; i++){
         const voteResponse = await fetch(`query?vote_id=${data.results[i].roll_call_id}`);
-        const voteData = await res.json();
+        const voteData = await voteResponse.json();
 
         var x = document.createElement("BUTTON");
         x.classList.add('measure-button');
