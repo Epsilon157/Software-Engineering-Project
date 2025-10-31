@@ -20,7 +20,7 @@ const url = new URL(request.url);
     return Response.json(result);
   }
   else if(url.searchParams.has("search")){
-    const search_query = "SELECT * FROM votes_1;";
+    const search_query = "SELECT * FROM votes_1 ORDER BY date;";
 
     const result = await env.DB.prepare(search_query)
     .bind()
