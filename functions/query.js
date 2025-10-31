@@ -19,5 +19,13 @@ const url = new URL(request.url);
     .all();
     return Response.json(result);
   }
+  else if(url.searchParams.has("search")){
+    const search_query = "SELECT * FROM votes_1;";
+
+    const result = await env.DB.prepare(search_query)
+    .bind()
+    .all();
+    return Response.json(result);
+  }
 
 }
