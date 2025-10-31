@@ -28,12 +28,12 @@ async function loadSearchPage() {
 
         var x = document.createElement("BUTTON");
         x.classList.add('measure-button');
-        x.innerHTML = `2025 Session: > ${voteData.results[0].chamber}: > (BillID): <br>Date: ${voteData.results[0].date} <br>Vote: <br>Description: `;
+        x.innerHTML = `2025 Session: > ${voteData.results[0].chamber} > ${voteData.results[0].measure_number} <br>Date: ${voteData.results[0].date} <br>Yea: ${voteData.results[0].yea_votes} Nay: ${voteData.results[0].nay_votes} <br>Description: ${voteData.results[0].desc}`;
 
         x.addEventListener('click', () => {
             const url = new URL('https://soonerview.org/measure');
 
-            url.searchParams.set("vote_id", i);
+            url.searchParams.set("vote_id", voteData.results[0].roll_call_id);
 
             window.location.href = url.toString();
         });
