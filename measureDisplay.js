@@ -18,7 +18,7 @@ for (let i=1; i<=20; i++){
 }*/
 
 async function loadSearchPage() {
-    const res = await fetch(`query?vote_id=${id}`);
+    const res = await fetch(`query?search`);
     const data = await res.json();
 
     
