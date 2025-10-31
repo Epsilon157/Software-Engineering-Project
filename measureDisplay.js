@@ -22,7 +22,7 @@ async function loadSearchPage() {
     const data = await res.json();
 
     
-    for(let i=1; i<=20; i++){
+    for(let i=0; i<=20; i++){
         const voteResponse = await fetch(`query?vote_id=${data.results[i].roll_call_id}`);
         const voteData = await voteResponse.json();
 
@@ -33,7 +33,7 @@ async function loadSearchPage() {
         x.addEventListener('click', () => {
             const url = new URL('https://soonerview.org/measure');
 
-            url.searchParams.set("vote_id", voteData.results[0].roll_call_id);
+            url.searchParams.set("vote_id", data.results[i].roll_call_id);
 
             window.location.href = url.toString();
         });
