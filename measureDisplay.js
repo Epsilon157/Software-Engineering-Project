@@ -38,3 +38,5 @@ async function loadSearchPage() {
         document.getElementById("measure-list").appendChild(x);
     }
 }
+
+loadSearchPage();
