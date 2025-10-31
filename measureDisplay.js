@@ -28,7 +28,7 @@ async function loadSearchPage() {
 
         var x = document.createElement("BUTTON");
         x.classList.add('measure-button');
-        x.innerHTML = `2025 Session: > ${voteData.results[0].chamber} > ${voteData.results[0].measure_number} <br>Date: ${voteData.results[0].date} <br>Yea: ${voteData.results[0].yea_votes} Nay: ${voteData.results[0].nay_votes} <br>Description: ${voteData.results[0].desc}`;
+        x.innerHTML = `2025 Session > ${voteData.results[0].chamber} > ${voteData.results[0].measure_number} <br>Date: ${voteData.results[0].date} <br>Yea: ${voteData.results[0].yea_votes} Nay: ${voteData.results[0].nay_votes} <br>${voteData.results[0].desc}`;
 
         x.addEventListener('click', () => {
             const url = new URL('https://soonerview.org/measure');
