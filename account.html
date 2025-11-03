@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="stylesheet.css">
-    <title>Soonerview</title>
+    <title>Soonerview - Account</title>
 </head>
 
 <body>
@@ -19,13 +19,46 @@
 
     <hr>
 
-    <div>
-        <h2 style = "text-align: center;"><b>View account info</b></h2>
+    <div class="page-header">
+        <h2>Account</h2>
     </div>
 
+    <!-- Authentication Container -->
+    <div class="auth-container">
+        <!-- Login Form -->
+        <div id="loginSection" class="auth-form">
+            <h3>Login</h3>
+            <form id="loginForm">
+                <input type="email" id="loginEmail" placeholder="Email" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <button type="submit" class="btn-primary">Login</button>
+            </form>
+            <p class="auth-switch">
+                Don't have an account? <a href="#" onclick="showRegister()">Register here</a>
+            </p>
+        </div>
+
+        <!-- Registration Form -->
+        <div id="registerSection" class="auth-form" style="display: none;">
+            <h3>Create Account</h3>
+            <form id="registerForm">
+                <input type="email" id="registerEmail" placeholder="Email" required>
+                <input type="password" id="registerPassword" placeholder="Password" required>
+                <button type="submit" class="btn-success">Register</button>
+            </form>
+            <p class="auth-switch">
+                Already have an account? <a href="#" onclick="showLogin()">Login here</a>
+            </p>
+        </div>
+
+        <!-- Message Display -->
+        <div id="authMessage" class="message" style="display: none;"></div>
+    </div>
+
+    
     <script>
+        // Navigation function (your existing code)
         function topNav() {
-            //Referenced from https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_topnav
             var x = document.getElementById("myTopnav");
             if (x.className === "topnav") {
                 x.className += " responsive";
@@ -35,5 +68,4 @@
         }
     </script>
 </body>
-
 </html>
