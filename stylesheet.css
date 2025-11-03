@@ -118,3 +118,144 @@ hr{
   height: 600px;
   
 }
+.page-header {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.page-header h2 {
+    margin: 0;
+    color: #333;
+}
+
+/* Authentication Container */
+.auth-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.auth-form {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 8px;
+    border: 1px solid #d4b8b8;
+    box-shadow: 0 2px 4px rgba(102, 22, 22, 0.1);
+}
+
+.auth-form h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #661616;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #d4b8b8;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 14px;
+    background-color: #f9f7f3;
+}
+
+.auth-form input:focus {
+    border-color: #661616;
+    outline: none;
+    background-color: #ffffff;
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 15px;
+    color: #666;
+}
+
+.auth-switch a {
+    color: #661616;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+/* Button Styles */
+.btn-primary, .btn-success, .btn-danger {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-weight: bold;
+}
+
+.btn-primary {
+    background-color: #661616;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #4a1010;
+}
+
+.btn-success {
+    background-color: #2d5016;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #1f3610;
+}
+
+.btn-danger {
+    background-color: #8b4513;
+    color: white;
+    width: auto;
+    padding: 8px 16px;
+}
+
+.btn-danger:hover {
+    background-color: #654321;
+}
+
+/* Message Styles */
+.message {
+    padding: 12px;
+    margin: 15px 0;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.message.success {
+    background-color: #e8f5e8;
+    color: #2d5016;
+    border: 1px solid #c8e6c9;
+}
+
+.message.error {
+    background-color: #ffebee;
+    color: #661616;
+    border: 1px solid #ffcdd2;
+}
+
+/* Responsive adjustments for authentication */
+@media screen and (max-width: 600px) {
+    .auth-container {
+        padding: 10px;
+        max-width: 100%;
+    }
+    
+    .auth-form, .auth-dashboard {
+        padding: 20px 15px;
+    }
+    
+    .btn-danger {
+        width: 100%;
+    }
+}
