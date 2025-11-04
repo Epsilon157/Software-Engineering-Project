@@ -18,6 +18,13 @@ async function loadMeasurePage() {
         document.getElementById('desc').textContent = `Description: ${row.desc}`;
         document.getElementById('yeaheader').textContent = `Yea: ${row.yea_votes}`;
         document.getElementById('nayheader').textContent = `Nay: ${row.nay_votes}`;
+
+        for(let i = 1; i <= 48; i++){
+            var n = String(i).padStart(3, '0');
+            var p = document.createElement('p');
+            p.textContent = `${row.District_+n}`;
+            document.getElementById("yea").appendChild(p);
+        }
     });
 }
 
