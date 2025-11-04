@@ -1,6 +1,4 @@
 export async function onRequestGet({ request, env }) {
-//TODO: currently only gets voteid, needs more parameters for search functions
-//      Need to somehow differentiate between functions (EX: measure display vs search display) (another parameter?)
 
 const url = new URL(request.url);
 
@@ -19,6 +17,18 @@ const url = new URL(request.url);
     .all();
     return Response.json(result);
   }
+  else if(url.searchParams.has("district")){
+    const id = url.searchParams.get("vote_id");
+    const district = url.searchParams.get("district");
+    const district_query = `SELECT v1.District_${district} FROM votes_1 AS v1 WHERE v1.roll_call_id = ?`;
+
+    const result = await env.DB.prepare(district_query)
+    .bind(id)
+    .all();
+    return Response.json(result);
+  }
+  //If search parameter in url then activate search query
+  //TODO: Allow different parameters to search by. As easy as getting the parameters and updating the query i think
   else if(url.searchParams.has("search")){
     const search_query = "SELECT * FROM votes_1 ORDER BY date LIMIT 30;";
 
