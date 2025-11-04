@@ -3,7 +3,7 @@ export async function onRequestGet({ request, env }) {
 const url = new URL(request.url);
 
   if(url.searchParams.has("district")){
-    const id = url.searchParams.get("vote_id");
+    /*const id = url.searchParams.get("vote_id");
     let district = url.searchParams.get("district");
     district = district.replace(/[^0-9]/g, '');
 
@@ -12,7 +12,7 @@ const url = new URL(request.url);
                             WHERE v1.roll_call_id = ?`;
     const districtResult = await env.DB.prepare(district_query)
     .bind(id)
-    .all();
+    .all();*/
 
     const term_query = `SELECT t.party
                         FROM terms AS t
