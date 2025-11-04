@@ -6,14 +6,26 @@ const url = new URL(request.url);
     const id = url.searchParams.get("vote_id");
     let district = url.searchParams.get("district");
     district = district.replace(/[^0-9]/g, '');
-    const district_query = `SELECT v1.District_${district}, t.party, t.people_id, t.district
-                            FROM votes_1 AS v1 
-                            INNER JOIN terms as t ON t.district = ?
-                            WHERE v1.roll_call_id = ?`;
 
-    const result = await env.DB.prepare(district_query)
-    .bind(2, id)
+    const district_query = `SELECT v1.District_${district} as district_result
+                            FROM votes_1 AS v1 
+                            WHERE v1.roll_call_id = ?`;
+    const districtResult = await env.DB.prepare(district_query)
+    .bind(id)
     .all();
+
+    const term_query = `SELECT t.party
+                        FROM terms AS t
+                        WHERE t.district = ?`;
+    const termResult = await env.DB.prepare(term_query)
+    .bind(Number(id))
+    .all();
+
+    const result = {
+      party:termResult.party,
+      district_result:districtResult.district_result
+    };
+
     return Response.json(result);
   }
   else if(url.searchParams.has("vote_id")){
