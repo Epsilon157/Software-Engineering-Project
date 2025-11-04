@@ -14,7 +14,7 @@ const url = new URL(request.url);
     .bind(id)
     .all();*/
 
-    const term_query = `SELECT t.party
+    const term_query = `SELECT *
                         FROM terms AS t
                         WHERE t.district = ?`;
     const termResult = await env.DB.prepare(term_query)
