@@ -18,7 +18,7 @@ const url = new URL(request.url);
                         FROM terms AS t
                         WHERE t.district = ?`;
     const termResult = await env.DB.prepare(term_query)
-    .bind(Number(id))
+    .bind(2)
     .all();
 
     //const result = {
