@@ -8,7 +8,7 @@ const url = new URL(request.url);
     district = district.replace(/[^0-9]/g, '');
     const district_query = `SELECT v1.District_${district}, t.party, t.people_id, t.district
                             FROM votes_1 AS v1 
-                            INNER JOIN terms as t
+                            CROSS JOIN terms as t
                             WHERE v1.roll_call_id = ? AND t.district = ?`;
 
     const result = await env.DB.prepare(district_query)
