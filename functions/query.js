@@ -4,7 +4,7 @@ const url = new URL(request.url);
 
   if(url.searchParams.has("district")){
     const id = url.searchParams.get("vote_id");
-    const district = url.searchParams.get("district");
+    let district = url.searchParams.get("district");
     district = district.replace(/[^0-9]/g, '');
     const district_query = `SELECT v1.District_${district} FROM votes_1 AS v1 WHERE v1.roll_call_id = ?`;
 
