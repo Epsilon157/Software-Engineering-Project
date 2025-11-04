@@ -14,7 +14,7 @@ const url = new URL(request.url);
     .bind(id)
     .all();*/
 
-    const term_query = `SELECT *
+    const term_query = `SELECT party
                         FROM terms`;
     const termResult = await env.DB.prepare(term_query)
     .bind()
