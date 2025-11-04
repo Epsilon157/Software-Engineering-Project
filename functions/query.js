@@ -20,7 +20,7 @@ const url = new URL(request.url);
                         FROM terms
                         WHERE district = ? AND start_date < ?`;
     const termResult = await env.DB.prepare(term_query)
-    .bind(`${Number(district), date}`)
+    .bind(`${Number(district)}`, date)
     .all();
 
     //const result = {
