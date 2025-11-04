@@ -7,19 +7,20 @@ const url = new URL(request.url);
     let district = url.searchParams.get("district");
     district = district.replace(/[^0-9]/g, '');
 
-    /*
-    const district_query = `SELECT v1.District_${district} as district_result
+    const district_query = `SELECT v1.District_${district} as district_result, v1.date
                             FROM votes_1 AS v1 
                             WHERE v1.roll_call_id = ?`;
     const districtResult = await env.DB.prepare(district_query)
     .bind(id)
-    .all();*/
+    .all();
 
-    const term_query = `SELECT party, district
+    const date = districtResult.date;
+
+    const term_query = `SELECT party, district, start_date, end_date
                         FROM terms
-                        WHERE district = ?`;
+                        WHERE district = ? AND (start_date < ? < end_date)`;
     const termResult = await env.DB.prepare(term_query)
-    .bind(`${Number(district)}`)
+    .bind(`${Number(district), date}`)
     .all();
 
     //const result = {
