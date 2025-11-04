@@ -6,10 +6,13 @@ const url = new URL(request.url);
     const id = url.searchParams.get("vote_id");
     let district = url.searchParams.get("district");
     district = district.replace(/[^0-9]/g, '');
-    const district_query = `SELECT v1.District_${district} FROM votes_1 AS v1 WHERE v1.roll_call_id = ?`;
+    const district_query = `SELECT v1.District_${district}, t.party, t.people_id, t.district
+                            FROM votes_1 AS v1 
+                            INNER JOIN terms as t ON (t.district = ?})
+                            WHERE v1.roll_call_id = ?`;
 
     const result = await env.DB.prepare(district_query)
-    .bind(id)
+    .bind(Number(district), id)
     .all();
     return Response.json(result);
   }
