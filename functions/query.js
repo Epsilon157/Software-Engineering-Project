@@ -15,10 +15,9 @@ const url = new URL(request.url);
     .all();*/
 
     const term_query = `SELECT *
-                        FROM terms AS t
-                        WHERE t.district = ?`;
+                        FROM terms`;
     const termResult = await env.DB.prepare(term_query)
-    .bind(2)
+    .bind()
     .all();
 
     //const result = {
