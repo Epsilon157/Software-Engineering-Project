@@ -3,10 +3,11 @@ export async function onRequestGet({ request, env }) {
 const url = new URL(request.url);
 
   if(url.searchParams.has("district")){
-    /*const id = url.searchParams.get("vote_id");
+    const id = url.searchParams.get("vote_id");
     let district = url.searchParams.get("district");
     district = district.replace(/[^0-9]/g, '');
 
+    /*
     const district_query = `SELECT v1.District_${district} as district_result
                             FROM votes_1 AS v1 
                             WHERE v1.roll_call_id = ?`;
@@ -18,7 +19,7 @@ const url = new URL(request.url);
                         FROM terms
                         WHERE district = ?`;
     const termResult = await env.DB.prepare(term_query)
-    .bind("2")
+    .bind(`${Number(district)}`)
     .all();
 
     //const result = {
