@@ -12,7 +12,7 @@ const url = new URL(request.url);
                             WHERE v1.roll_call_id = ?`;
 
     const result = await env.DB.prepare(district_query)
-    .bind(Number(district), id)
+    .bind(2, id)
     .all();
     return Response.json(result);
   }
