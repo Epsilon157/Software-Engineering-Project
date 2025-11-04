@@ -14,10 +14,11 @@ const url = new URL(request.url);
     .bind(id)
     .all();*/
 
-    const term_query = `SELECT party
-                        FROM terms`;
+    const term_query = `SELECT party, district
+                        FROM terms
+                        WHERE district = ?`;
     const termResult = await env.DB.prepare(term_query)
-    .bind()
+    .bind(2)
     .all();
 
     //const result = {
