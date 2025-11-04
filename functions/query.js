@@ -15,9 +15,10 @@ const url = new URL(request.url);
     .all();*/
 
     const term_query = `SELECT party, district
-                        FROM terms`;
+                        FROM terms
+                        WHERE party = ?`;
     const termResult = await env.DB.prepare(term_query)
-    .bind()
+    .bind("Republican")
     .all();
 
     //const result = {
