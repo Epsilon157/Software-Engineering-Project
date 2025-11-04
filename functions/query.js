@@ -21,12 +21,12 @@ const url = new URL(request.url);
     .bind(Number(id))
     .all();
 
-    const result = {
-      party:termResult.party,
-      district_result:districtResult.district_result
-    };
+    //const result = {
+    //  party:termResult.party,
+    //  district_result:districtResult.district_result
+    //};
 
-    return Response.json(result);
+    return Response.json(termResult);
   }
   else if(url.searchParams.has("vote_id")){
     const id = url.searchParams.get("vote_id");
