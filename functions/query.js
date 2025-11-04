@@ -18,9 +18,9 @@ const url = new URL(request.url);
 
     const term_query = `SELECT party, district, start_date, end_date
                         FROM terms
-                        WHERE district = ? AND (start_date < ? < end_date)`;
+                        WHERE district = ?`;
     const termResult = await env.DB.prepare(term_query)
-    .bind(`${Number(district), date}`)
+    .bind(`${Number(district)}`)
     .all();
 
     //const result = {
