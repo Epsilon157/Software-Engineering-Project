@@ -38,7 +38,7 @@ const url = new URL(request.url);
                           INNER JOIN measures AS m ON v1.bill_id = m.bill_id 
                           INNER JOIN coauthors AS c ON v1.bill_id = c.bill_id 
                           INNER JOIN legislators AS l ON c.people_id = l.people_id 
-                          INNER JOIN legislators AS l2 ON m.primary_author = people_id
+                          INNER JOIN legislators AS l2 ON m.primary_author = l2.people_id
                           WHERE v1.roll_call_id = ?;`;
 
     const result = await env.DB.prepare(vote_id_query)
