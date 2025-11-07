@@ -10,8 +10,9 @@ async function loadMeasurePage() {
 
     (data.results || []).forEach(row => {
         document.getElementById('header').textContent = `2025 Session > ${row.chamber} > ${row.measure_number}`;
-        const coauthorNames = row.coauthors.map(coauthor => coauthor.name).join(', ');
-        document.getElementById('coauthors').textContent = `Coauthors: ${coauthorNames}`;
+        const coauthorsArray = JSON.parse(row.coauthors);
+        const coauthorsNames = coauthorsArray.map(coauthor => coauthor.name).join(', ');
+        document.getElementById('coauthors').textContent = `Coauthors: ${coauthorsNames}`;
         //document.getElementById('coauthors').textContent = `Coauthors: ${row.coauthors.map(coauthors => String(coauthors.name))}`;
         document.getElementById('author').textContent = `Author: ${row.primary_author_name}`;
         document.getElementById('date').textContent = `Date: ${row.date}`;
