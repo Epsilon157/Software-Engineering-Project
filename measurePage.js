@@ -10,7 +10,9 @@ async function loadMeasurePage() {
 
     (data.results || []).forEach(row => {
         document.getElementById('header').textContent = `2025 Session > ${row.chamber} > ${row.measure_number}`;
-        const coauthorsArray = JSON.parse(row.coauthors);
+        const coauthorsArray = typeof row.coauthors === 'string' 
+        ? JSON.parse(row.coauthors) 
+        : row.coauthors;
         const coauthorsNames = coauthorsArray.map(coauthor => coauthor.name).join(', ');
         document.getElementById('coauthors').textContent = `Coauthors: ${coauthorsNames}`;
         //document.getElementById('coauthors').textContent = `Coauthors: ${row.coauthors.map(coauthors => String(coauthors.name))}`;
