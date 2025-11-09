@@ -15,6 +15,7 @@ const url = new URL(request.url);
     .all();
 
     const date = districtResult.date;
+    const chamber = districtResult.chamber;
 
     const term_query = `SELECT t.party, t.district, t.start_date, t.end_date, t.people_id, l.name
                         FROM terms AS t
@@ -22,7 +23,7 @@ const url = new URL(request.url);
                         ON t.people_id = l.people_id AND t.chamber = ?
                         WHERE district = ? AND start_date < ? < end_date`;
     const termResult = await env.DB.prepare(term_query)
-    .bind(`${districtResult.chamber}`,`${Number(district)}`, `${date}`)
+    .bind(`${chamber}`,`${Number(district)}`, `${date}`)
     .all();
 
     //const result = {
