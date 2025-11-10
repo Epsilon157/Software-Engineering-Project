@@ -28,13 +28,13 @@ async function loadMeasurePage() {
         document.getElementById('yeaheader').innerHTML = `<strong><mark>Yea:</mark></strong> ${row.yea_votes}`;
         document.getElementById('nayheader').innerHTML = `<strong><mark>Nay:</mark></strong> ${row.nay_votes}`;
 
-        
+        /*
         document.getElementById('author').textContent = `Author: ${row.primary_author_name}`;
         document.getElementById('date').textContent = `Date: ${row.date}`;
         document.getElementById('desc').textContent = `Description: ${row.desc}`;
         document.getElementById('yeaheader').textContent = `Yea: ${row.yea_votes}`;
         document.getElementById('nayheader').textContent = `Nay: ${row.nay_votes}`;
-        
+        */
         for(let i = 1; i <= 48; i++){
             var n = String(i).padStart(3, '0');
             var p = document.createElement('p');
