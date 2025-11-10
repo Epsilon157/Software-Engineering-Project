@@ -31,7 +31,7 @@ const url = new URL(request.url);
     //  district_result:districtResult.district_result
     //};
 
-    return Response.json(termResult);
+    return Response.json(districtResult);
   }
   else if(url.searchParams.has("vote_id")){
     const id = url.searchParams.get("vote_id");
