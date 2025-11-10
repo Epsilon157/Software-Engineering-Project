@@ -20,7 +20,7 @@ async function loadMeasurePage() {
         //document.getElementById('coauthors').innerHTML = `<mark>Coauthors</mark>: ${coauthorsNames}`;// Just highlight
         document.getElementById('coauthors').innerHTML = `<strong><mark>Coauthors:</mark></strong> ${coauthorsNames}`;// Highlight and bold
 
-        document.getElementById('coauthors').textContent = `Coauthors: ${row.coauthors.map(coauthors => String(coauthors.name))}`;
+        //document.getElementById('coauthors').textContent = `Coauthors: ${row.coauthors.map(coauthors => String(coauthors.name))}`;
         
         document.getElementById('author').innerHTML = `<strong><mark>Author:</mark></strong> ${row.primary_author_name}`;
         document.getElementById('date').innerHTML = `<strong><mark>Date:</mark></strong> ${row.date}`;
