@@ -18,15 +18,15 @@ async function loadMeasurePage() {
         //document.getElementById('coauthors').textContent = `Coauthors: ${coauthorsNames}`;// No highlight or bold
         //document.getElementById('coauthors').innerHTML = `<strong>Coauthors</strong>: ${coauthorsNames}`;// Just bold
         //document.getElementById('coauthors').innerHTML = `<mark>Coauthors</mark>: ${coauthorsNames}`;// Just highlight
-        document.getElementById('coauthors').innerHTML = `<strong><mark>Coauthors:</mark></strong> ${coauthorsNames}`;// Highlight and bold
+        document.getElementById('coauthors').innerHTML = `<strong><mark>Coauthors:\n</mark></strong> ${coauthorsNames}`;// Highlight and bold
 
         //document.getElementById('coauthors').textContent = `Coauthors: ${row.coauthors.map(coauthors => String(coauthors.name))}`;
         
-        document.getElementById('author').innerHTML = `<strong><mark>Author:</mark></strong> ${row.primary_author_name}`;
-        document.getElementById('date').innerHTML = `<strong><mark>Date:</mark></strong> ${row.date}`;
-        document.getElementById('desc').innerHTML = `<strong><mark>Description:</mark></strong> ${row.desc}`;
-        document.getElementById('yeaheader').innerHTML = `<strong><mark>Yea:</mark></strong> ${row.yea_votes}`;
-        document.getElementById('nayheader').innerHTML = `<strong><mark>Nay:</mark></strong> ${row.nay_votes}`;
+        document.getElementById('author').innerHTML = `<strong><mark>Author:\n</mark></strong> ${row.primary_author_name}`;
+        document.getElementById('date').innerHTML = `<strong><mark>Date:\n</mark></strong> ${row.date}`;
+        document.getElementById('desc').innerHTML = `<strong><mark>Description:\n</mark></strong> ${row.desc}`;
+        document.getElementById('yeaheader').innerHTML = `<strong><mark>Yea:\n</mark></strong> ${row.yea_votes}`;
+        document.getElementById('nayheader').innerHTML = `<strong><mark>Nay:\n</mark></strong> ${row.nay_votes}`;
 
         /*
         document.getElementById('author').textContent = `Author: ${row.primary_author_name}`;
