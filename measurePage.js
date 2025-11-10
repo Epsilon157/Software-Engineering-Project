@@ -14,8 +14,14 @@ async function loadMeasurePage() {
         ? JSON.parse(row.coauthors) 
         : row.coauthors;
         const coauthorsNames = coauthorsArray.map(coauthor => coauthor.name).join(', ');
-        document.getElementById('coauthors').textContent = `Coauthors: ${coauthorsNames}`;
-        //document.getElementById('coauthors').textContent = `Coauthors: ${row.coauthors.map(coauthors => String(coauthors.name))}`;
+
+        //document.getElementById('coauthors').textContent = `Coauthors: ${coauthorsNames}`;// No highlight or bold
+        //document.getElementById('coauthors').innerHTML = `<strong>Coauthors</strong>: ${coauthorsNames}`;// Just bold
+        //document.getElementById('coauthors').innerHTML = `<mark>Coauthors</mark>: ${coauthorsNames}`;// Just highlight
+        document.getElementById('coauthors').innerHTML = `<strong><mark>Coauthors</mark></strong>: ${coauthorsNames}`;// Highlight and bold
+
+        document.getElementById('coauthors').textContent = `Coauthors: ${row.coauthors.map(coauthors => String(coauthors.name))}`;
+        
         document.getElementById('author').textContent = `Author: ${row.primary_author_name}`;
         document.getElementById('date').textContent = `Date: ${row.date}`;
         document.getElementById('desc').textContent = `Description: ${row.desc}`;
