@@ -46,7 +46,7 @@ const url = new URL(request.url);
       district_result
     }));
 
-    return Response.json(mergedResults);
+    return Response.json(termResult);
   }
   else if(url.searchParams.has("vote_id")){
     const id = url.searchParams.get("vote_id");
