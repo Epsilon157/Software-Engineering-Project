@@ -51,7 +51,7 @@ async function loadYeaNay() {
         const termData = districtData.termResult[0];
 
         p.textContent = `${termData.name}`;
-        if(row.party == 'Republican'){
+        if(termData.party == 'Republican'){
             p.style.color = "red";
         }
         else{
