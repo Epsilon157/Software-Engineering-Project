@@ -8,7 +8,6 @@
     
     <!-- Firebase SDK -->
     <script type="module">
-        // Import Firebase modules
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { 
             getAuth, 
@@ -16,13 +15,10 @@
             signInWithEmailAndPassword,
             signOut,
             onAuthStateChanged,
-            sendEmailVerification,
-            sendPasswordResetEmail,
-            deleteUser
+            sendEmailVerification
         } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { 
             getFirestore, 
-            collection, 
             doc, 
             setDoc, 
             getDoc, 
@@ -40,24 +36,19 @@
             measurementId: "G-9N2C7T4FEZ"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Make auth available globally
         window.auth = auth;
         window.firebaseAuth = {
             createUserWithEmailAndPassword,
             signInWithEmailAndPassword,
             signOut,
-            sendEmailVerification,
-            sendPasswordResetEmail,
-            deleteUser
+            sendEmailVerification
         };
         window.firestore = {
             db,
-            collection,
             doc,
             setDoc,
             getDoc,
@@ -65,93 +56,21 @@
             serverTimestamp
         };
 
-        // Time frame for verification (24 hours)
-        const VERIFICATION_TIME_LIMIT = 24 * 60 * 60 * 1000;
-
-        // Auth state listener - only for initial page load and automatic state changes
+        // Auth state listener for page loads
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                try {
-                    await user.reload();
-                    const updatedUser = auth.currentUser;
-                    
-                    // Check if account should be deleted due to non-verification
-                    const shouldDelete = await checkVerificationTimeLimit(updatedUser);
-                    if (shouldDelete) {
-                        await deleteExpiredAccount(updatedUser);
-                        return;
-                    }
-                    
-                    // User is signed in and account is valid
-                    if (updatedUser.emailVerified) {
-                        await removeFromUnverifiedTracking(updatedUser);
-                        // Only update UI if we're not already on the profile page
-                        if (document.getElementById('userProfile').style.display !== 'block') {
-                            showUserProfile(updatedUser);
-                        }
-                    } else {
-                        // Only update UI if we're not already on the verification page
-                        if (document.getElementById('pendingVerification').style.display !== 'block') {
-                            showPendingVerification(updatedUser);
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error reloading user:', error);
-                    showLoginForm();
+                await user.reload(); // Get fresh verification status
+                const updatedUser = auth.currentUser;
+                
+                if (updatedUser.emailVerified) {
+                    showUserProfile(updatedUser);
+                } else {
+                    showPendingVerification(updatedUser);
                 }
             } else {
-                // Only show login if we're not already there
-                if (document.getElementById('loginSection').style.display !== 'block') {
-                    showLoginForm();
-                }
+                showLoginForm();
             }
         });
-        
-        async function checkVerificationTimeLimit(user) {
-            if (user.emailVerified) {
-                return false;
-            }
-            
-            try {
-                const userDocRef = doc(db, 'unverifiedAccounts', user.uid);
-                const userDoc = await getDoc(userDocRef);
-                
-                if (userDoc.exists()) {
-                    const userData = userDoc.data();
-                    const creationTime = userData.createdAt.toDate().getTime();
-                    const currentTime = Date.now();
-                    const timeElapsed = currentTime - creationTime;
-                    
-                    return timeElapsed > VERIFICATION_TIME_LIMIT;
-                }
-            } catch (error) {
-                console.error('Error checking verification time limit:', error);
-            }
-            
-            return false;
-        }
-        
-        async function deleteExpiredAccount(user) {
-            try {
-                const userDocRef = doc(db, 'unverifiedAccounts', user.uid);
-                await deleteDoc(userDocRef);
-                await deleteUser(user);
-                showMessage('Your unverified account has been automatically deleted due to non-verification. Please register again.', 'warning');
-            } catch (error) {
-                console.error('Error deleting expired account:', error);
-                showMessage('Error processing account. Please try logging in again.', 'error');
-            }
-        }
-
-        async function removeFromUnverifiedTracking(user) {
-            try {
-                const userDocRef = doc(db, 'unverifiedAccounts', user.uid);
-                await deleteDoc(userDocRef);
-                console.log('Account removed from unverified tracking');
-            } catch (error) {
-                console.error('Error removing from unverified tracking:', error);
-            }
-        }
     </script>
 </head>
 
@@ -187,8 +106,6 @@
             </form>
             <p class="auth-switch">
                 Don't have an account? <a href="#" onclick="showRegister()">Register here</a>
-                <br>
-                <a href="#" onclick="showForgotPassword()">Forgot password?</a>
             </p>
         </div>
 
@@ -209,20 +126,6 @@
             </p>
         </div>
 
-        <!-- Forgot Password Form -->
-        <div id="forgotPasswordSection" class="auth-form" style="display: none;">
-            <h3>Reset Password</h3>
-            <form id="forgotPasswordForm">
-                <div class="form-group">
-                    <input type="email" id="forgotPasswordEmail" placeholder="Enter your email" required>
-                </div>
-                <button type="submit" class="btn-primary">Send Reset Email</button>
-            </form>
-            <p class="auth-switch">
-                Remember your password? <a href="#" onclick="showLogin()">Login here</a>
-            </p>
-        </div>
-
         <!-- Pending Verification View -->
         <div id="pendingVerification" class="auth-form" style="display: none;">
             <h3>Verify Your Email</h3>
@@ -232,10 +135,6 @@
                     <p>We've sent a verification email to <strong id="pendingEmail"></strong>.</p>
                     <p>Please check your inbox and click the verification link to activate your account.</p>
                     <p>Once verified, you can log in to access your Soonerview account.</p>
-                    <div class="time-limit-warning">
-                        <strong>⚠️ Important:</strong> You have <strong>24 hours</strong> to verify your account. 
-                        Unverified accounts will be automatically deleted after this period.
-                    </div>
                 </div>
                 <div class="button-group">
                     <button onclick="resendVerification()" class="btn-primary" id="verifyEmailBtn">
@@ -257,7 +156,6 @@
                         <li>Make sure you entered the correct email address</li>
                         <li>Wait a few minutes - emails can sometimes be delayed</li>
                         <li>Click "Resend Verification Email" if needed</li>
-                        <li>You have 24 hours to verify your account</li>
                     </ul>
                 </div>
             </div>
@@ -273,9 +171,6 @@
                 </p>
                 <p><strong>User ID:</strong> <span id="userId" class="user-id"></span></p>
                 <p><strong>Account Created:</strong> <span id="userCreated"></span></p>
-                <p><strong>Account Status:</strong> 
-                    <span class="badge badge-success">Active</span>
-                </p>
             </div>
             
             <button onclick="logout()" class="btn-danger">Logout</button>
@@ -286,9 +181,6 @@
     </div>
 
     <script>
-        const VERIFICATION_TIME_LIMIT = 24 * 60 * 60 * 1000;
-        let pendingUserInfo = { email: null, uid: null };
-
         function topNav() {
             var x = document.getElementById("myTopnav");
             if (x.className === "topnav") {
@@ -302,39 +194,31 @@
             hideAllSections();
             document.getElementById('registerSection').style.display = 'block';
             hideMessage();
-            return false;
         }
 
         function showLogin() {
             hideAllSections();
             document.getElementById('loginSection').style.display = 'block';
             hideMessage();
-            return false;
-        }
-
-        function showForgotPassword() {
-            hideAllSections();
-            document.getElementById('forgotPasswordSection').style.display = 'block';
-            hideMessage();
-            return false;
         }
 
         function showPendingVerification(user) {
             hideAllSections();
             document.getElementById('pendingVerification').style.display = 'block';
             document.getElementById('pendingEmail').textContent = user.email;
-            pendingUserInfo.email = user.email;
-            pendingUserInfo.uid = user.uid;
             hideMessage();
         }
 
         function showUserProfile(user) {
             hideAllSections();
             document.getElementById('userProfile').style.display = 'block';
+            
             document.getElementById('userEmail').textContent = user.email;
             document.getElementById('userId').textContent = user.uid;
+            
             const created = new Date(user.metadata.creationTime).toLocaleDateString();
             document.getElementById('userCreated').textContent = created;
+            
             hideMessage();
         }
 
@@ -347,7 +231,6 @@
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('registerSection').style.display = 'none';
             document.getElementById('userProfile').style.display = 'none';
-            document.getElementById('forgotPasswordSection').style.display = 'none';
             document.getElementById('pendingVerification').style.display = 'none';
         }
 
@@ -405,31 +288,17 @@
             }
         }
 
-        async function trackUnverifiedAccount(user) {
-            try {
-                const userDocRef = window.firestore.doc(window.firestore.db, 'unverifiedAccounts', user.uid);
-                await window.firestore.setDoc(userDocRef, {
-                    email: user.email,
-                    createdAt: window.firestore.serverTimestamp(),
-                    verified: false
-                });
-            } catch (error) {
-                console.error('Error tracking unverified account:', error);
-            }
-        }
-
-        // SIMPLIFIED LOGIN HANDLER - Direct control of UI
+        // SIMPLE LOGIN - Check verification and show appropriate page
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
 
             try {
-                // Show loading state
                 const loginBtn = this.querySelector('button[type="submit"]');
                 const originalText = loginBtn.textContent;
                 loginBtn.disabled = true;
-                loginBtn.innerHTML = '<div class="spinner"></div> Logging in...';
+                loginBtn.textContent = 'Logging in...';
 
                 // Sign in user
                 const userCredential = await window.firebaseAuth.signInWithEmailAndPassword(window.auth, email, password);
@@ -439,37 +308,15 @@
                 await user.reload();
                 const updatedUser = window.auth.currentUser;
                 
-                console.log('User logged in, emailVerified:', updatedUser.emailVerified);
+                console.log('Login successful, email verified:', updatedUser.emailVerified);
                 
-                // DIRECTLY CONTROL UI BASED ON VERIFICATION STATUS
+                // Directly show the appropriate page based on verification status
                 if (updatedUser.emailVerified) {
-                    // User is verified - show profile immediately
-                    await removeFromUnverifiedTracking(updatedUser);
                     showUserProfile(updatedUser);
                     showMessage('Login successful!', 'success');
                 } else {
-                    // User is not verified
-                    const userDocRef = window.firestore.doc(window.firestore.db, 'unverifiedAccounts', updatedUser.uid);
-                    const userDoc = await window.firestore.getDoc(userDocRef);
-                    
-                    if (userDoc.exists()) {
-                        const userData = userDoc.data();
-                        const creationTime = userData.createdAt.toDate().getTime();
-                        const currentTime = Date.now();
-                        const timeElapsed = currentTime - creationTime;
-                        
-                        if (timeElapsed > VERIFICATION_TIME_LIMIT) {
-                            await window.firebaseAuth.deleteUser(updatedUser);
-                            await window.firestore.deleteDoc(userDocRef);
-                            showMessage('Account deleted - not verified within 24 hours. Please register again.', 'warning');
-                            loginBtn.disabled = false;
-                            loginBtn.textContent = originalText;
-                            return;
-                        }
-                    }
-                    
                     showPendingVerification(updatedUser);
-                    showMessage('Please verify your email address.', 'warning');
+                    showMessage('Please verify your email address to access your account.', 'warning');
                 }
                 
                 this.reset();
@@ -477,7 +324,6 @@
                 loginBtn.textContent = originalText;
                 
             } catch (error) {
-                console.error('Login error:', error);
                 showMessage('Login failed: ' + error.message);
                 const loginBtn = this.querySelector('button[type="submit"]');
                 loginBtn.disabled = false;
@@ -485,7 +331,7 @@
             }
         });
 
-        // Registration form
+        // REGISTRATION - Create account and show pending verification
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('registerEmail').value;
@@ -500,48 +346,23 @@
                 const userCredential = await window.firebaseAuth.createUserWithEmailAndPassword(window.auth, email, password);
                 const user = userCredential.user;
                 
-                await trackUnverifiedAccount(user);
+                // Send verification email
                 await window.firebaseAuth.sendEmailVerification(user);
                 
+                // Show pending verification screen
                 showPendingVerification(user);
                 showMessage('Account created! Please verify your email.', 'success');
                 this.reset();
+                
             } catch (error) {
                 showMessage('Registration failed: ' + error.message);
             }
         });
 
-        // Forgot password form
-        document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const email = document.getElementById('forgotPasswordEmail').value;
-
-            try {
-                await window.firebaseAuth.sendPasswordResetEmail(window.auth, email);
-                showMessage('Password reset email sent!', 'success');
-                this.reset();
-                showLogin();
-            } catch (error) {
-                showMessage('Failed to send reset email: ' + error.message);
-            }
-        });
-
-        // Helper function to remove from unverified tracking
-        async function removeFromUnverifiedTracking(user) {
-            try {
-                const userDocRef = window.firestore.doc(window.firestore.db, 'unverifiedAccounts', user.uid);
-                await window.firestore.deleteDoc(userDocRef);
-            } catch (error) {
-                console.error('Error removing from unverified tracking:', error);
-            }
-        }
-
-        // Logout function
         async function logout() {
             try {
                 await window.firebaseAuth.signOut(window.auth);
                 showMessage('Logged out successfully', 'success');
-                showLoginForm();
             } catch (error) {
                 showMessage('Logout error: ' + error.message);
             }
@@ -566,16 +387,20 @@
         
         .user-info p {
             word-wrap: break-word;
+            margin: 10px 0;
         }
 
-        .card ul {
-            margin: 10px 0;
-            padding-left: 20px;
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
         }
         
-        .card li {
-            margin-bottom: 5px;
-            line-height: 1.4;
+        .badge-success {
+            background-color: #28a745;
         }
         
         .button-group {
@@ -589,13 +414,26 @@
             margin-top: 0;
         }
         
-        .time-limit-warning {
+        .verification-warning {
             background: #fff3cd;
             border: 1px solid #ffeaa7;
             border-radius: 4px;
-            padding: 10px;
+            padding: 15px;
             margin: 10px 0;
             color: #856404;
+        }
+        
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        
+        .card-header {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
         }
         
         /* Spinner styling */
@@ -613,19 +451,6 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
-        }
-        
-        .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        
-        .badge-success {
-            background-color: #28a745;
-            color: white;
         }
         
         @media screen and (max-width: 600px) {
