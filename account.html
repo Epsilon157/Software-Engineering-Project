@@ -74,7 +74,7 @@
         // Auth state listener - will update UI when auth state changes
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // FIXED: Reload user to get latest verification status
+                // FIXED: Improved verification status check
                 try {
                     await user.reload();
                     const updatedUser = auth.currentUser;
@@ -89,7 +89,7 @@
                     }
                     
                     // User is signed in and account is valid
-                    // FIXED: Check actual verification status
+                    // FIXED: Better handling of verification status
                     if (updatedUser.emailVerified) {
                         await removeFromUnverifiedTracking(updatedUser);
                         showUserProfile(updatedUser);
@@ -468,7 +468,7 @@
             }
         }
 
-        // FIXED: Login form - reload user to get latest verification status
+        // FIXED: Improved login form handling with better verification check
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
@@ -478,7 +478,7 @@
                 const userCredential = await window.firebaseAuth.signInWithEmailAndPassword(window.auth, email, password);
                 const user = userCredential.user;
                 
-                // FIXED: Reload user to get latest verification status
+                // FIXED: Force reload to get latest verification status
                 await user.reload();
                 const updatedUser = window.auth.currentUser;
                 
@@ -486,37 +486,36 @@
                 pendingUserInfo.email = updatedUser.email;
                 pendingUserInfo.uid = updatedUser.uid;
                 
-                // Check if account has expired
-                const userDocRef = window.firestore.doc(window.firestore.db, 'unverifiedAccounts', updatedUser.uid);
-                const userDoc = await window.firestore.getDoc(userDocRef);
-                
-                if (userDoc.exists()) {
-                    const userData = userDoc.data();
-                    const creationTime = userData.createdAt.toDate().getTime();
-                    const currentTime = Date.now();
-                    const timeElapsed = currentTime - creationTime;
-                    
-                    if (timeElapsed > VERIFICATION_TIME_LIMIT) {
-                        // Account expired, delete it
-                        await window.firebaseAuth.deleteUser(updatedUser);
-                        await window.firestore.deleteDoc(userDocRef);
-                        showMessage('This account has been deleted because it was not verified within 24 hours. Please register again.', 'warning');
-                        return;
-                    }
-                }
-                
-                // FIXED: Check actual verification status after reload
-                if (!updatedUser.emailVerified) {
-                    // Show verification required message
-                    showMessage('Please verify your email address to access your account.', 'warning');
-                    showPendingVerification(updatedUser);
-                    // Clear form
+                // FIXED: Check verification status immediately after reload
+                if (updatedUser.emailVerified) {
+                    // User is verified - remove from tracking and show profile
+                    await window.firestore.deleteDoc(window.firestore.doc(window.firestore.db, 'unverifiedAccounts', updatedUser.uid));
+                    showUserProfile(updatedUser);
+                    showMessage('Login successful!', 'success');
                     this.reset();
                 } else {
-                    // Remove from unverified tracking if verified
-                    await window.firestore.deleteDoc(window.firestore.doc(window.firestore.db, 'unverifiedAccounts', updatedUser.uid));
-                    showMessage('Login successful!', 'success');
-                    // Clear form
+                    // User is not verified - check if account should be expired
+                    const userDocRef = window.firestore.doc(window.firestore.db, 'unverifiedAccounts', updatedUser.uid);
+                    const userDoc = await window.firestore.getDoc(userDocRef);
+                    
+                    if (userDoc.exists()) {
+                        const userData = userDoc.data();
+                        const creationTime = userData.createdAt.toDate().getTime();
+                        const currentTime = Date.now();
+                        const timeElapsed = currentTime - creationTime;
+                        
+                        if (timeElapsed > VERIFICATION_TIME_LIMIT) {
+                            // Account expired, delete it
+                            await window.firebaseAuth.deleteUser(updatedUser);
+                            await window.firestore.deleteDoc(userDocRef);
+                            showMessage('This account has been deleted because it was not verified within 24 hours. Please register again.', 'warning');
+                            return;
+                        }
+                    }
+                    
+                    // Account not expired but not verified
+                    showMessage('Please verify your email address to access your account.', 'warning');
+                    showPendingVerification(updatedUser);
                     this.reset();
                 }
             } catch (error) {
@@ -593,6 +592,7 @@
             try {
                 await window.firebaseAuth.signOut(window.auth);
                 showMessage('Logged out successfully', 'success');
+                showLoginForm();
             } catch (error) {
                 showMessage('Logout error: ' + error.message);
             }
