@@ -41,15 +41,25 @@ async function loadMeasurePage() {
 
 async function loadYeaNay() {
     for(let i = 1; i <= 48; i++){
-            var n = String(i).padStart(3, '0');
-            var p = document.createElement('p');
+        var n = String(i).padStart(3, '0');
+        var p = document.createElement('p');
 
-            const districtRes = await fetch(`query?vote_id=${id}district=${n}`);
-            const districtData = await districtRes.json();
+        const districtRes = await fetch(`query?vote_id=${id}district=${n}`);
+        const districtData = await districtRes.json();
 
-            p.textContent = `${districtData.name}`;
+        (districtData.results || []).forEach(row => {
+            p.textContent = `${row.name}`;
+            if(row.party == 'Republican'){
+                p.style.color = "red";
+            }
+            else{
+                p.style.color = "blue";
+            }
+            
             document.getElementById("yea").appendChild(p);
+        }
     }
 }
 
 loadMeasurePage();
+loadYeaNay();
