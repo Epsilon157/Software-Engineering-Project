@@ -74,17 +74,32 @@
         // Auth state listener - will update UI when auth state changes
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Check if account should be deleted due to non-verification
-                const shouldDelete = await checkVerificationTimeLimit(user);
-                if (shouldDelete) {
-                    // Account expired, delete it
-                    await deleteExpiredAccount(user);
+                // FIXED: Reload user to get latest verification status
+                try {
+                    await user.reload();
+                    const updatedUser = auth.currentUser;
+                    
+                    // Check if account should be deleted due to non-verification
+                    const shouldDelete = await checkVerificationTimeLimit(updatedUser);
+                    if (shouldDelete) {
+                        // Account expired, delete it
+                        await deleteExpiredAccount(updatedUser);
+                        showLoginForm();
+                        return;
+                    }
+                    
+                    // User is signed in and account is valid
+                    // FIXED: Check actual verification status
+                    if (updatedUser.emailVerified) {
+                        await removeFromUnverifiedTracking(updatedUser);
+                        showUserProfile(updatedUser);
+                    } else {
+                        showPendingVerification(updatedUser);
+                    }
+                } catch (error) {
+                    console.error('Error reloading user:', error);
                     showLoginForm();
-                    return;
                 }
-                
-                // User is signed in and account is valid
-                showUserProfile(user);
             } else {
                 // User is signed out
                 showLoginForm();
@@ -131,6 +146,17 @@
             } catch (error) {
                 console.error('Error deleting expired account:', error);
                 showMessage('Error processing account. Please try logging in again.', 'error');
+            }
+        }
+
+        // FIXED: Remove from unverified tracking when verified
+        async function removeFromUnverifiedTracking(user) {
+            try {
+                const userDocRef = doc(db, 'unverifiedAccounts', user.uid);
+                await deleteDoc(userDocRef);
+                console.log('Account removed from unverified tracking');
+            } catch (error) {
+                console.error('Error removing from unverified tracking:', error);
             }
         }
     </script>
@@ -442,18 +468,7 @@
             }
         }
 
-        // Remove from unverified tracking when verified
-        async function removeFromUnverifiedTracking(user) {
-            try {
-                const userDocRef = window.firestore.doc(window.firestore.db, 'unverifiedAccounts', user.uid);
-                await window.firestore.deleteDoc(userDocRef);
-                console.log('Account removed from unverified tracking');
-            } catch (error) {
-                console.error('Error removing from unverified tracking:', error);
-            }
-        }
-
-        // CHANGED: Login form - properly handle verification status
+        // FIXED: Login form - reload user to get latest verification status
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
@@ -463,12 +478,16 @@
                 const userCredential = await window.firebaseAuth.signInWithEmailAndPassword(window.auth, email, password);
                 const user = userCredential.user;
                 
+                // FIXED: Reload user to get latest verification status
+                await user.reload();
+                const updatedUser = window.auth.currentUser;
+                
                 // Store user info for potential resend
-                pendingUserInfo.email = user.email;
-                pendingUserInfo.uid = user.uid;
+                pendingUserInfo.email = updatedUser.email;
+                pendingUserInfo.uid = updatedUser.uid;
                 
                 // Check if account has expired
-                const userDocRef = window.firestore.doc(window.firestore.db, 'unverifiedAccounts', user.uid);
+                const userDocRef = window.firestore.doc(window.firestore.db, 'unverifiedAccounts', updatedUser.uid);
                 const userDoc = await window.firestore.getDoc(userDocRef);
                 
                 if (userDoc.exists()) {
@@ -479,23 +498,23 @@
                     
                     if (timeElapsed > VERIFICATION_TIME_LIMIT) {
                         // Account expired, delete it
-                        await window.firebaseAuth.deleteUser(user);
+                        await window.firebaseAuth.deleteUser(updatedUser);
                         await window.firestore.deleteDoc(userDocRef);
                         showMessage('This account has been deleted because it was not verified within 24 hours. Please register again.', 'warning');
                         return;
                     }
                 }
                 
-                // Check if email is verified
-                if (!user.emailVerified) {
+                // FIXED: Check actual verification status after reload
+                if (!updatedUser.emailVerified) {
                     // Show verification required message
                     showMessage('Please verify your email address to access your account.', 'warning');
-                    showPendingVerification(user);
+                    showPendingVerification(updatedUser);
                     // Clear form
                     this.reset();
                 } else {
                     // Remove from unverified tracking if verified
-                    await removeFromUnverifiedTracking(user);
+                    await window.firestore.deleteDoc(window.firestore.doc(window.firestore.db, 'unverifiedAccounts', updatedUser.uid));
                     showMessage('Login successful!', 'success');
                     // Clear form
                     this.reset();
@@ -505,7 +524,7 @@
             }
         });
 
-        // CHANGED: Registration form - keep user logged in for resend functionality
+        // Registration form - keep user logged in for resend functionality
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('registerEmail').value;
@@ -527,7 +546,7 @@
                 // Send email verification
                 await sendVerificationEmail();
                 
-                // CHANGED: Keep user logged in but show pending verification
+                // Keep user logged in but show pending verification
                 showPendingVerification(user);
                 showMessage('Account created! Please verify your email within 24 hours to activate your account.', 'success');
                 
