@@ -40,7 +40,7 @@ async function loadMeasurePage() {
 }
 
 async function loadYeaNay() {
-    for(let i = 1; i <= 48; i++){
+    for(let i = 1; i <= 101; i++){
         var n = String(i).padStart(3, '0');
         var p = document.createElement('p');
 
