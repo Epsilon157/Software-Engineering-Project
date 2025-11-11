@@ -39,7 +39,7 @@ const url = new URL(request.url);
     .bind(`${Number(district)}`, `${date}`, `House`)
     .all();
 
-    return Response.json(districtResult);
+    return Response.json(termResult);
   }
   else if(url.searchParams.has("vote_id")){
     const id = url.searchParams.get("vote_id");
