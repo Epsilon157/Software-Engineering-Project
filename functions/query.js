@@ -33,10 +33,10 @@ const url = new URL(request.url);
     const term_query = `SELECT t.party, t.district, t.start_date, t.end_date, t.people_id, l.name
                         FROM terms AS t
                         INNER JOIN legislators AS l
-                        ON t.people_id = l.people_id AND t.chamber = ?
+                        ON t.people_id = l.people_id
                         WHERE district = ? AND start_date < ? < end_date`;
     const termResult = await env.DB.prepare(term_query)
-    .bind(`${chamber}`,`${Number(district)}`, `${date}`)
+    .bind(`${Number(district)}`, `${date}`)
     .all();
 
     //const result = {
