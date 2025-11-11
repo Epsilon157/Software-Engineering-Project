@@ -54,10 +54,10 @@ async function loadYeaNay() {
 
         p.textContent = `${termData.name}`;
         if(termData.party == 'Republican'){
-            p.style.color = "#661616";
+            p.style.color = "#9e2020ff";
         }
         else{
-            p.style.color = "#20228aff";
+            p.style.color = "#282bb3ff";
         }
             
         if(Number(voteData.district_result) == 1){
