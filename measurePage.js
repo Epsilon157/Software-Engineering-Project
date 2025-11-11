@@ -18,7 +18,7 @@ async function loadMeasurePage() {
         //document.getElementById('coauthors').textContent = `Coauthors: ${coauthorsNames}`;// No highlight or bold
         //document.getElementById('coauthors').innerHTML = `<strong>Coauthors</strong>: ${coauthorsNames}`;// Just bold
         //document.getElementById('coauthors').innerHTML = `<mark>Coauthors</mark>: ${coauthorsNames}`;// Just highlight
-        document.getElementById('coauthors').innerHTML = `<strong><mark>Coauthors:</mark></strong>\n ${coauthorsNames}`;// Highlight and bold
+        document.getElementById('coauthors').innerHTML = `<strong>Coauthors:\n</strong>\n ${coauthorsNames}`;// Highlight and bold
 
         //document.getElementById('coauthors').textContent = `Coauthors: ${row.coauthors.map(coauthors => String(coauthors.name))}`;
         
