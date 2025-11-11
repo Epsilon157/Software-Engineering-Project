@@ -125,7 +125,7 @@
             </p>
         </div>
 
-        <!-- CHANGED: Pending Verification View (shown after registration but before verification) -->
+        <!-- Pending Verification View (shown after registration but before verification) -->
         <div id="pendingVerification" class="auth-form" style="display: none;">
             <h3>Verify Your Email</h3>
             <div class="verification-section">
@@ -135,12 +135,14 @@
                     <p>Please check your inbox and click the verification link to activate your account.</p>
                     <p>Once verified, you can log in to access your Soonerview account.</p>
                 </div>
-                <button onclick="sendVerificationEmail()" class="btn-primary" id="verifyEmailBtn">
-                    Resend Verification Email
-                </button>
-                <button onclick="showLogin()" class="btn-secondary" style="margin-left: 10px;">
-                    Return to Login
-                </button>
+                <div class="button-group">
+                    <button onclick="sendVerificationEmail()" class="btn-primary" id="verifyEmailBtn">
+                        Resend Verification Email
+                    </button>
+                    <button onclick="showLogin()" class="btn-primary">
+                        Return to Login
+                    </button>
+                </div>
             </div>
             
             <!-- Additional help information -->
@@ -221,7 +223,7 @@
             return false;
         }
 
-        // CHANGED: Show pending verification view
+        // Show pending verification view
         function showPendingVerification(user) {
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('registerSection').style.display = 'none';
@@ -276,7 +278,7 @@
             document.getElementById('authMessage').style.display = 'none';
         }
 
-        // CHANGED: Login form - prevent login if email not verified
+        // Login form - prevent login if email not verified
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
@@ -287,10 +289,10 @@
                 const user = userCredential.user;
                 
                 if (!user.emailVerified) {
-                    // NEW: Sign out user and show verification required message
+                    // Sign out user and show verification required message
                     await window.firebaseAuth.signOut(window.auth);
                     showMessage('Please verify your email address before logging in. Check your inbox for the verification link.', 'warning');
-                    // NEW: Show the pending verification view with their email
+                    // Show the pending verification view with their email
                     showPendingVerification(user);
                 } else {
                     showMessage('Login successful!', 'success');
@@ -302,7 +304,7 @@
             }
         });
 
-        // CHANGED: Registration form - sign out immediately after creation and require verification
+        // Registration form - sign out immediately after creation and require verification
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('registerEmail').value;
@@ -321,7 +323,7 @@
                 // Send email verification
                 await sendVerificationEmail();
                 
-                // NEW: Immediately sign out the user and show pending verification view
+                // Immediately sign out the user and show pending verification view
                 await window.firebaseAuth.signOut(window.auth);
                 showPendingVerification(user);
                 showMessage('Account created! Please verify your email to activate your account.', 'success');
@@ -415,7 +417,7 @@
             word-wrap: break-word;
         }
 
-        /* NEW: Styling for the pending verification help section */
+        /* Styling for the pending verification help section */
         .card ul {
             margin: 10px 0;
             padding-left: 20px;
@@ -424,6 +426,25 @@
         .card li {
             margin-bottom: 5px;
             line-height: 1.4;
+        }
+        
+        /* NEW: Button group styling for the verification section */
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .button-group .btn-primary {
+            flex: 1;
+            margin-top: 0;
+        }
+        
+        /* Responsive adjustment for button group */
+        @media screen and (max-width: 600px) {
+            .button-group {
+                flex-direction: column;
+            }
         }
     </style>
 
