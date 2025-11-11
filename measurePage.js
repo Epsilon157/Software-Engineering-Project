@@ -44,7 +44,7 @@ async function loadYeaNay() {
         var n = String(i).padStart(3, '0');
         var p = document.createElement('p');
 
-        const districtRes = await fetch(`query?vote_id=${id}district=${n}`);
+        const districtRes = await fetch(`query?vote_id=${id}&district=${n}`);
         const districtData = await districtRes.json();
 
         (districtData.results || []).forEach(row => {
