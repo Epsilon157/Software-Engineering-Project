@@ -50,6 +50,8 @@ async function loadYeaNay() {
         const voteData = districtData.districtResult[0];
         const termData = districtData.termResult[0];
 
+        if(voteData == null || termData == null) continue;
+
         p.textContent = `${termData.name}`;
         if(termData.party == 'Republican'){
             p.style.color = "red";
@@ -58,7 +60,12 @@ async function loadYeaNay() {
             p.style.color = "blue";
         }
             
-        document.getElementById("yea").appendChild(p);
+        if(Number(voteData.district_result) == 1){
+            document.getElementById("yea").appendChild(p);
+        }
+        else if(Number(voteData.district_result) == 2){
+            document.getElementById("nay").appendChild(p);
+        }
         
     }
 }
