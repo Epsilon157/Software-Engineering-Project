@@ -36,7 +36,7 @@ const url = new URL(request.url);
                         ON (t.people_id = l.people_id)
                         WHERE (t.district = ?) AND (t.start_date <= ? <= t.end_date) AND (t.chamber = ?)`;
     const termResult = await env.DB.prepare(term_query)
-    .bind(`${Number(district)}`, `${date}`, `House`)
+    .bind(`${Number(district)}`, `${date}`, `${chamber}`)
     .all();
 
     return Response.json(termResult);
