@@ -58,7 +58,7 @@ async function loadYeaNay() {
             
             document.getElementById("yea").appendChild(p);
         }
-    }
+    )}
 }
 
 loadMeasurePage();
