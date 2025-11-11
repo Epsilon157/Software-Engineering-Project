@@ -7,12 +7,25 @@ const url = new URL(request.url);
     let district = url.searchParams.get("district");
     district = district.replace(/[^0-9]/g, '');
 
-    const district_query = `SELECT v1.District_${district} as district_result, v1.date, v1.chamber
-                            FROM votes_1 AS v1 
-                            WHERE v1.roll_call_id = ?`;
-    const districtResult = await env.DB.prepare(district_query)
-    .bind(id)
-    .all();
+    let districtResult;
+
+    if(Number(district) < 49){
+      const district_query = `SELECT v1.District_${district} as district_result, v1.date, v1.chamber
+                              FROM votes_1 AS v1 
+                              WHERE v1.roll_call_id = ?`;
+      districtResult = await env.DB.prepare(district_query)
+      .bind(id)
+      .all();
+    }
+    else{
+      const district_query = `SELECT v2.District_${district} as district_result, v1.date, v1.chamber
+                              FROM votes_1 AS v1
+                              INNER JOIN votes_2 ON v1.roll_call_id = v2.roll_call_id
+                              WHERE v2.roll_call_id = ?`;
+      districtResult = await env.DB.prepare(district_query)
+      .bind(id)
+      .all();
+    }
 
     const date = districtResult.date;
     const chamber = districtResult.chamber;
