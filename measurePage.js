@@ -35,17 +35,21 @@ async function loadMeasurePage() {
         document.getElementById('yeaheader').textContent = `Yea: ${row.yea_votes}`;
         document.getElementById('nayheader').textContent = `Nay: ${row.nay_votes}`;
         */
-        for(let i = 1; i <= 48; i++){
+        
+    });
+}
+
+async function loadYeaNay() {
+    for(let i = 1; i <= 48; i++){
             var n = String(i).padStart(3, '0');
             var p = document.createElement('p');
 
-            //const districtRes = await fetch(`query?vote_id=${id}district=${n}`);
-            //const districtData = await districtRes.json();
+            const districtRes = await fetch(`query?vote_id=${id}district=${n}`);
+            const districtData = await districtRes.json();
 
-            //p.textContent = `${}`;
+            p.textContent = `${districtData.name}`;
             document.getElementById("yea").appendChild(p);
-        }
-    });
+    }
 }
 
 loadMeasurePage();
