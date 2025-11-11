@@ -15,20 +15,20 @@
             createUserWithEmailAndPassword,
             signInWithEmailAndPassword,
             signOut,
-            onAuthStateChanged
+            onAuthStateChanged,
+            sendEmailVerification,
+            sendPasswordResetEmail
         } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
-
         const firebaseConfig = {
-
-         apiKey: "AIzaSyAwIf4z7Yc0rgtHm1BwF9HIaoAJxS5RD_k",
-         authDomain: "soonerview-3bdcd.firebaseapp.com",
-         projectId: "soonerview-3bdcd",
-         storageBucket: "soonerview-3bdcd.firebasestorage.app",
-         messagingSenderId: "453639989277",
-         appId: "1:453639989277:web:3a2af00f31d3c031d6bef4",
-         measurementId: "G-9N2C7T4FEZ"
-    };
+            apiKey: "AIzaSyAwIf4z7Yc0rgtHm1BwF9HIaoAJxS5RD_k",
+            authDomain: "soonerview-3bdcd.firebaseapp.com",
+            projectId: "soonerview-3bdcd",
+            storageBucket: "soonerview-3bdcd.firebasestorage.app",
+            messagingSenderId: "453639989277",
+            appId: "1:453639989277:web:3a2af00f31d3c031d6bef4",
+            measurementId: "G-9N2C7T4FEZ"
+        };
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
@@ -39,7 +39,9 @@
         window.firebaseAuth = {
             createUserWithEmailAndPassword,
             signInWithEmailAndPassword,
-            signOut
+            signOut,
+            sendEmailVerification,
+            sendPasswordResetEmail
         };
 
         // Auth state listener - will update UI when auth state changes
@@ -83,6 +85,8 @@
             </form>
             <p class="auth-switch">
                 Don't have an account? <a href="#" onclick="showRegister()">Register here</a>
+                <br>
+                <a href="#" onclick="showForgotPassword()">Forgot password?</a>
             </p>
         </div>
 
@@ -99,14 +103,41 @@
             </p>
         </div>
 
+        <!-- Forgot Password Form -->
+        <div id="forgotPasswordSection" class="auth-form" style="display: none;">
+            <h3>Reset Password</h3>
+            <form id="forgotPasswordForm">
+                <input type="email" id="forgotPasswordEmail" placeholder="Enter your email" required>
+                <button type="submit" class="btn-primary">Send Reset Email</button>
+            </form>
+            <p class="auth-switch">
+                Remember your password? <a href="#" onclick="showLogin()">Login here</a>
+            </p>
+        </div>
+
         <!-- User Profile (shown when logged in) -->
         <div id="userProfile" class="auth-form" style="display: none;">
             <h3>Welcome to Soonerview!</h3>
             <div class="user-info">
                 <p><strong>Email:</strong> <span id="userEmail"></span></p>
+                <p><strong>Email Verified:</strong> <span id="emailVerified"></span></p>
                 <p><strong>User ID:</strong> <span id="userId"></span></p>
                 <p><strong>Account Created:</strong> <span id="userCreated"></span></p>
             </div>
+            
+            <!-- Email Verification Section -->
+            <div id="verificationSection" style="margin: 15px 0; padding: 10px; border-radius: 5px; display: none;">
+                <div id="verificationWarning" style="background: #fff3cd; color: #856404; padding: 10px; border-radius: 4px; margin-bottom: 10px;">
+                    <strong>Email Not Verified:</strong> Please verify your email address to access all features.
+                </div>
+                <button onclick="sendVerificationEmail()" class="btn-primary" id="verifyEmailBtn">
+                    Send Verification Email
+                </button>
+                <button onclick="refreshVerificationStatus()" class="btn-secondary" style="margin-left: 10px;">
+                    Refresh Status
+                </button>
+            </div>
+
             <button onclick="logout()" class="btn-danger">Logout</button>
         </div>
 
@@ -130,6 +161,7 @@
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('registerSection').style.display = 'block';
             document.getElementById('userProfile').style.display = 'none';
+            document.getElementById('forgotPasswordSection').style.display = 'none';
             hideMessage();
             return false;
         }
@@ -138,6 +170,16 @@
             document.getElementById('registerSection').style.display = 'none';
             document.getElementById('loginSection').style.display = 'block';
             document.getElementById('userProfile').style.display = 'none';
+            document.getElementById('forgotPasswordSection').style.display = 'none';
+            hideMessage();
+            return false;
+        }
+
+        function showForgotPassword() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('registerSection').style.display = 'none';
+            document.getElementById('userProfile').style.display = 'none';
+            document.getElementById('forgotPasswordSection').style.display = 'block';
             hideMessage();
             return false;
         }
@@ -146,6 +188,7 @@
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('registerSection').style.display = 'none';
             document.getElementById('userProfile').style.display = 'block';
+            document.getElementById('forgotPasswordSection').style.display = 'none';
             
             // Display user info
             document.getElementById('userEmail').textContent = user.email;
@@ -154,14 +197,33 @@
             // Format creation time
             const created = new Date(user.metadata.creationTime).toLocaleDateString();
             document.getElementById('userCreated').textContent = created;
+
+            // Update email verification status
+            updateVerificationStatus(user);
             
             hideMessage();
+        }
+
+        function updateVerificationStatus(user) {
+            const emailVerifiedEl = document.getElementById('emailVerified');
+            const verificationSection = document.getElementById('verificationSection');
+            
+            if (user.emailVerified) {
+                emailVerifiedEl.textContent = 'Yes';
+                emailVerifiedEl.style.color = 'green';
+                verificationSection.style.display = 'none';
+            } else {
+                emailVerifiedEl.textContent = 'No';
+                emailVerifiedEl.style.color = 'red';
+                verificationSection.style.display = 'block';
+            }
         }
 
         function showLoginForm() {
             document.getElementById('loginSection').style.display = 'block';
             document.getElementById('registerSection').style.display = 'none';
             document.getElementById('userProfile').style.display = 'none';
+            document.getElementById('forgotPasswordSection').style.display = 'none';
         }
 
         // Message functions
@@ -170,6 +232,11 @@
             messageEl.textContent = message;
             messageEl.style.display = 'block';
             messageEl.className = `message ${type}`;
+            
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(hideMessage, 5000);
+            }
         }
 
         function hideMessage() {
@@ -183,8 +250,15 @@
             const password = document.getElementById('loginPassword').value;
 
             try {
-                await window.firebaseAuth.signInWithEmailAndPassword(window.auth, email, password);
-                showMessage('Login successful!', 'success');
+                const userCredential = await window.firebaseAuth.signInWithEmailAndPassword(window.auth, email, password);
+                const user = userCredential.user;
+                
+                if (!user.emailVerified) {
+                    showMessage('Please verify your email address. Check your inbox for the verification link.', 'warning');
+                } else {
+                    showMessage('Login successful!', 'success');
+                }
+                
                 // Clear form
                 this.reset();
             } catch (error) {
@@ -204,14 +278,86 @@
             }
 
             try {
-                await window.firebaseAuth.createUserWithEmailAndPassword(window.auth, email, password);
-                showMessage('Account created successfully!', 'success');
+                const userCredential = await window.firebaseAuth.createUserWithEmailAndPassword(window.auth, email, password);
+                const user = userCredential.user;
+                
+                // Send email verification
+                await sendVerificationEmail();
+                showMessage('Account created! Verification email sent. Please check your inbox.', 'success');
+                
                 // Clear form
                 this.reset();
             } catch (error) {
                 showMessage('Registration failed: ' + error.message);
             }
         });
+
+        document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('forgotPasswordEmail').value;
+
+            try {
+                await window.firebaseAuth.sendPasswordResetEmail(window.auth, email);
+                showMessage('Password reset email sent! Check your inbox.', 'success');
+                this.reset();
+                showLogin(); // Go back to login form
+            } catch (error) {
+                showMessage('Failed to send reset email: ' + error.message);
+            }
+        });
+
+        // Email verification functions
+        async function sendVerificationEmail() {
+            const user = window.auth.currentUser;
+            if (!user) {
+                showMessage('No user logged in');
+                return;
+            }
+
+            try {
+                const verifyBtn = document.getElementById('verifyEmailBtn');
+                verifyBtn.disabled = true;
+                verifyBtn.textContent = 'Sending...';
+                
+                await window.firebaseAuth.sendEmailVerification(user);
+                showMessage('Verification email sent! Please check your inbox and spam folder.', 'success');
+                
+                // Re-enable button after a delay
+                setTimeout(() => {
+                    verifyBtn.disabled = false;
+                    verifyBtn.textContent = 'Send Verification Email';
+                }, 3000);
+                
+            } catch (error) {
+                showMessage('Failed to send verification email: ' + error.message);
+                const verifyBtn = document.getElementById('verifyEmailBtn');
+                verifyBtn.disabled = false;
+                verifyBtn.textContent = 'Send Verification Email';
+            }
+        }
+
+        async function refreshVerificationStatus() {
+            const user = window.auth.currentUser;
+            if (!user) {
+                showMessage('No user logged in');
+                return;
+            }
+
+            try {
+                // Reload user to get fresh verification status
+                await user.reload();
+                const updatedUser = window.auth.currentUser;
+                updateVerificationStatus(updatedUser);
+                
+                if (updatedUser.emailVerified) {
+                    showMessage('Email verified successfully!', 'success');
+                } else {
+                    showMessage('Email not verified yet. Please check your inbox.', 'warning');
+                }
+            } catch (error) {
+                showMessage('Failed to refresh status: ' + error.message);
+            }
+        }
 
         // Logout function
         async function logout() {
@@ -229,5 +375,22 @@
             console.log('Soonerview Account page loaded');
         });
     </script>
+
+    <style>
+        .btn-primary { background: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
+        .btn-success { background: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
+        .btn-danger { background: #dc3545; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
+        .btn-secondary { background: #6c757d; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
+        
+        .message { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .message.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .message.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .message.warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        
+        .auth-form { max-width: 400px; margin: 0 auto; padding: 20px; }
+        .auth-form input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 4px; }
+        .auth-switch { margin-top: 15px; text-align: center; }
+        .user-info { margin: 15px 0; }
+    </style>
 </body>
 </html>
