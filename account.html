@@ -125,32 +125,53 @@
             </p>
         </div>
 
-        <!-- User Profile (shown when logged in) -->
+        <!-- CHANGED: Pending Verification View (shown after registration but before verification) -->
+        <div id="pendingVerification" class="auth-form" style="display: none;">
+            <h3>Verify Your Email</h3>
+            <div class="verification-section">
+                <div class="verification-warning">
+                    <strong>Account Created - Verification Required</strong>
+                    <p>We've sent a verification email to <strong id="pendingEmail"></strong>.</p>
+                    <p>Please check your inbox and click the verification link to activate your account.</p>
+                    <p>Once verified, you can log in to access your Soonerview account.</p>
+                </div>
+                <button onclick="sendVerificationEmail()" class="btn-primary" id="verifyEmailBtn">
+                    Resend Verification Email
+                </button>
+                <button onclick="showLogin()" class="btn-secondary" style="margin-left: 10px;">
+                    Return to Login
+                </button>
+            </div>
+            
+            <!-- Additional help information -->
+            <div class="card" style="margin-top: 20px;">
+                <div class="card-header">
+                    <strong>Didn't receive the email?</strong>
+                </div>
+                <div style="padding: 10px;">
+                    <ul style="text-align: left; margin: 10px 0; padding-left: 20px;">
+                        <li>Check your spam or junk folder</li>
+                        <li>Make sure you entered the correct email address</li>
+                        <li>Wait a few minutes - emails can sometimes be delayed</li>
+                        <li>Click "Resend Verification Email" if needed</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Profile (shown when logged in with verified email) -->
         <div id="userProfile" class="auth-form" style="display: none;">
             <h3>Welcome to Soonerview!</h3>
             <div class="user-info">
                 <p><strong>Email:</strong> <span id="userEmail"></span></p>
                 <p><strong>Email Verified:</strong> 
-                    <span id="emailVerified"></span>
-                    <span id="emailVerifiedBadge" class="badge" style="margin-left: 8px;"></span>
+                    <span id="emailVerified">Yes</span>
+                    <span class="badge badge-success" style="margin-left: 8px;">Verified</span>
                 </p>
                 <p><strong>User ID:</strong> <span id="userId" class="user-id"></span></p>
                 <p><strong>Account Created:</strong> <span id="userCreated"></span></p>
             </div>
             
-            <!-- Email Verification Section -->
-            <div id="verificationSection" class="verification-section" style="display: none;">
-                <div class="verification-warning">
-                    <strong>Email Not Verified:</strong> Please verify your email address to access all features.
-                </div>
-                <button onclick="sendVerificationEmail()" class="btn-primary" id="verifyEmailBtn">
-                    Send Verification Email
-                </button>
-                <button onclick="refreshVerificationStatus()" class="btn-secondary">
-                    Refresh Status
-                </button>
-            </div>
-
             <button onclick="logout()" class="btn-danger">Logout</button>
         </div>
 
@@ -175,6 +196,7 @@
             document.getElementById('registerSection').style.display = 'block';
             document.getElementById('userProfile').style.display = 'none';
             document.getElementById('forgotPasswordSection').style.display = 'none';
+            document.getElementById('pendingVerification').style.display = 'none';
             hideMessage();
             return false;
         }
@@ -184,6 +206,7 @@
             document.getElementById('loginSection').style.display = 'block';
             document.getElementById('userProfile').style.display = 'none';
             document.getElementById('forgotPasswordSection').style.display = 'none';
+            document.getElementById('pendingVerification').style.display = 'none';
             hideMessage();
             return false;
         }
@@ -193,8 +216,21 @@
             document.getElementById('registerSection').style.display = 'none';
             document.getElementById('userProfile').style.display = 'none';
             document.getElementById('forgotPasswordSection').style.display = 'block';
+            document.getElementById('pendingVerification').style.display = 'none';
             hideMessage();
             return false;
+        }
+
+        // CHANGED: Show pending verification view
+        function showPendingVerification(user) {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('registerSection').style.display = 'none';
+            document.getElementById('userProfile').style.display = 'none';
+            document.getElementById('forgotPasswordSection').style.display = 'none';
+            document.getElementById('pendingVerification').style.display = 'block';
+            
+            document.getElementById('pendingEmail').textContent = user.email;
+            hideMessage();
         }
 
         function showUserProfile(user) {
@@ -202,6 +238,7 @@
             document.getElementById('registerSection').style.display = 'none';
             document.getElementById('userProfile').style.display = 'block';
             document.getElementById('forgotPasswordSection').style.display = 'none';
+            document.getElementById('pendingVerification').style.display = 'none';
             
             // Display user info
             document.getElementById('userEmail').textContent = user.email;
@@ -210,31 +247,8 @@
             // Format creation time
             const created = new Date(user.metadata.creationTime).toLocaleDateString();
             document.getElementById('userCreated').textContent = created;
-
-            // Update email verification status
-            updateVerificationStatus(user);
             
             hideMessage();
-        }
-
-        function updateVerificationStatus(user) {
-            const emailVerifiedEl = document.getElementById('emailVerified');
-            const emailVerifiedBadge = document.getElementById('emailVerifiedBadge');
-            const verificationSection = document.getElementById('verificationSection');
-            
-            if (user.emailVerified) {
-                emailVerifiedEl.textContent = 'Yes';
-                emailVerifiedEl.style.color = 'green';
-                emailVerifiedBadge.textContent = 'Verified';
-                emailVerifiedBadge.className = 'badge badge-success';
-                verificationSection.style.display = 'none';
-            } else {
-                emailVerifiedEl.textContent = 'No';
-                emailVerifiedEl.style.color = 'red';
-                emailVerifiedBadge.textContent = 'Unverified';
-                emailVerifiedBadge.className = 'badge badge-warning';
-                verificationSection.style.display = 'block';
-            }
         }
 
         function showLoginForm() {
@@ -242,6 +256,7 @@
             document.getElementById('registerSection').style.display = 'none';
             document.getElementById('userProfile').style.display = 'none';
             document.getElementById('forgotPasswordSection').style.display = 'none';
+            document.getElementById('pendingVerification').style.display = 'none';
         }
 
         // Message functions
@@ -261,7 +276,7 @@
             document.getElementById('authMessage').style.display = 'none';
         }
 
-        // Form submissions
+        // CHANGED: Login form - prevent login if email not verified
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
@@ -272,18 +287,22 @@
                 const user = userCredential.user;
                 
                 if (!user.emailVerified) {
-                    showMessage('Please verify your email address. Check your inbox for the verification link.', 'warning');
+                    // NEW: Sign out user and show verification required message
+                    await window.firebaseAuth.signOut(window.auth);
+                    showMessage('Please verify your email address before logging in. Check your inbox for the verification link.', 'warning');
+                    // NEW: Show the pending verification view with their email
+                    showPendingVerification(user);
                 } else {
                     showMessage('Login successful!', 'success');
+                    // Clear form
+                    this.reset();
                 }
-                
-                // Clear form
-                this.reset();
             } catch (error) {
                 showMessage('Login failed: ' + error.message);
             }
         });
 
+        // CHANGED: Registration form - sign out immediately after creation and require verification
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('registerEmail').value;
@@ -301,7 +320,11 @@
                 
                 // Send email verification
                 await sendVerificationEmail();
-                showMessage('Account created! Verification email sent. Please check your inbox.', 'success');
+                
+                // NEW: Immediately sign out the user and show pending verification view
+                await window.firebaseAuth.signOut(window.auth);
+                showPendingVerification(user);
+                showMessage('Account created! Please verify your email to activate your account.', 'success');
                 
                 // Clear form
                 this.reset();
@@ -346,53 +369,14 @@
                 // Re-enable button after a delay
                 setTimeout(() => {
                     verifyBtn.disabled = false;
-                    verifyBtn.textContent = 'Send Verification Email';
+                    verifyBtn.textContent = 'Resend Verification Email';
                 }, 3000);
                 
             } catch (error) {
                 showMessage('Failed to send verification email: ' + error.message);
                 const verifyBtn = document.getElementById('verifyEmailBtn');
                 verifyBtn.disabled = false;
-                verifyBtn.textContent = 'Send Verification Email';
-            }
-        }
-
-        async function refreshVerificationStatus() {
-            const user = window.auth.currentUser;
-            if (!user) {
-                showMessage('No user logged in');
-                return;
-            }
-
-            try {
-                // Show loading state on refresh button
-                const refreshBtn = event.target;
-                const originalText = refreshBtn.textContent;
-                refreshBtn.innerHTML = '<div class="spinner" style="display: inline-block; margin-right: 8px;"></div> Checking...';
-                refreshBtn.disabled = true;
-                
-                // Reload user to get fresh verification status
-                await user.reload();
-                const updatedUser = window.auth.currentUser;
-                updateVerificationStatus(updatedUser);
-                
-                if (updatedUser.emailVerified) {
-                    showMessage('Email verified successfully!', 'success');
-                } else {
-                    showMessage('Email not verified yet. Please check your inbox.', 'warning');
-                }
-                
-                // Reset button
-                setTimeout(() => {
-                    refreshBtn.disabled = false;
-                    refreshBtn.textContent = originalText;
-                }, 1000);
-                
-            } catch (error) {
-                showMessage('Failed to refresh status: ' + error.message);
-                const refreshBtn = event.target;
-                refreshBtn.disabled = false;
-                refreshBtn.textContent = 'Refresh Status';
+                verifyBtn.textContent = 'Resend Verification Email';
             }
         }
 
@@ -412,6 +396,36 @@
             console.log('Soonerview Account page loaded');
         });
     </script>
+
+    <style>
+        /* Additional styling for the full user ID display */
+        .user-id {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            word-break: break-all;
+            background-color: #f8f5f0;
+            padding: 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 4px;
+        }
+        
+        /* Ensure the user info section handles long content properly */
+        .user-info p {
+            word-wrap: break-word;
+        }
+
+        /* NEW: Styling for the pending verification help section */
+        .card ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .card li {
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+    </style>
 
     <!-- Font Awesome for the hamburger icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
