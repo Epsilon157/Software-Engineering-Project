@@ -30,7 +30,7 @@ const url = new URL(request.url);
     const date = districtResult.date;
     const chamber = districtResult.chamber;
     const district_result = districtResult.district_result;
-    
+
     const term_query = `SELECT t.party, t.district, t.start_date, t.end_date, t.people_id, l.name, t.chamber, v1
                         FROM terms AS t
                         INNER JOIN legislators AS l
@@ -40,7 +40,7 @@ const url = new URL(request.url);
     .bind(`${Number(district)}`, `${date}`, `House`)
     .all();
 
-    return Response.json(termResult);
+    return Response.json(districtResult);
   }
   else if(url.searchParams.has("vote_id")){
     const id = url.searchParams.get("vote_id");
