@@ -25,8 +25,8 @@ async function loadMeasurePage() {
         document.getElementById('author').innerHTML = `<strong>Author:</strong><br> ${row.primary_author_name}`;
         document.getElementById('date').innerHTML = `<strong>Date:</strong><br> ${row.date}`;
         document.getElementById('desc').innerHTML = `<strong>Description:</strong><br> ${row.desc}`;
-        document.getElementById('yeaheader').innerHTML = `<strong>Yea:</strong><br> ${row.yea_votes}`;
-        document.getElementById('nayheader').innerHTML = `<strong>Nay:</strong><br> ${row.nay_votes}`;
+        document.getElementById('yeaheader').innerHTML = `<strong>Yea:</strong> ${row.yea_votes}`;
+        document.getElementById('nayheader').innerHTML = `<strong>Nay:</strong> ${row.nay_votes}`;
 
         /*
         document.getElementById('author').textContent = `Author: ${row.primary_author_name}`;
