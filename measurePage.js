@@ -47,10 +47,10 @@ async function loadYeaNay() {
         const districtRes = await fetch(`query?vote_id=${id}&district=${n}`);
         const districtData = await districtRes.json();
 
-        const districtResult = districtData.districtResult[0];
-        const termResult = districtData.termResult[0];
+        const voteData = districtData.districtResult[0];
+        const termData = districtData.termResult[0];
 
-        p.textContent = `${termResult.name}`;
+        p.textContent = `${termData.name}`;
         if(row.party == 'Republican'){
             p.style.color = "red";
         }
