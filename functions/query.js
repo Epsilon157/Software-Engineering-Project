@@ -29,6 +29,7 @@ const url = new URL(request.url);
 
     const date = districtResult.date;
     const chamber = districtResult.chamber;
+    const district_result = districtResult.district_result;
     // AND (t.chamber = ?)
     const term_query = `SELECT t.party, t.district, t.start_date, t.end_date, t.people_id, l.name, t.chamber, v1
                         FROM terms AS t
