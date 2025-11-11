@@ -68,7 +68,7 @@
         // Time frame for verification (24 hours)
         const VERIFICATION_TIME_LIMIT = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
-        // NEW: Store pending user email for resend functionality
+        // Store pending user email for resend functionality
         let pendingUserEmail = null;
 
         // Auth state listener - will update UI when auth state changes
@@ -131,20 +131,6 @@
             } catch (error) {
                 console.error('Error deleting expired account:', error);
                 showMessage('Error processing account. Please try logging in again.', 'error');
-            }
-        }
-
-        // NEW: Function to resend verification email to a specific email
-        async function resendVerificationToEmail(email) {
-            try {
-                // Create a temporary sign-in to resend verification
-                // Note: This requires the password, which we don't have
-                // Alternative approach: Use Firebase Admin SDK on a backend (recommended)
-                // For now, we'll show a message that they need to log in first
-                showMessage('Please log in to resend verification email, or register again with the same email.', 'warning');
-            } catch (error) {
-                console.error('Error resending verification:', error);
-                showMessage('Failed to resend verification email: ' + error.message);
             }
         }
     </script>
@@ -234,19 +220,12 @@
                     </div>
                 </div>
                 <div class="button-group">
-                    <!-- CHANGED: Updated to use the new resend function -->
                     <button onclick="resendVerification()" class="btn-primary" id="verifyEmailBtn">
                         Resend Verification Email
                     </button>
-                    <button onclick="showLogin()" class="btn-primary">
+                    <button onclick="logoutAndShowLogin()" class="btn-primary">
                         Return to Login
                     </button>
-                </div>
-                <!-- NEW: Alternative verification method -->
-                <div style="margin-top: 15px; padding: 10px; background: #f8f5f0; border-radius: 4px;">
-                    <p style="margin: 0; font-size: 14px;">
-                        <strong>Note:</strong> If resend doesn't work, try logging in to trigger a new verification email.
-                    </p>
                 </div>
             </div>
             
@@ -262,7 +241,6 @@
                         <li>Wait a few minutes - emails can sometimes be delayed</li>
                         <li>Click "Resend Verification Email" if needed</li>
                         <li>You have 24 hours to verify your account</li>
-                        <li>Try logging in - this may trigger a new verification email</li>
                     </ul>
                 </div>
             </div>
@@ -296,7 +274,7 @@
         // Verification time limit (24 hours)
         const VERIFICATION_TIME_LIMIT = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
-        // NEW: Store pending user info for resend functionality
+        // Store pending user info for resend functionality
         let pendingUserInfo = {
             email: null,
             uid: null
@@ -353,7 +331,7 @@
             
             document.getElementById('pendingEmail').textContent = user.email;
             
-            // NEW: Store user info for resend functionality
+            // Store user info for resend functionality
             pendingUserInfo.email = user.email;
             pendingUserInfo.uid = user.uid;
             
@@ -386,6 +364,17 @@
             document.getElementById('pendingVerification').style.display = 'none';
         }
 
+        // NEW: Logout and show login form
+        async function logoutAndShowLogin() {
+            try {
+                await window.firebaseAuth.signOut(window.auth);
+                showLogin();
+            } catch (error) {
+                console.error('Logout error:', error);
+                showLogin();
+            }
+        }
+
         // Message functions
         function showMessage(message, type = 'error') {
             const messageEl = document.getElementById('authMessage');
@@ -403,10 +392,12 @@
             document.getElementById('authMessage').style.display = 'none';
         }
 
-        // NEW: Resend verification email function
+        // Resend verification email function
         async function resendVerification() {
-            if (!pendingUserInfo.email) {
-                showMessage('No email address found. Please try logging in again.', 'error');
+            const user = window.auth.currentUser;
+            if (!user) {
+                showMessage('Please log in to resend verification email.', 'error');
+                showLogin();
                 return;
             }
 
@@ -418,19 +409,18 @@
                 // Show loading state
                 verifyBtn.innerHTML = '<div class="spinner" style="display: inline-block; margin-right: 8px;"></div> Sending...';
                 
-                // NEW: Try to sign in and resend verification
-                // We'll guide the user to log in instead
-                showMessage('Please log in with your email and password to resend the verification email.', 'info');
+                // Resend verification email
+                await window.firebaseAuth.sendEmailVerification(user);
+                showMessage('Verification email sent! Please check your inbox and spam folder.', 'success');
                 
-                // Reset button after a delay
+                // Re-enable button after a delay
                 setTimeout(() => {
                     verifyBtn.disabled = false;
                     verifyBtn.textContent = 'Resend Verification Email';
-                    showLogin(); // Redirect to login page
                 }, 3000);
                 
             } catch (error) {
-                showMessage('Failed to resend verification email. Please try logging in.', 'error');
+                showMessage('Failed to send verification email: ' + error.message, 'error');
                 const verifyBtn = document.getElementById('verifyEmailBtn');
                 verifyBtn.disabled = false;
                 verifyBtn.textContent = 'Resend Verification Email';
@@ -463,7 +453,7 @@
             }
         }
 
-        // Login form - prevent login if email not verified
+        // CHANGED: Login form - properly handle verification status
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
@@ -473,41 +463,36 @@
                 const userCredential = await window.firebaseAuth.signInWithEmailAndPassword(window.auth, email, password);
                 const user = userCredential.user;
                 
+                // Store user info for potential resend
+                pendingUserInfo.email = user.email;
+                pendingUserInfo.uid = user.uid;
+                
+                // Check if account has expired
+                const userDocRef = window.firestore.doc(window.firestore.db, 'unverifiedAccounts', user.uid);
+                const userDoc = await window.firestore.getDoc(userDocRef);
+                
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    const creationTime = userData.createdAt.toDate().getTime();
+                    const currentTime = Date.now();
+                    const timeElapsed = currentTime - creationTime;
+                    
+                    if (timeElapsed > VERIFICATION_TIME_LIMIT) {
+                        // Account expired, delete it
+                        await window.firebaseAuth.deleteUser(user);
+                        await window.firestore.deleteDoc(userDocRef);
+                        showMessage('This account has been deleted because it was not verified within 24 hours. Please register again.', 'warning');
+                        return;
+                    }
+                }
+                
+                // Check if email is verified
                 if (!user.emailVerified) {
-                    // NEW: Store user info for potential resend
-                    pendingUserInfo.email = user.email;
-                    pendingUserInfo.uid = user.uid;
-                    
-                    // Check if account has expired
-                    const userDocRef = window.firestore.doc(window.firestore.db, 'unverifiedAccounts', user.uid);
-                    const userDoc = await window.firestore.getDoc(userDocRef);
-                    
-                    if (userDoc.exists()) {
-                        const userData = userDoc.data();
-                        const creationTime = userData.createdAt.toDate().getTime();
-                        const currentTime = Date.now();
-                        const timeElapsed = currentTime - creationTime;
-                        
-                        if (timeElapsed > VERIFICATION_TIME_LIMIT) {
-                            // Account expired, delete it
-                            await window.firebaseAuth.deleteUser(user);
-                            await window.firestore.deleteDoc(userDocRef);
-                            showMessage('This account has been deleted because it was not verified within 24 hours. Please register again.', 'warning');
-                            return;
-                        }
-                    }
-                    
-                    // NEW: Send verification email again when unverified user logs in
-                    try {
-                        await window.firebaseAuth.sendEmailVerification(user);
-                        showMessage('New verification email sent! Please check your inbox.', 'success');
-                    } catch (verificationError) {
-                        console.error('Error sending verification email:', verificationError);
-                    }
-                    
-                    // Show verification required message but keep user logged in temporarily
-                    showMessage('Please verify your email address. A new verification email has been sent.', 'warning');
+                    // Show verification required message
+                    showMessage('Please verify your email address to access your account.', 'warning');
                     showPendingVerification(user);
+                    // Clear form
+                    this.reset();
                 } else {
                     // Remove from unverified tracking if verified
                     await removeFromUnverifiedTracking(user);
@@ -520,7 +505,7 @@
             }
         });
 
-        // Registration form - sign out immediately after creation and require verification
+        // CHANGED: Registration form - keep user logged in for resend functionality
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('registerEmail').value;
@@ -542,8 +527,7 @@
                 // Send email verification
                 await sendVerificationEmail();
                 
-                // Immediately sign out the user and show pending verification view
-                await window.firebaseAuth.signOut(window.auth);
+                // CHANGED: Keep user logged in but show pending verification
                 showPendingVerification(user);
                 showMessage('Account created! Please verify your email within 24 hours to activate your account.', 'success');
                 
