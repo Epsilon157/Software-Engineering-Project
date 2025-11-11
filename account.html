@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="stylesheet.css?v=1.3">
+    <link rel="stylesheet" href="stylesheet.css?v=1.4">
     <title>Soonerview - Account</title>
     
     <!-- Firebase SDK -->
@@ -27,7 +27,8 @@
             setDoc, 
             getDoc, 
             deleteDoc,
-            serverTimestamp
+            serverTimestamp,
+            enableIndexedDbPersistence
         } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
         const firebaseConfig = {
@@ -44,6 +45,14 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+
+        // NEW: Enable offline persistence for Firestore
+        try {
+            await enableIndexedDbPersistence(db);
+            console.log('Firestore offline persistence enabled');
+        } catch (err) {
+            console.warn('Firestore offline persistence failed:', err);
+        }
 
         // Make auth available globally
         window.auth = auth;
@@ -74,9 +83,9 @@
         // Auth state listener - will update UI when auth state changes
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // FIXED: Reload user to get latest verification status
+                // FIXED: Improved error handling for reload with retry logic
                 try {
-                    await user.reload();
+                    await reloadUserWithRetry(user);
                     const updatedUser = auth.currentUser;
                     
                     // Check if account should be deleted due to non-verification
@@ -89,7 +98,7 @@
                     }
                     
                     // User is signed in and account is valid
-                    // FIXED: Check actual verification status
+                    // Check actual verification status
                     if (updatedUser.emailVerified) {
                         await removeFromUnverifiedTracking(updatedUser);
                         showUserProfile(updatedUser);
@@ -97,14 +106,37 @@
                         showPendingVerification(updatedUser);
                     }
                 } catch (error) {
-                    console.error('Error reloading user:', error);
-                    showLoginForm();
+                    console.error('Error in auth state listener:', error);
+                    // NEW: Fallback - check verification status without reload
+                    if (user.emailVerified) {
+                        await removeFromUnverifiedTracking(user);
+                        showUserProfile(user);
+                    } else {
+                        showPendingVerification(user);
+                    }
                 }
             } else {
                 // User is signed out
                 showLoginForm();
             }
         });
+        
+        // NEW: Improved user reload with retry logic
+        async function reloadUserWithRetry(user, maxRetries = 2) {
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                    await user.reload();
+                    return; // Success
+                } catch (error) {
+                    console.warn(`Reload attempt ${attempt} failed:`, error);
+                    if (attempt === maxRetries) {
+                        throw error; // All retries failed
+                    }
+                    // Wait before retrying (exponential backoff)
+                    await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+                }
+            }
+        }
         
         // Check if account has exceeded verification time limit
         async function checkVerificationTimeLimit(user) {
@@ -119,7 +151,14 @@
                 
                 if (userDoc.exists()) {
                     const userData = userDoc.data();
-                    const creationTime = userData.createdAt.toDate().getTime();
+                    // NEW: Better error handling for timestamp
+                    let creationTime;
+                    if (userData.createdAt && typeof userData.createdAt.toDate === 'function') {
+                        creationTime = userData.createdAt.toDate().getTime();
+                    } else {
+                        // Fallback to user metadata
+                        creationTime = new Date(user.metadata.creationTime).getTime();
+                    }
                     const currentTime = Date.now();
                     const timeElapsed = currentTime - creationTime;
                     
@@ -127,6 +166,15 @@
                 }
             } catch (error) {
                 console.error('Error checking verification time limit:', error);
+                // NEW: Fallback to user metadata
+                try {
+                    const creationTime = new Date(user.metadata.creationTime).getTime();
+                    const currentTime = Date.now();
+                    const timeElapsed = currentTime - creationTime;
+                    return timeElapsed > VERIFICATION_TIME_LIMIT;
+                } catch (fallbackError) {
+                    console.error('Fallback check also failed:', fallbackError);
+                }
             }
             
             return false;
@@ -149,7 +197,7 @@
             }
         }
 
-        // FIXED: Remove from unverified tracking when verified
+        // Remove from unverified tracking when verified
         async function removeFromUnverifiedTracking(user) {
             try {
                 const userDocRef = doc(db, 'unverifiedAccounts', user.uid);
@@ -158,6 +206,16 @@
             } catch (error) {
                 console.error('Error removing from unverified tracking:', error);
             }
+        }
+
+        // NEW: Check network connectivity
+        function isOnline() {
+            return navigator.onLine;
+        }
+
+        // NEW: Show network error message
+        function showNetworkError() {
+            showMessage('Network connection required. Please check your internet connection and try again.', 'error');
         }
     </script>
 </head>
@@ -294,6 +352,13 @@
 
         <!-- Message Display -->
         <div id="authMessage" class="message" style="display: none;"></div>
+
+        <!-- NEW: Network Status Indicator -->
+        <div id="networkStatus" class="network-status" style="display: none;">
+            <div class="message warning">
+                <strong>Network Status:</strong> <span id="networkStatusText"></span>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -305,6 +370,24 @@
             email: null,
             uid: null
         };
+
+        // NEW: Network status monitoring
+        function updateNetworkStatus() {
+            const networkStatus = document.getElementById('networkStatus');
+            const networkStatusText = document.getElementById('networkStatusText');
+            
+            if (navigator.onLine) {
+                networkStatus.style.display = 'none';
+            } else {
+                networkStatusText.textContent = 'You appear to be offline. Some features may not work.';
+                networkStatus.style.display = 'block';
+            }
+        }
+
+        // Initialize network status monitoring
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
+        document.addEventListener('DOMContentLoaded', updateNetworkStatus);
 
         // Navigation function
         function topNav() {
@@ -418,8 +501,20 @@
             document.getElementById('authMessage').style.display = 'none';
         }
 
+        // NEW: Check if user is online
+        function checkOnline() {
+            if (!navigator.onLine) {
+                showMessage('You appear to be offline. Please check your internet connection and try again.', 'error');
+                return false;
+            }
+            return true;
+        }
+
         // Resend verification email function
         async function resendVerification() {
+            // NEW: Check online status first
+            if (!checkOnline()) return;
+
             const user = window.auth.currentUser;
             if (!user) {
                 showMessage('Please log in to resend verification email.', 'error');
@@ -446,7 +541,13 @@
                 }, 3000);
                 
             } catch (error) {
-                showMessage('Failed to send verification email: ' + error.message, 'error');
+                console.error('Error resending verification:', error);
+                // NEW: Better error messages
+                if (error.code === 'auth/network-request-failed') {
+                    showMessage('Network error. Please check your internet connection and try again.', 'error');
+                } else {
+                    showMessage('Failed to send verification email: ' + error.message, 'error');
+                }
                 const verifyBtn = document.getElementById('verifyEmailBtn');
                 verifyBtn.disabled = false;
                 verifyBtn.textContent = 'Resend Verification Email';
@@ -468,9 +569,13 @@
             }
         }
 
-        // FIXED: Login form - reload user to get latest verification status
+        // FIXED: Improved login with better error handling and network checks
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            // NEW: Check online status
+            if (!checkOnline()) return;
+
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
 
@@ -478,34 +583,53 @@
                 const userCredential = await window.firebaseAuth.signInWithEmailAndPassword(window.auth, email, password);
                 const user = userCredential.user;
                 
-                // FIXED: Reload user to get latest verification status
-                await user.reload();
-                const updatedUser = window.auth.currentUser;
+                // FIXED: Improved reload with better error handling
+                try {
+                    await user.reload();
+                } catch (reloadError) {
+                    console.warn('User reload failed, continuing with current data:', reloadError);
+                    // Continue with current user data if reload fails
+                }
+                
+                const updatedUser = window.auth.currentUser || user; // Fallback to original user
                 
                 // Store user info for potential resend
                 pendingUserInfo.email = updatedUser.email;
                 pendingUserInfo.uid = updatedUser.uid;
                 
                 // Check if account has expired
-                const userDocRef = window.firestore.doc(window.firestore.db, 'unverifiedAccounts', updatedUser.uid);
-                const userDoc = await window.firestore.getDoc(userDocRef);
-                
-                if (userDoc.exists()) {
-                    const userData = userDoc.data();
-                    const creationTime = userData.createdAt.toDate().getTime();
-                    const currentTime = Date.now();
-                    const timeElapsed = currentTime - creationTime;
+                try {
+                    const userDocRef = window.firestore.doc(window.firestore.db, 'unverifiedAccounts', updatedUser.uid);
+                    const userDoc = await window.firestore.getDoc(userDocRef);
                     
-                    if (timeElapsed > VERIFICATION_TIME_LIMIT) {
-                        // Account expired, delete it
-                        await window.firebaseAuth.deleteUser(updatedUser);
-                        await window.firestore.deleteDoc(userDocRef);
-                        showMessage('This account has been deleted because it was not verified within 24 hours. Please register again.', 'warning');
-                        return;
+                    if (userDoc.exists()) {
+                        const userData = userDoc.data();
+                        let creationTime;
+                        
+                        // NEW: Better timestamp handling
+                        if (userData.createdAt && typeof userData.createdAt.toDate === 'function') {
+                            creationTime = userData.createdAt.toDate().getTime();
+                        } else {
+                            creationTime = new Date(updatedUser.metadata.creationTime).getTime();
+                        }
+                        
+                        const currentTime = Date.now();
+                        const timeElapsed = currentTime - creationTime;
+                        
+                        if (timeElapsed > VERIFICATION_TIME_LIMIT) {
+                            // Account expired, delete it
+                            await window.firebaseAuth.deleteUser(updatedUser);
+                            await window.firestore.deleteDoc(userDocRef);
+                            showMessage('This account has been deleted because it was not verified within 24 hours. Please register again.', 'warning');
+                            return;
+                        }
                     }
+                } catch (firestoreError) {
+                    console.warn('Firestore check failed:', firestoreError);
+                    // Continue without Firestore data
                 }
                 
-                // FIXED: Check actual verification status after reload
+                // FIXED: Check actual verification status
                 if (!updatedUser.emailVerified) {
                     // Show verification required message
                     showMessage('Please verify your email address to access your account.', 'warning');
@@ -514,19 +638,35 @@
                     this.reset();
                 } else {
                     // Remove from unverified tracking if verified
-                    await window.firestore.deleteDoc(window.firestore.doc(window.firestore.db, 'unverifiedAccounts', updatedUser.uid));
+                    try {
+                        await window.firestore.deleteDoc(window.firestore.doc(window.firestore.db, 'unverifiedAccounts', updatedUser.uid));
+                    } catch (deleteError) {
+                        console.warn('Could not remove from unverified tracking:', deleteError);
+                    }
                     showMessage('Login successful!', 'success');
                     // Clear form
                     this.reset();
                 }
             } catch (error) {
-                showMessage('Login failed: ' + error.message);
+                console.error('Login error:', error);
+                // NEW: Better error messages
+                if (error.code === 'auth/network-request-failed') {
+                    showMessage('Network error. Please check your internet connection and try again.', 'error');
+                } else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    showMessage('Invalid email or password. Please try again.', 'error');
+                } else {
+                    showMessage('Login failed: ' + error.message, 'error');
+                }
             }
         });
 
         // Registration form - keep user logged in for resend functionality
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            // NEW: Check online status
+            if (!checkOnline()) return;
+
             const email = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
 
@@ -553,12 +693,24 @@
                 // Clear form
                 this.reset();
             } catch (error) {
-                showMessage('Registration failed: ' + error.message);
+                console.error('Registration error:', error);
+                // NEW: Better error messages
+                if (error.code === 'auth/network-request-failed') {
+                    showMessage('Network error. Please check your internet connection and try again.', 'error');
+                } else if (error.code === 'auth/email-already-in-use') {
+                    showMessage('This email is already registered. Please use a different email or try logging in.', 'error');
+                } else {
+                    showMessage('Registration failed: ' + error.message, 'error');
+                }
             }
         });
 
         document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            // NEW: Check online status
+            if (!checkOnline()) return;
+
             const email = document.getElementById('forgotPasswordEmail').value;
 
             try {
@@ -567,7 +719,12 @@
                 this.reset();
                 showLogin(); // Go back to login form
             } catch (error) {
-                showMessage('Failed to send reset email: ' + error.message);
+                console.error('Password reset error:', error);
+                if (error.code === 'auth/network-request-failed') {
+                    showMessage('Network error. Please check your internet connection and try again.', 'error');
+                } else {
+                    showMessage('Failed to send reset email: ' + error.message, 'error');
+                }
             }
         });
 
@@ -594,7 +751,8 @@
                 await window.firebaseAuth.signOut(window.auth);
                 showMessage('Logged out successfully', 'success');
             } catch (error) {
-                showMessage('Logout error: ' + error.message);
+                console.error('Logout error:', error);
+                showMessage('Logout error: ' + error.message, 'error');
             }
         }
 
@@ -602,6 +760,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             // The onAuthStateChanged listener in the head will handle initial state
             console.log('Soonerview Account page loaded');
+            updateNetworkStatus(); // Initialize network status
         });
     </script>
 
@@ -654,6 +813,11 @@
             padding: 10px;
             margin: 10px 0;
             color: #856404;
+        }
+
+        /* NEW: Network status styling */
+        .network-status {
+            margin: 10px 0;
         }
         
         /* Responsive adjustment for button group */
