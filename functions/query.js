@@ -30,7 +30,7 @@ const url = new URL(request.url);
     const date = districtResult.date;
     const chamber = districtResult.chamber;
 
-    const term_query = `SELECT t.party, t.district, t.start_date, t.end_date, t.people_id, l.name, t.chamber, v1
+    const term_query = `SELECT t.party, t.district, t.start_date, t.end_date, t.people_id, l.name, t.chamber
                         FROM terms AS t
                         INNER JOIN legislators AS l
                         ON (t.people_id = l.people_id)
