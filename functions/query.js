@@ -34,7 +34,7 @@ const url = new URL(request.url);
                         FROM terms AS t
                         INNER JOIN legislators AS l
                         ON (t.people_id = l.people_id)
-                        WHERE (district = ?) AND (start_date < ? < end_date) AND (t.chamber = ?)`;
+                        WHERE (district = ?) AND (start_date <= ? <= end_date) AND (t.chamber = ?)`;
     const termResult = await env.DB.prepare(term_query)
     .bind(`${Number(district)}`, `${date}`, `House`)
     .all();
