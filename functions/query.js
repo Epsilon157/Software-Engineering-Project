@@ -30,7 +30,7 @@ const url = new URL(request.url);
     const date = districtResult.date;
     const chamber = districtResult.chamber;
     const district_result = districtResult.district_result;
-    // AND (t.chamber = ?)
+    
     const term_query = `SELECT t.party, t.district, t.start_date, t.end_date, t.people_id, l.name, t.chamber, v1
                         FROM terms AS t
                         INNER JOIN legislators AS l
@@ -39,11 +39,6 @@ const url = new URL(request.url);
     const termResult = await env.DB.prepare(term_query)
     .bind(`${Number(district)}`, `${date}`, `House`)
     .all();
-
-    const mergedResults = termResult.results.map(row => ({
-      ...row,
-      district_result
-    }));
 
     return Response.json(termResult);
   }
