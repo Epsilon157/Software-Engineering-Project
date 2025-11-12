@@ -95,7 +95,7 @@ async function loadYeaNay() {
         }
         
         geoLayer.eachLayer(layer=>{
-            if(layer.feature.properties.district === 1){
+            if(layer.features.properties.DISTRICT === 1){
                 layer.setStyle({fillColor: partyColor, fillOpacity: partyOpacity});
             }
         });
