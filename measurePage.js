@@ -29,7 +29,7 @@ function style() {
     };
 }
 
-L.geoJson({style: style}).addTo(map);
+L.geoJson(geoLayer, {style: style}).addTo(map);
 
 
 async function loadMeasurePage() {
