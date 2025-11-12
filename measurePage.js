@@ -1,3 +1,4 @@
+const { fillColor, fillOpacity } = require("pdfkit");
 
 //Get URL parameters
 const urlParams = new URLSearchParams(window.location.search);
@@ -54,6 +55,8 @@ async function loadMeasurePage() {
     });
 }
 
+
+
 async function loadYeaNay() {
     for(let i = 1; i <= 101; i++){
         var n = String(i).padStart(3, '0');
@@ -67,21 +70,35 @@ async function loadYeaNay() {
 
         if(voteData == null || termData == null) continue;
 
-        p.textContent = `${termData.name}`;
+        let partyColor = "#696969ff";
+        let partyOpacity = 1.0;
+
         if(termData.party == 'Republican'){
-            p.style.color = "#9e2020ff";
+            partyColor = "#9e2020ff";
         }
         else{
-            p.style.color = "#282bb3ff";
+            partyColor = "#282bb3ff";
         }
             
+        p.textContent = `${termData.name}`;
+        p.style.color = partyColor;
+
         if(Number(voteData.district_result) == 1){
             document.getElementById("yea").appendChild(p);
         }
         else if(Number(voteData.district_result) == 2){
             document.getElementById("nay").appendChild(p);
+            partyOpacity = 0.5;
+        }
+        else{
+            partyOpacity = 0.0;
         }
         
+        geoLayer.eachLayer(layer=>{
+            if(layer.feature.properties.district === 1){
+                layer.setStyle({fillColor: partyColor, fillOpacity: partyOpacity});
+            }
+        });
     }
 }
 
