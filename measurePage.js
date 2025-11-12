@@ -5,7 +5,7 @@ const id = urlParams.get('vote_id');
 
 
 var map = L.map('map').setView([35,-97.9], 7);
-var geoLayer = L.geoJSON().addTo(map);
+var geoLayer = L.geoJSON(null, {style: style}).addTo(map);
 
 fetch('./Website Assets/MapSHPFile/HouseGeoJSON.json')
     .then(response => response.json())
@@ -28,8 +28,6 @@ function style() {
         fillOpacity: 0.7
     };
 }
-
-L.geoJson(geoLayer, {style: style}).addTo(map);
 
 
 async function loadMeasurePage() {
