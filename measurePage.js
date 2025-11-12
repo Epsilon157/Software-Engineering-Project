@@ -18,6 +18,19 @@ fetch('./Website Assets/MapSHPFile/HouseGeoJSON.json')
         console.error('Error loading map JSON data', error);
     });
 
+function style() {
+    return {
+        fillColor: "#696969ff",
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        dashArray: '3',
+        fillOpacity: 0.7
+    };
+}
+
+L.geoJson(statesData, {style: style}).addTo(map);
+
 
 async function loadMeasurePage() {
     const res = await fetch(`query?vote_id=${id}`);
@@ -87,7 +100,7 @@ async function loadYeaNay() {
         }
         else if(Number(voteData.district_result) == 2){
             document.getElementById("nay").appendChild(p);
-            partyOpacity = 0.5;
+            partyOpacity = 0.7;
         }
         else{
             partyOpacity = 0.0;
