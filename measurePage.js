@@ -3,6 +3,19 @@
 const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get('vote_id');
 
+var map = L.map('map').setView([35,-97.9], 7);
+var geoLayer = L.geoJSON().addTo(map);
+
+fetch('./Website Assets/MapSHPFile/HouseGeoJSON.json')
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+
+        geoLayer.addData(data);
+    })
+        .catch(error => {
+        console.error('Error loading map JSON data', error);
+    });
 
 async function loadMeasurePage() {
     const res = await fetch(`query?vote_id=${id}`);
