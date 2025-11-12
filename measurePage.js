@@ -1,4 +1,3 @@
-const { fillColor, fillOpacity } = require("pdfkit");
 
 //Get URL parameters
 const urlParams = new URLSearchParams(window.location.search);
