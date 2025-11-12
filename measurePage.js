@@ -25,7 +25,7 @@ function style() {
         opacity: 1,
         color: 'white',
         dashArray: '3',
-        fillOpacity: 0.7
+        fillOpacity: 0.0
     };
 }
 
@@ -98,7 +98,7 @@ async function loadYeaNay() {
         }
         else if(Number(voteData.district_result) == 2){
             document.getElementById("nay").appendChild(p);
-            partyOpacity = 0.7;
+            partyOpacity = 0.5;
         }
         else{
             partyOpacity = 0.0;
