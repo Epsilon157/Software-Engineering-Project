@@ -6,7 +6,7 @@ async function loadSearchPage(changePage){
     const data = await res.json();
     const votePromises = [];
 
-    document.getElementById("<").disabled = page <= 1;
+    document.getElementById("left").disabled = page <= 1;
 
     for(let i=0; i<=20; i++){
         votePromises.push(fetch(`query?vote_id=${data.results[i].roll_call_id}`));
