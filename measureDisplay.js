@@ -3,18 +3,14 @@ let page = 1;
 
 async function loadSearchPage(changePage){
     document.getElementById("measure-list").innerHTML = '';
-    
+
     const res = await fetch(`query?search`);
     const data = await res.json();
     const votePromises = [];
 
     document.getElementById("left").disabled = page <= 1;
     document.getElementById("farleft").disabled = page <= 10;
-    document.getElementById("right").disabled = page >= Math.ceil(data.results.length / 20);
-
-    if(page + changePage >= 1 && page + changePage <= Math.ceil(data.results.length / 20)){
-        page += changePage;
-    }
+    //document.getElementById("right").disabled = page >= Math.ceil(data.results.length / 20);
 
     for(let i=(page-1)*20; i<page*20 && i<data.results.length; i++){
         votePromises.push(fetch(`query?vote_id=${data.results[i].roll_call_id}`));
