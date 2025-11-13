@@ -103,52 +103,6 @@ async function loadMeasurePage() {
     });
 }
 
-/*
-async function loadYeaNay() {
-    for(let i = 1; i <= 101; i++){
-        var n = String(i).padStart(3, '0');
-        var p = document.createElement('p');
-
-        const districtRes = await fetch(`query?vote_id=${id}&district=${n}`);
-        const districtData = await districtRes.json();
-
-        const voteData = districtData.districtResult[0];
-        const termData = districtData.termResult[0];
-
-        if(voteData == null || termData == null) continue;
-
-        let partyColor = "#696969ff";
-        let partyOpacity = 1.0;
-
-        if(termData.party == 'Republican'){
-            partyColor = "#9e2020ff";
-        }
-        else{
-            partyColor = "#282bb3ff";
-        }
-            
-        p.textContent = `${termData.name}`;
-        p.style.color = partyColor;
-
-        if(Number(voteData.district_result) == 1){
-            document.getElementById("yea").appendChild(p);
-        }
-        else if(Number(voteData.district_result) == 2){
-            document.getElementById("nay").appendChild(p);
-            partyOpacity = 0.5;
-        }
-        else{
-            partyOpacity = 0.0;
-        }
-        
-        geoLayer.eachLayer(layer=>{
-            if(layer.feature.properties.DISTRICT === i){
-                layer.setStyle({fillColor: partyColor, fillOpacity: partyOpacity});
-            }
-        });
-    }
-}*/
-
 async function loadYeaNay() {
     const districtPromises = [];
 
@@ -160,6 +114,7 @@ async function loadYeaNay() {
 
     for(let i = 0; i < districtResponses.length; i++){
         var p = document.createElement('p');
+
         const response = districtResponses[i];
         const districtData = await response.json();
 
