@@ -157,8 +157,9 @@ async function loadYeaNay() {
         districtPromises.push(fetch(`query?vote_id=${id}&district=${n}`));
     }
     const districtResponses = await Promise.all(districtPromises);
-    
+
     for(let i = 0; i < districtResponses.length; i++){
+        var p = document.createElement('p');
         const response = districtResponses[i];
         const districtData = await response.json();
 
