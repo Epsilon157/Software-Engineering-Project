@@ -25,10 +25,12 @@ async function loadSearchPage() {
 }*/
 
 async function loadSearchPage(){
+    const res = await fetch(`query?search`);
+    const data = await res.json();
     const votePromises = [];
 
     for(let i=0; i<=20; i++){
-        votePromises.push(fetch(`query?vote_id=${i}`));
+        votePromises.push(fetch(`query?vote_id=${data.results[i].roll_call_id}`));
     }
     
     const voteResponses = await Promise.all(votePromises);
