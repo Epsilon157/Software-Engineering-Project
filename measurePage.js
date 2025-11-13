@@ -3,9 +3,6 @@
 const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get('vote_id');
 
-const res = await fetch(`query?vote_id=${id}`);
-const data = await res.json();
-
 var map = L.map('map').setView([35,-97.9], 7);
 var geoLayer = L.geoJSON(null, {style: style}).addTo(map);
 
@@ -67,6 +64,29 @@ async function loadMeasurePage() {
         document.getElementById('desc').innerHTML = `<strong>Description:</strong><br> ${row.desc}`;
         document.getElementById('yeaheader').innerHTML = `<strong>Yea:</strong> ${row.yea_votes}`;
         document.getElementById('nayheader').innerHTML = `<strong>Nay:</strong> ${row.nay_votes}`;
+
+        if(row.chamber == 'House'){
+            fetch('./Website Assets/MapSHPFile/HouseGeoJSON.json')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                geoLayer.addData(data);
+            })
+            .catch(error => {
+                console.error('Error loading map JSON data', error);
+            });
+        }
+        else{
+            fetch('./Website Assets/MapSHPFile/SenateGeoJSON.json')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                geoLayer.addData(data);
+            })
+            .catch(error => {
+                console.error('Error loading map JSON data', error);
+            });
+        }
 
         /*
         document.getElementById('author').textContent = `Author: ${row.primary_author_name}`;
