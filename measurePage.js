@@ -46,6 +46,9 @@ function style() {
 
 async function loadMeasurePage() {
 
+    const res = await fetch(`query?vote_id=${id}`);
+    const data = await res.json();
+
     (data.results || []).forEach(row => {
         document.getElementById('header').textContent = `2025 Session > ${row.chamber} > ${row.measure_number}`;
         const coauthorsArray = typeof row.coauthors === 'string' 
