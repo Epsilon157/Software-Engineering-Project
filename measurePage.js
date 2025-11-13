@@ -3,11 +3,14 @@
 const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get('vote_id');
 
+const res = await fetch(`query?vote_id=${id}`);
+const data = await res.json();
 
 var map = L.map('map').setView([35,-97.9], 7);
 var geoLayer = L.geoJSON(null, {style: style}).addTo(map);
 
-fetch('./Website Assets/MapSHPFile/HouseGeoJSON.json')
+if(data.results[0].chamber == 'House'){
+    fetch('./Website Assets/MapSHPFile/HouseGeoJSON.json')
     .then(response => response.json())
     .then(data => {
         console.log(data);
@@ -17,6 +20,19 @@ fetch('./Website Assets/MapSHPFile/HouseGeoJSON.json')
         .catch(error => {
         console.error('Error loading map JSON data', error);
     });
+}
+else{
+    fetch('./Website Assets/MapSHPFile/SenateGeoJSON.json')
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+
+        geoLayer.addData(data);
+    })
+        .catch(error => {
+        console.error('Error loading map JSON data', error);
+    });
+}
 
 function style() {
     return {
@@ -31,8 +47,6 @@ function style() {
 
 
 async function loadMeasurePage() {
-    const res = await fetch(`query?vote_id=${id}`);
-    const data = await res.json();
 
     (data.results || []).forEach(row => {
         document.getElementById('header').textContent = `2025 Session > ${row.chamber} > ${row.measure_number}`;
