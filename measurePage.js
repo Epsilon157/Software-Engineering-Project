@@ -6,6 +6,7 @@ const id = urlParams.get('vote_id');
 var map = L.map('map').setView([35,-97.9], 7);
 var geoLayer = L.geoJSON(null, {style: style}).addTo(map);
 
+/*
 if(data.results[0].chamber == 'House'){
     fetch('./Website Assets/MapSHPFile/HouseGeoJSON.json')
     .then(response => response.json())
@@ -29,7 +30,7 @@ else{
         .catch(error => {
         console.error('Error loading map JSON data', error);
     });
-}
+}*/
 
 function style() {
     return {
