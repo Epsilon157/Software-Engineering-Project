@@ -2,6 +2,8 @@
 let page = 1;
 
 async function loadSearchPage(changePage){
+    document.getElementById("measure-list").innerHTML = '';
+    
     const res = await fetch(`query?search`);
     const data = await res.json();
     const votePromises = [];
