@@ -75,6 +75,8 @@ async function loadMeasurePage() {
             .then(data => {
                 console.log(data);
                 geoLayer.addData(data);
+
+                loadYeaNay();
             })
             .catch(error => {
                 console.error('Error loading map JSON data', error);
@@ -86,6 +88,8 @@ async function loadMeasurePage() {
             .then(data => {
                 console.log(data);
                 geoLayer.addData(data);
+
+                loadYeaNay();
             })
             .catch(error => {
                 console.error('Error loading map JSON data', error);
@@ -156,4 +160,3 @@ async function loadYeaNay() {
 }
 
 loadMeasurePage();
-loadYeaNay();
