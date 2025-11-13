@@ -261,3 +261,8 @@ hr{
         width: 100%;
     }
 }
+
+button:disabled {
+    background-color: gray;
+    cursor: not-allowed;
+}
