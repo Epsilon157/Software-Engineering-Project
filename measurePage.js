@@ -152,7 +152,7 @@ async function loadYeaNay() {
         }
         
         geoLayer.eachLayer(layer=>{
-            if(layer.feature.properties.DISTRICT == voteData.termData.district){
+            if(layer.feature.properties.DISTRICT == termData.district){
                 layer.setStyle({fillColor: partyColor, fillOpacity: partyOpacity});
             }
         });
