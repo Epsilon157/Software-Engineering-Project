@@ -152,7 +152,7 @@ async function loadYeaNay() {
         }
         
         geoLayer.eachLayer(layer=>{
-            if(layer.feature.properties.DISTRICT === i){
+            if(layer.feature.properties.DISTRICT == i){
                 layer.setStyle({fillColor: partyColor, fillOpacity: partyOpacity});
             }
         });
