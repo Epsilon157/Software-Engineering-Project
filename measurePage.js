@@ -133,7 +133,7 @@ async function loadYeaNay() {
         if(termData.party == 'Republican'){
             partyColor = "#9e2020ff";
         }
-        else{
+        else if (termData.party == 'Democrat'){
             partyColor = "#282bb3ff";
         }
             
