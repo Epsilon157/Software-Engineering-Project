@@ -28,6 +28,7 @@ function highlightFeature(e) {
     });
 
     layer.bringToFront();
+    info.update(layer.feature.properties);
 }
 
 function resetHighlight(e) {
@@ -39,17 +40,11 @@ function resetHighlight(e) {
         color: 'white',
         dashArray: '3'
     });
-}
 
-function onEachFeature(feature, layer) {
-    layer.on({
-        mouseover: highlightFeature,
-        mouseout: resetHighlight,
-    });
+    info.update();
 }
 
 var legend = L.control({position: 'bottomright'});
-
 legend.onAdd = function () {
 
     var div = L.DomUtil.create('div', 'info legend');
@@ -61,8 +56,28 @@ legend.onAdd = function () {
 
     return div;
 };
-
 legend.addTo(map);
+
+var info = L.control();
+info.onAdd = function (map) {
+    this._div = L.DomUtil.create('div', 'info');
+    this.update();
+    return this._div;
+};
+
+info.update = function (props) {
+    this._div.innerHTML = '<h4>Oklahoma Districts</h4>' +  (props ?
+        '<b>' + props.DISTRICT + '</b><br />'
+        : 'Hover over a district');
+};
+info.addTo(map);
+
+function onEachFeature(feature, layer) {
+    layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+    });
+}
 
 async function loadMeasurePage() {
 
