@@ -21,17 +21,24 @@ function highlightFeature(e) {
     var layer = e.target;
 
     layer.setStyle({
-        weight: 5,
-        color: '#666',
-        dashArray: '',
-        fillOpacity: 0.7
+        weight: 3,
+        opacity: 1,
+        color: 'white',
+        dashArray: ''
     });
 
     layer.bringToFront();
 }
 
 function resetHighlight(e) {
-    geojson.resetStyle(e.target);
+    var layer = e.target;
+
+    layer.setStyle({
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        dashArray: '3'
+    });
 }
 
 function onEachFeature(feature, layer) {
