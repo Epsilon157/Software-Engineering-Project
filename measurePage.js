@@ -4,7 +4,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get('vote_id');
 
 var map = L.map('map').setView([35,-97.9], 7);
-var geoLayer = L.geoJSON(null, {style: style}).addTo(map);
+var geoLayer = L.geoJSON(null, {style: style, onEachFeature: onEachFeature}).addTo(map);
 
 function style() {
     return {
@@ -153,10 +153,7 @@ async function loadYeaNay() {
                 layer.setStyle({fillColor: partyColor, fillOpacity: partyOpacity});
             }
 
-            layer.on({
-                mouseover: highlightFeature,
-                mouseout: resetHighlight,
-            });
+            
         });
     }
 }
