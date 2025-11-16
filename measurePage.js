@@ -6,32 +6,6 @@ const id = urlParams.get('vote_id');
 var map = L.map('map').setView([35,-97.9], 7);
 var geoLayer = L.geoJSON(null, {style: style}).addTo(map);
 
-/*
-if(data.results[0].chamber == 'House'){
-    fetch('./Website Assets/MapSHPFile/HouseGeoJSON.json')
-    .then(response => response.json())
-    .then(data => {
-        console.log(data);
-
-        geoLayer.addData(data);
-    })
-        .catch(error => {
-        console.error('Error loading map JSON data', error);
-    });
-}
-else{
-    fetch('./Website Assets/MapSHPFile/SenateGeoJSON.json')
-    .then(response => response.json())
-    .then(data => {
-        console.log(data);
-
-        geoLayer.addData(data);
-    })
-        .catch(error => {
-        console.error('Error loading map JSON data', error);
-    });
-}*/
-
 function style() {
     return {
         fillColor: "#696969ff",
@@ -43,6 +17,29 @@ function style() {
     };
 }
 
+function highlightFeature(e) {
+    var layer = e.target;
+
+    layer.setStyle({
+        weight: 5,
+        color: '#666',
+        dashArray: '',
+        fillOpacity: 0.7
+    });
+
+    layer.bringToFront();
+}
+
+function resetHighlight(e) {
+    geojson.resetStyle(e.target);
+}
+
+function onEachFeature(feature, layer) {
+    layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+    });
+}
 
 async function loadMeasurePage() {
 
@@ -155,6 +152,11 @@ async function loadYeaNay() {
             if(layer.feature.properties.DISTRICT == termData.district){
                 layer.setStyle({fillColor: partyColor, fillOpacity: partyOpacity});
             }
+
+            layer.on({
+                mouseover: highlightFeature,
+                mouseout: resetHighlight,
+            });
         });
     }
 }
