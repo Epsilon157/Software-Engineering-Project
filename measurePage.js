@@ -84,12 +84,7 @@ async function loadMeasurePage() {
         : row.coauthors;
         const coauthorsNames = coauthorsArray.map(coauthor => coauthor.name).join(', ');
 
-        //document.getElementById('coauthors').textContent = `Coauthors: ${coauthorsNames}`;// No highlight or bold
-        //document.getElementById('coauthors').innerHTML = `<strong>Coauthors</strong>: ${coauthorsNames}`;// Just bold
-        //document.getElementById('coauthors').innerHTML = `<mark>Coauthors</mark>: ${coauthorsNames}`;// Just highlight
-        document.getElementById('coauthors').innerHTML = `<strong>Coauthors:</strong><br> ${coauthorsNames}`;// Highlight and bold
-
-        //document.getElementById('coauthors').textContent = `Coauthors: ${row.coauthors.map(coauthors => String(coauthors.name))}`;
+        document.getElementById('coauthors').innerHTML = `<strong>Coauthors:</strong><br> ${coauthorsNames}`;
         
         document.getElementById('author').innerHTML = `<strong>Author:</strong><br> ${row.primary_author_name}`;
         document.getElementById('date').innerHTML = `<strong>Date:</strong><br> ${row.date}`;
@@ -123,15 +118,6 @@ async function loadMeasurePage() {
                 console.error('Error loading map JSON data', error);
             });
         }
-
-        /*
-        document.getElementById('author').textContent = `Author: ${row.primary_author_name}`;
-        document.getElementById('date').textContent = `Date: ${row.date}`;
-        document.getElementById('desc').textContent = `Description: ${row.desc}`;
-        document.getElementById('yeaheader').textContent = `Yea: ${row.yea_votes}`;
-        document.getElementById('nayheader').textContent = `Nay: ${row.nay_votes}`;
-        */
-        
     });
 }
 
@@ -165,7 +151,7 @@ async function loadYeaNay() {
             partyColor = "#282bb3ff";
         }
             
-        p.textContent = `${termData.name}`;
+        p.textContent = `${termData.district}: ${termData.name}`;
         p.style.color = partyColor;
 
         if(Number(voteData.district_result) == 1){
