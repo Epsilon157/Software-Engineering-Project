@@ -67,7 +67,7 @@ info.onAdd = function (map) {
 
 info.update = function (props) {
     this._div.innerHTML = '<h4>Oklahoma Districts</h4>' +  (props ?
-        '<b>' + props.DISTRICT + '</b><br />'
+        '<b>' + 'District: ' + props.DISTRICT + '</b><br />'
         : 'Hover over a district');
 };
 info.addTo(map);
