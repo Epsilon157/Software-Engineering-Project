@@ -48,6 +48,22 @@ function onEachFeature(feature, layer) {
     });
 }
 
+var legend = L.control({position: 'bottomright'});
+
+legend.onAdd = function () {
+
+    var div = L.DomUtil.create('div', 'info legend');
+    div.innerHTML += '<i style="background: #9e2020ff"></i><span>Republican Yea</span><br>';
+    div.innerHTML += '<i style="background: #bd7e7e"></i><span>Republican Nay</span><br>';
+    div.innerHTML += '<i style="background: #282bb3ff"></i><span>Democratic Yea</span><br>';
+    div.innerHTML += '<i style="background: #8284c8"></i><span>Democratic Nay</span><br>';
+    div.innerHTML += '<i style="background: #dddddd"></i><span>No vote/Absent</span><br>';
+
+    return div;
+};
+
+legend.addTo(map);
+
 async function loadMeasurePage() {
 
     const res = await fetch(`query?vote_id=${id}`);
