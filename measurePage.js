@@ -65,13 +65,6 @@ info.onAdd = function (map) {
     return this._div;
 };
 
-info.update = function (props) {
-    this._div.innerHTML = '<h4>Oklahoma Districts</h4>' +  (props ?
-        '<b>' + 'District: ' + props.DISTRICT + '</b><br />'
-        : 'Hover over a district');
-};
-info.addTo(map);
-
 function onEachFeature(feature, layer) {
     layer.on({
         mouseover: highlightFeature,
@@ -189,11 +182,18 @@ async function loadYeaNay() {
         geoLayer.eachLayer(layer=>{
             if(layer.feature.properties.DISTRICT == termData.district){
                 layer.setStyle({fillColor: partyColor, fillOpacity: partyOpacity});
+                layer.feature.properties.name = termData.name;
             }
-
-            
         });
     }
 }
 
 loadMeasurePage();
+
+info.update = function (props) {
+    this._div.innerHTML = '<h4>Oklahoma Districts</h4>' +  (props ?
+        '<b>' + 'District: ' + props.DISTRICT + '</b><br />' + 
+        '<b>' + 'Name: ' + props.name + '</b><br />'
+        : 'Hover over a district');
+};
+info.addTo(map);
