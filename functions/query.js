@@ -98,12 +98,9 @@ const url = new URL(request.url);
     }
     //Default
     else{
-      search_query = `SELECT v1.roll_call_id, v1.bill_id, v1.desc, v1.date, v1.yea_votes, v1.nay_votes, v1.chamber, m.measure_number, m.measure_type, m.primary_author, l2.name AS primary_author_name, json_group_array(json_object('coauthor_id', c.people_id, 'name', l.name)) AS coauthors 
+      search_query = `SELECT DISTINCT v1.roll_call_id, v1.date, v1.chamber, v1.yea_votes, v1.nay_votes 
                           FROM votes_1 AS v1 
-                          INNER JOIN measures AS m ON v1.bill_id = m.bill_id 
-                          INNER JOIN coauthors AS c ON v1.bill_id = c.bill_id 
-                          INNER JOIN legislators AS l ON c.people_id = l.people_id 
-                          INNER JOIN legislators AS l2 ON m.primary_author = l2.people_id;`;
+                          ORDER BY v1.date;`;
       const result = await env.DB.prepare(search_query)
       .bind()
       .all();
