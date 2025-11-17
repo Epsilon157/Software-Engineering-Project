@@ -1,7 +1,15 @@
 {
-    "name": "soonerviewworker0akajeff",
-    "compatibility_date": "2025-09-19",
+    "name": "software-engineering-project",
+    "compatibility_date": "2025-10-12",
+    "account_id": "eef0ae090d2e11add4d5415bbe7c1659",
+
     "assets": {
-        "directory": "./dist"
-    }
+      "directory": "./"
+    },
+
+    "d1_databases": [{
+        "binding": "DB",
+        "database_name": "prod-d1-tutorial",
+        "database_id": "d0751026-ff53-445d-a2af-1da4cc6b5d1e"
+    }]
 }

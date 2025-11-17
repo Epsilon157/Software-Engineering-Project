@@ -3,8 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="stylesheet.css">
-    <title>Soonerview</title>
+    <link rel="stylesheet" href="stylesheet.css?v=1.3">
+    <title>Soonerview - Account</title>
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signOut,
+            onAuthStateChanged,
+            sendEmailVerification,
+            sendPasswordResetEmail
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { 
+            getFirestore, 
+            doc, 
+            setDoc, 
+            getDoc, 
+            deleteDoc,
+            serverTimestamp
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAwIf4z7Yc0rgtHm1BwF9HIaoAJxS5RD_k",
+            authDomain: "soonerview-3bdcd.firebaseapp.com",
+            projectId: "soonerview-3bdcd",
+            storageBucket: "soonerview-3bdcd.firebasestorage.app",
+            messagingSenderId: "453639989277",
+            appId: "1:453639989277:web:3a2af00f31d3c031d6bef4",
+            measurementId: "G-9N2C7T4FEZ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.auth = auth;
+        window.firebaseAuth = {
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signOut,
+            sendEmailVerification,
+            sendPasswordResetEmail
+        };
+        window.firestore = {
+            db,
+            doc,
+            setDoc,
+            getDoc,
+            deleteDoc,
+            serverTimestamp
+        };
+
+        // Auth state listener for page loads
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                await user.reload(); // Get fresh verification status
+                const updatedUser = auth.currentUser;
+                
+                if (updatedUser.emailVerified) {
+                    showUserProfile(updatedUser);
+                } else {
+                    showPendingVerification(updatedUser);
+                }
+            } else {
+                showLoginForm();
+            }
+        });
+    </script>
 </head>
 
 <body>
@@ -19,13 +88,118 @@
 
     <hr>
 
-    <div>
-        <h2 style = "text-align: center;"><b>View account info</b></h2>
+    <div class="page-header">
+        <h2>Account Information</h2>
+    </div>
+
+    <!-- Authentication Container -->
+    <div class="auth-container">
+        <!-- Login Form -->
+        <div id="loginSection" class="auth-form">
+            <h3>Login to Soonerview</h3>
+            <form id="loginForm">
+                <div class="form-group">
+                    <input type="email" id="loginEmail" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="loginPassword" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn-primary">Login</button>
+            </form>
+            <p class="auth-switch">
+                Don't have an account? <a href="#" onclick="showRegister()">Register here</a>
+                <br>
+                <a href="#" onclick="showForgotPassword()">Forgot password?</a>
+            </p>
+        </div>
+
+        <!-- Registration Form -->
+        <div id="registerSection" class="auth-form" style="display: none;">
+            <h3>Create Account</h3>
+            <form id="registerForm">
+                <div class="form-group">
+                    <input type="email" id="registerEmail" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="registerPassword" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn-success">Register</button>
+            </form>
+            <p class="auth-switch">
+                Already have an account? <a href="#" onclick="showLogin()">Login here</a>
+            </p>
+        </div>
+
+        <!-- Forgot Password Form -->
+        <div id="forgotPasswordSection" class="auth-form" style="display: none;">
+            <h3>Reset Password</h3>
+            <form id="forgotPasswordForm">
+                <div class="form-group">
+                    <input type="email" id="forgotPasswordEmail" placeholder="Enter your email" required>
+                </div>
+                <button type="submit" class="btn-primary">Send Reset Email</button>
+            </form>
+            <p class="auth-switch">
+                Remember your password? <a href="#" onclick="showLogin()">Login here</a>
+            </p>
+        </div>
+
+        <!-- Pending Verification View -->
+        <div id="pendingVerification" class="auth-form" style="display: none;">
+            <h3>Verify Your Email</h3>
+            <div class="verification-section">
+                <div class="verification-warning">
+                    <strong>Account Created - Verification Required</strong>
+                    <p>We've sent a verification email to <strong id="pendingEmail"></strong>.</p>
+                    <p>Please check your inbox and click the verification link to activate your account.</p>
+                    <p>Once verified, you can log in to access your Soonerview account.</p>
+                </div>
+                <div class="button-group">
+                    <button onclick="resendVerification()" class="btn-primary" id="verifyEmailBtn">
+                        Resend Verification Email
+                    </button>
+                    <button onclick="logoutAndShowLogin()" class="btn-primary">
+                        Return to Login
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top: 20px;">
+                <div class="card-header">
+                    <strong>Didn't receive the email?</strong>
+                </div>
+                <div style="padding: 10px;">
+                    <ul style="text-align: left; margin: 10px 0; padding-left: 20px;">
+                        <li>Check your spam or junk folder</li>
+                        <li>Make sure you entered the correct email address</li>
+                        <li>Wait a few minutes - emails can sometimes be delayed</li>
+                        <li>Click "Resend Verification Email" if needed</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Profile -->
+        <div id="userProfile" class="auth-form" style="display: none;">
+            <h3>Welcome to Soonerview!</h3>
+            <div class="user-info">
+                <p><strong>Email:</strong> <span id="userEmail"></span></p>
+                <p><strong>Email Verified:</strong> 
+                    <span class="badge badge-success">Verified</span>
+                </p>
+                <p><strong>User ID:</strong> <span id="userId" class="user-id"></span></p>
+                <p><strong>Account Created:</strong> <span id="userCreated"></span></p>
+            </div>
+            
+            <button onclick="logout()" class="btn-danger">Logout</button>
+        </div>
+
+        <!-- Message Display -->
+        <div id="authMessage" class="message" style="display: none;"></div>
     </div>
 
     <script>
         function topNav() {
-            //Referenced from https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_topnav
             var x = document.getElementById("myTopnav");
             if (x.className === "topnav") {
                 x.className += " responsive";
@@ -33,7 +207,300 @@
                 x.className = "topnav";
             }
         }
-    </script>
-</body>
 
+        function showRegister() {
+            hideAllSections();
+            document.getElementById('registerSection').style.display = 'block';
+            hideMessage();
+        }
+
+        function showLogin() {
+            hideAllSections();
+            document.getElementById('loginSection').style.display = 'block';
+            hideMessage();
+        }
+
+        function showForgotPassword() {
+            hideAllSections();
+            document.getElementById('forgotPasswordSection').style.display = 'block';
+            hideMessage();
+        }
+
+        function showPendingVerification(user) {
+            hideAllSections();
+            document.getElementById('pendingVerification').style.display = 'block';
+            document.getElementById('pendingEmail').textContent = user.email;
+            hideMessage();
+        }
+
+        function showUserProfile(user) {
+            hideAllSections();
+            document.getElementById('userProfile').style.display = 'block';
+            
+            document.getElementById('userEmail').textContent = user.email;
+            document.getElementById('userId').textContent = user.uid;
+            
+            const created = new Date(user.metadata.creationTime).toLocaleDateString();
+            document.getElementById('userCreated').textContent = created;
+            
+            hideMessage();
+        }
+
+        function showLoginForm() {
+            hideAllSections();
+            document.getElementById('loginSection').style.display = 'block';
+        }
+
+        function hideAllSections() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('registerSection').style.display = 'none';
+            document.getElementById('userProfile').style.display = 'none';
+            document.getElementById('forgotPasswordSection').style.display = 'none';
+            document.getElementById('pendingVerification').style.display = 'none';
+        }
+
+        async function logoutAndShowLogin() {
+            try {
+                await window.firebaseAuth.signOut(window.auth);
+                showLogin();
+            } catch (error) {
+                console.error('Logout error:', error);
+                showLogin();
+            }
+        }
+
+        function showMessage(message, type = 'error') {
+            const messageEl = document.getElementById('authMessage');
+            messageEl.textContent = message;
+            messageEl.style.display = 'block';
+            messageEl.className = `message ${type}`;
+            
+            if (type === 'success') {
+                setTimeout(hideMessage, 5000);
+            }
+        }
+
+        function hideMessage() {
+            document.getElementById('authMessage').style.display = 'none';
+        }
+
+        async function resendVerification() {
+            const user = window.auth.currentUser;
+            if (!user) {
+                showMessage('Please log in to resend verification email.', 'error');
+                showLogin();
+                return;
+            }
+
+            try {
+                const verifyBtn = document.getElementById('verifyEmailBtn');
+                verifyBtn.disabled = true;
+                verifyBtn.innerHTML = '<div class="spinner"></div> Sending...';
+                
+                await window.firebaseAuth.sendEmailVerification(user);
+                showMessage('Verification email sent! Please check your inbox and spam folder.', 'success');
+                
+                setTimeout(() => {
+                    verifyBtn.disabled = false;
+                    verifyBtn.textContent = 'Resend Verification Email';
+                }, 3000);
+                
+            } catch (error) {
+                showMessage('Failed to send verification email: ' + error.message, 'error');
+                const verifyBtn = document.getElementById('verifyEmailBtn');
+                verifyBtn.disabled = false;
+                verifyBtn.textContent = 'Resend Verification Email';
+            }
+        }
+
+        // SIMPLE LOGIN - Check verification and show appropriate page
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const loginBtn = this.querySelector('button[type="submit"]');
+                const originalText = loginBtn.textContent;
+                loginBtn.disabled = true;
+                loginBtn.textContent = 'Logging in...';
+
+                // Sign in user
+                const userCredential = await window.firebaseAuth.signInWithEmailAndPassword(window.auth, email, password);
+                const user = userCredential.user;
+                
+                // Force reload to get latest verification status
+                await user.reload();
+                const updatedUser = window.auth.currentUser;
+                
+                console.log('Login successful, email verified:', updatedUser.emailVerified);
+                
+                // Directly show the appropriate page based on verification status
+                if (updatedUser.emailVerified) {
+                    showUserProfile(updatedUser);
+                    showMessage('Login successful!', 'success');
+                } else {
+                    showPendingVerification(updatedUser);
+                    showMessage('Please verify your email address to access your account.', 'warning');
+                }
+                
+                this.reset();
+                loginBtn.disabled = false;
+                loginBtn.textContent = originalText;
+                
+            } catch (error) {
+                showMessage('Login failed: ' + error.message);
+                const loginBtn = this.querySelector('button[type="submit"]');
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Login';
+            }
+        });
+
+        // REGISTRATION - Create account and show pending verification
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+
+            if (password.length < 6) {
+                showMessage('Password should be at least 6 characters');
+                return;
+            }
+
+            try {
+                const userCredential = await window.firebaseAuth.createUserWithEmailAndPassword(window.auth, email, password);
+                const user = userCredential.user;
+                
+                // Send verification email
+                await window.firebaseAuth.sendEmailVerification(user);
+                
+                // Show pending verification screen
+                showPendingVerification(user);
+                showMessage('Account created! Please verify your email.', 'success');
+                this.reset();
+                
+            } catch (error) {
+                showMessage('Registration failed: ' + error.message);
+            }
+        });
+
+        // FORGOT PASSWORD FORM
+        document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('forgotPasswordEmail').value;
+
+            try {
+                await window.firebaseAuth.sendPasswordResetEmail(window.auth, email);
+                showMessage('Password reset email sent! Check your inbox.', 'success');
+                this.reset();
+                showLogin(); // Go back to login form
+            } catch (error) {
+                showMessage('Failed to send reset email: ' + error.message);
+            }
+        });
+
+        async function logout() {
+            try {
+                await window.firebaseAuth.signOut(window.auth);
+                showMessage('Logged out successfully', 'success');
+            } catch (error) {
+                showMessage('Logout error: ' + error.message);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Soonerview Account page loaded');
+        });
+    </script>
+
+    <style>
+        .user-id {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            word-break: break-all;
+            background-color: #f8f5f0;
+            padding: 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 4px;
+        }
+        
+        .user-info p {
+            word-wrap: break-word;
+            margin: 10px 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .badge-success {
+            background-color: #28a745;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .button-group .btn-primary {
+            flex: 1;
+            margin-top: 0;
+        }
+        
+        .verification-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            color: #856404;
+        }
+        
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        
+        .card-header {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+        }
+        
+        /* Spinner styling */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media screen and (max-width: 600px) {
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+
+    <!-- Font Awesome for the hamburger icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</body>
 </html>
