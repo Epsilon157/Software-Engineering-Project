@@ -61,15 +61,53 @@ const url = new URL(request.url);
     return Response.json(result);
   }
   //If search parameter in url then activate search query
-  //TODO: Allow different parameters to search by. As easy as getting the parameters and updating the query I think
+  //-------TODO: Allow different parameters to search by. As easy as getting the parameters and updating the query I think
   else if(url.searchParams.has("search")){
     const searchType = url.searchParams.get("search");
-    const search_query = "SELECT * FROM votes_1 ORDER BY date LIMIT 30;";
 
-    const result = await env.DB.prepare(search_query)
-    .bind()
-    .all();
-    return Response.json(result);
+    const searchId = url.searchParams.get("searchID");
+    const searchAuthor = url.searchParams.get("searchAuthor");
+
+    let search_query;
+
+    if(searchId){
+      search_query = `SELECT v1.roll_call_id, v1.bill_id, v1.desc, v1.date, v1.yea_votes, v1.nay_votes, v1.chamber, m.measure_number, m.measure_type, m.primary_author, l2.name AS primary_author_name, json_group_array(json_object('coauthor_id', c.people_id, 'name', l.name)) AS coauthors 
+                          FROM votes_1 AS v1 
+                          INNER JOIN measures AS m ON v1.bill_id = m.bill_id 
+                          INNER JOIN coauthors AS c ON v1.bill_id = c.bill_id 
+                          INNER JOIN legislators AS l ON c.people_id = l.people_id 
+                          INNER JOIN legislators AS l2 ON m.primary_author = l2.people_id
+                          WHERE m.measure_number LIKE ?;`;
+      const result = await env.DB.prepare(search_query)
+      .bind(`%${searchId}%`)
+      .all();
+      return Response.json(result);
+    }
+    else if(searchAuthor){
+      search_query = `SELECT v1.roll_call_id, v1.bill_id, v1.desc, v1.date, v1.yea_votes, v1.nay_votes, v1.chamber, m.measure_number, m.measure_type, m.primary_author, l2.name AS primary_author_name, json_group_array(json_object('coauthor_id', c.people_id, 'name', l.name)) AS coauthors 
+                          FROM votes_1 AS v1 
+                          INNER JOIN measures AS m ON v1.bill_id = m.bill_id 
+                          INNER JOIN coauthors AS c ON v1.bill_id = c.bill_id 
+                          INNER JOIN legislators AS l ON c.people_id = l.people_id 
+                          INNER JOIN legislators AS l2 ON m.primary_author = l2.people_id
+                          WHERE l2.name LIKE ?;`;
+      const result = await env.DB.prepare(search_query)
+      .bind(`%${searchAuthor}%`)
+      .all();
+      return Response.json(result);
+    }
+    //Default
+    else{
+      search_query = `SELECT v1.roll_call_id, v1.bill_id, v1.desc, v1.date, v1.yea_votes, v1.nay_votes, v1.chamber, m.measure_number, m.measure_type, m.primary_author, l2.name AS primary_author_name, json_group_array(json_object('coauthor_id', c.people_id, 'name', l.name)) AS coauthors 
+                          FROM votes_1 AS v1 
+                          INNER JOIN measures AS m ON v1.bill_id = m.bill_id 
+                          INNER JOIN coauthors AS c ON v1.bill_id = c.bill_id 
+                          INNER JOIN legislators AS l ON c.people_id = l.people_id 
+                          INNER JOIN legislators AS l2 ON m.primary_author = l2.people_id;`;
+      const result = await env.DB.prepare(search_query)
+      .bind()
+      .all();
+      return Response.json(result);
+    }
   }
-
 }
