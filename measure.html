@@ -51,6 +51,7 @@
         <h3>AI Overview: </h3>
 
         <h3>Bill Text: </h3>
+        <div id="billtext"></div>
     </div>
  
     <script>
@@ -72,6 +73,29 @@
 
     <!--run mapDisplay script-->
     <script src="measurePage.js"></script>
+
+    <!--load pdf texts-->
+    <script>
+    function loadBillPDF() {
+        const params = new URLSearchParams(window.location.search);
+        const vote_id = params.get("vote_id");
+        if (!vote_id) return;
+
+        const pdfUrl = `https://raw.githubusercontent.com/Epsilon157/Software-Engineering-Project/main/Website%20Assets/BillStoragePDFs/${vote_id}.pdf`;
+
+        const container = document.getElementById("billtext");
+        container.innerHTML = `
+            <iframe 
+                src="${pdfUrl}" 
+                width="100%" 
+                height="800px" 
+                style="border: 1px solid #ccc;">
+            </iframe>
+        `;
+    }
+
+    loadBillPDF();
+    </script>
 </body>
 
 </html>
