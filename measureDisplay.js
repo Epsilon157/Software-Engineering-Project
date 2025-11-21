@@ -39,12 +39,15 @@ async function displayMeasures(voteIds, resetPage = false){
         const voteData = await voteResponses[i].json();
         
         if(voteData.results && voteData.results.length > 0){
-            var x = document.createElement("BUTTON");
-            x.classList.add('measure-button');
-            x.innerHTML = `2025 Session > ${voteData.results[0].chamber} > ${voteData.results[0].measure_number} <br>Date: ${voteData.results[0].date} <br>Yea: ${voteData.results[0].yea_votes} Nay: ${voteData.results[0].nay_votes} <br>${voteData.results[0].desc}`;
+            var div = document.createElement("DIV");
+            div.classList.add('measure-div');
+
+            var measureButton = document.createElement("BUTTON");
+            measureButton.classList.add('measure-button');
+            measureButton.innerHTML = `2025 Session > ${voteData.results[0].chamber} > ${voteData.results[0].measure_number} <br>Date: ${voteData.results[0].date} <br>Yea: ${voteData.results[0].yea_votes} Nay: ${voteData.results[0].nay_votes} <br>${voteData.results[0].desc}`;
 
             const rollCallID = voteIds[startIndex + i];
-            x.addEventListener('click', () => {
+            measureButton.addEventListener('click', () => {
                 const url = new URL('https://soonerview.org/measure');
 
                 url.searchParams.set("vote_id", rollCallID);
@@ -52,7 +55,13 @@ async function displayMeasures(voteIds, resetPage = false){
                 window.location.href = url.toString();
             });
         
-            document.getElementById("measure-list").appendChild(x);
+            var bookmarkButton = document.createElement("BUTTON");
+            bookmarkButton.classList.add('bookmark-button');
+            bookmarkButton.innerHTML = "Bookmark";
+
+            document.getElementById("measure-list").appendChild(div);
+            div.appendChild(measureButton);
+            div.appendChild(bookmarkButton);
         }
     }
 }
