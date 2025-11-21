@@ -58,7 +58,8 @@ async function displayMeasures(voteIds, resetPage = false){
             var bookmarkButton = document.createElement("INPUT");
             //bookmarkButton.classList.add('bookmark-button');
             //bookmarkButton.innerHTML = "Bookmark";
-            bookmarkButton.image = "Website Assets/Icons/bookmark-icon.png";
+            bookmarkButton.type = "image";
+            bookmarkButton.src = "Website Assets/Icons/bookmark-icon.png";
 
             document.getElementById("measure-list").appendChild(div);
             div.appendChild(measureButton);
