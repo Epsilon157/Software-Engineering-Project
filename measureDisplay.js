@@ -58,13 +58,17 @@ async function displayMeasures(voteIds, resetPage = false){
             var bookmarkButton = document.createElement("INPUT");
             bookmarkButton.classList.add('bookmark-button');
             bookmarkButton.type = "image";
-            bookmarkButton.src = "Website Assets/BookmarkOn.png";
+            bookmarkButton.src = "Website Assets/BookmarkOff.png";
 
             document.getElementById("measure-list").appendChild(div);
             div.appendChild(measureButton);
             div.appendChild(bookmarkButton);
         }
     }
+}
+
+async function getBookmark(rollCallID) {
+    
 }
 
 async function filter(){
