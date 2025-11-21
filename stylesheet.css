@@ -85,13 +85,10 @@ hr{
 }
 
 .bookmark-button{
-  background-color: #ffffff;
   border: none;
-  color: rgb(0, 0, 0);
   padding: 15px 32px;
   text-align: left;
   text-decoration: none;
-  font-size: 16px;
   margin: 4px 2px;
   cursor: pointer;
   width: 20%;

@@ -56,8 +56,7 @@ async function displayMeasures(voteIds, resetPage = false){
             });
         
             var bookmarkButton = document.createElement("INPUT");
-            //bookmarkButton.classList.add('bookmark-button');
-            //bookmarkButton.innerHTML = "Bookmark";
+            bookmarkButton.classList.add('bookmark-button');
             bookmarkButton.type = "image";
             bookmarkButton.src = "Website Assets/BookmarkOn.png";
 
