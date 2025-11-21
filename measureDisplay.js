@@ -55,9 +55,10 @@ async function displayMeasures(voteIds, resetPage = false){
                 window.location.href = url.toString();
             });
         
-            var bookmarkButton = document.createElement("BUTTON");
-            bookmarkButton.classList.add('bookmark-button');
-            bookmarkButton.innerHTML = "Bookmark";
+            var bookmarkButton = document.createElement("INPUT");
+            //bookmarkButton.classList.add('bookmark-button');
+            //bookmarkButton.innerHTML = "Bookmark";
+            bookmarkButton.image = "Website Assets/Icons/bookmark-icon.png";
 
             document.getElementById("measure-list").appendChild(div);
             div.appendChild(measureButton);
