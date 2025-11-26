@@ -1,5 +1,17 @@
 //import { fillAndStroke } from "pdfkit/js/mixins/vector";
 
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+const firebaseConfig = {
+    apiKey: "AIzaSyAwIf4z7Yc0rgtHm1BwF9HIaoAJxS5RD_k",
+    authDomain: "soonerview-3bdcd.firebaseapp.com",
+    projectId: "soonerview-3bdcd",
+};
+
+const app = initializeApp(firebaseConfig);
+//const auth = getAuth(app);
+
 let page = 1;
 
 let allVoteData = [];
