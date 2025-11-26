@@ -7,9 +7,15 @@
       "directory": "./"
     },
 
+    "vars": {
+      "FIREBASE_API_KEY": "",
+      "FIREBASE_PROJECT_ID": ""
+    },
+    
     "d1_databases": [{
         "binding": "DB",
         "database_name": "prod-d1-tutorial",
         "database_id": "d0751026-ff53-445d-a2af-1da4cc6b5d1e"
     }]
+    
 }

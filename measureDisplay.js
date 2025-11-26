@@ -60,6 +60,9 @@ async function displayMeasures(voteIds, resetPage = false){
             bookmarkButton.type = "image";
             bookmarkButton.src = "Website Assets/BookmarkOff.png";
 
+            bookmarkButton.dataset.rollCallId = rollCallID;
+            bookmarkButton.dataset.bookmarked = "false";
+
             document.getElementById("measure-list").appendChild(div);
             div.appendChild(measureButton);
             div.appendChild(bookmarkButton);

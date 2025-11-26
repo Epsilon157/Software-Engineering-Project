@@ -1,3 +1,72 @@
+/*async function verifyFirebaseToken(token, env) {
+  const projectId = env.FIREBASE_PROJECT_ID;
+
+  // This is Google’s public token verifier endpoint
+  const verifyUrl = `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${env.FIREBASE_API_KEY}`;
+
+  const res = await fetch(verifyUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ idToken: token })
+  });
+
+  const data = await res.json();
+
+  if (data.error || !data.users || data.users.length === 0) {
+    return null;
+  }
+
+  return data.users[0].localId; // Firebase UID
+}
+
+export async function onRequestPost(){
+  const auth = request.headers.get("Authorization");
+  if (!auth || !auth.startsWith("Bearer ")) {
+    return new Response("Missing token", { status: 401 });
+  }
+
+  const token = auth.split(" ")[1];
+  const userId = await verifyFirebaseToken(token, env);
+
+  if (!userId) {
+    return new Response("Invalid token", { status: 401 });
+  }
+
+  const { roll_call_id } = await request.json();
+
+  await env.DB.prepare(
+    `INSERT OR IGNORE INTO bookmarks (user_id, roll_call_id) VALUES (?, ?)`
+  )
+    .bind(userId, roll_call_id)
+    .run();
+
+  return Response.json({ success: true });
+}
+
+export async function onRequestDelete(){
+  const auth = request.headers.get("Authorization");
+  if (!auth || !auth.startsWith("Bearer ")) {
+    return new Response("Missing token", { status: 401 });
+  }
+
+  const token = auth.split(" ")[1];
+  const userId = await verifyFirebaseToken(token, env);
+
+  if (!userId) {
+    return new Response("Invalid token", { status: 401 });
+  }
+
+  const { roll_call_id } = await request.json();
+
+  await env.DB.prepare(
+    `DELETE FROM bookmarks WHERE user_id = ? AND roll_call_id = ?`
+  )
+    .bind(userId, roll_call_id)
+    .run();
+
+  return Response.json({ success: true });
+}*/
+
 export async function onRequestGet({ request, env }) {
 
 const url = new URL(request.url);
