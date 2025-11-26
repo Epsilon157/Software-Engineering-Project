@@ -60,8 +60,49 @@ async function displayMeasures(voteIds, resetPage = false){
             bookmarkButton.type = "image";
             bookmarkButton.src = "Website Assets/BookmarkOff.png";
 
-            bookmarkButton.dataset.rollCallId = rollCallID;
-            bookmarkButton.dataset.bookmarked = "false";
+            bookmarkButton.addEventListener("click", async (e) => {
+                e.stopPropagation(); // prevent the measure button from triggering
+
+                const rollCallId = bookmarkButton.dataset.rollCallId;
+
+                const user = firebase.auth().currentUser;
+                if (!user) {
+                    alert("You must be logged in to bookmark.");
+                    return;
+                }
+            
+                const token = await user.getIdToken();
+            
+                const bookmarked = bookmarkButton.dataset.bookmarked === "true";
+            
+                if (!bookmarked) {
+                    // ADD BOOKMARK
+                    await fetch("https://soonerview.org/query", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ roll_call_id: rollCallId })
+                    });
+                
+                    bookmarkButton.src = "Website Assets/BookmarkOn.png";
+                    bookmarkButton.dataset.bookmarked = "true";
+                } else {
+                    // REMOVE BOOKMARK
+                    await fetch("https://soonerview.org/query", {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ roll_call_id: rollCallId })
+                    });
+                
+                    bookmarkButton.src = "Website Assets/BookmarkOff.png";
+                    bookmarkButton.dataset.bookmarked = "false";
+                }
+            });
 
             document.getElementById("measure-list").appendChild(div);
             div.appendChild(measureButton);

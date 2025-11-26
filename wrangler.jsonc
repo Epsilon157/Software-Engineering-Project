@@ -8,10 +8,10 @@
     },
 
     "vars": {
-      "FIREBASE_API_KEY": "",
+      "FIREBASE_API_KEY": "AIzaSyAwIf4z7Yc0rgtHm1BwF9HIaoAJxS5RD_k",
       "FIREBASE_PROJECT_ID": ""
     },
-    
+
     "d1_databases": [{
         "binding": "DB",
         "database_name": "prod-d1-tutorial",

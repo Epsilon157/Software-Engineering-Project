@@ -1,5 +1,5 @@
-/*async function verifyFirebaseToken(token, env) {
-  const projectId = env.FIREBASE_PROJECT_ID;
+async function verifyFirebaseToken(token, env) {
+  //const projectId = env.FIREBASE_PROJECT_ID;
 
   // This is Google’s public token verifier endpoint
   const verifyUrl = `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${env.FIREBASE_API_KEY}`;
@@ -65,7 +65,7 @@ export async function onRequestDelete(){
     .run();
 
   return Response.json({ success: true });
-}*/
+}
 
 export async function onRequestGet({ request, env }) {
 
