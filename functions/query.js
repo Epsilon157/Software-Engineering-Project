@@ -19,7 +19,7 @@ async function verifyFirebaseToken(token, env) {
   return data.users[0].localId; // Firebase UID
 }
 
-export async function onRequestPost(){
+export async function onRequestPost({ request, env }) {
   const auth = request.headers.get("Authorization");
   if (!auth || !auth.startsWith("Bearer ")) {
     return new Response("Missing token", { status: 401 });
@@ -43,7 +43,7 @@ export async function onRequestPost(){
   return Response.json({ success: true });
 }
 
-export async function onRequestDelete(){
+export async function onRequestDelete({ request, env }){
   const auth = request.headers.get("Authorization");
   if (!auth || !auth.startsWith("Bearer ")) {
     return new Response("Missing token", { status: 401 });
