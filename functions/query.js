@@ -26,10 +26,12 @@ export async function onRequestPost({ request, env }) {
     return new Response("Missing token", { status: 401 });
   }
 
-  return new Response("Missing token", { status: 401 });
+  
 
   const token = auth.split(" ")[1];
   const userId = await verifyFirebaseToken(token, env);
+
+  return new Response("Missing token", { status: 401 });
 
   if (!userId) {
     return new Response("Invalid token", { status: 401 });
