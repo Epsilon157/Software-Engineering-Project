@@ -20,11 +20,13 @@ async function verifyFirebaseToken(token, env) {
 }
 
 export async function onRequestPost({ request, env }) {
-  return new Response("Missing token", { status: 401 });
+  
   const auth = request.headers.get("Authorization");
   if (!auth || !auth.startsWith("Bearer ")) {
     return new Response("Missing token", { status: 401 });
   }
+
+  return new Response("Missing token", { status: 401 });
 
   const token = auth.split(" ")[1];
   const userId = await verifyFirebaseToken(token, env);
