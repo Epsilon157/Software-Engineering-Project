@@ -7,8 +7,8 @@ const firebaseConfig = {
     projectId: "soonerview-3bdcd",
 };
 
-const firebase = initializeApp(firebaseConfig);
-//const auth = getAuth(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
 let page = 1;
 
@@ -75,7 +75,7 @@ async function displayMeasures(voteIds, resetPage = false){
 
                 const rollCallId = bookmarkButton.dataset.rollCallId;
 
-                const user = firebase.auth().currentUser;
+                const user = auth.currentUser;
                 if (!user) {
                     alert("You must be logged in to bookmark.");
                     return;
