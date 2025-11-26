@@ -31,7 +31,7 @@ export async function onRequestPost({ request, env }) {
   const token = auth.split(" ")[1];
   const userId = await verifyFirebaseToken(token, env);
 
-  return new Response("Missing token", { status: 401 });
+  
 
   if (!userId) {
     return new Response("Invalid token", { status: 401 });
@@ -40,7 +40,7 @@ export async function onRequestPost({ request, env }) {
   const { roll_call_id } = await request.json();
 
   await env.DB.prepare(
-    `INSERT OR IGNORE INTO bookmarks (user_id, roll_call_id) VALUES (?, ?)`
+    `INSERT OR IGNORE INTO user_info (user_id, roll_call_id) VALUES (?, ?)`
   )
     .bind(userId, roll_call_id)
     .run();
@@ -64,7 +64,7 @@ export async function onRequestDelete({ request, env }){
   const { roll_call_id } = await request.json();
 
   await env.DB.prepare(
-    `DELETE FROM bookmarks WHERE user_id = ? AND roll_call_id = ?`
+    `DELETE FROM user_info WHERE user_id = ? AND roll_call_id = ?`
   )
     .bind(userId, roll_call_id)
     .run();
