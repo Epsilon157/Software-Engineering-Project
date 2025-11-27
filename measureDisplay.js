@@ -87,6 +87,15 @@ async function displayMeasures(voteIds, resetPage = false){
                 const rollCallId = bookmarkButton.dataset.rollCallId;
             
                 if (!bookmarked) {
+                    const newSrc = "Website Assets/BookmarkOn.png?" + new Date().getTime();
+                    const img = new Image();
+                    img.onload = () => {
+                        bookmarkButton.src = newSrc; // update after it’s loaded
+                    };
+                    
+                    img.src = newSrc;
+                    bookmarkButton.dataset.bookmarked = "true";
+
                     // ADD BOOKMARK
                     await fetch("https://soonerview.org/query", {
                         method: "POST",
@@ -97,14 +106,7 @@ async function displayMeasures(voteIds, resetPage = false){
                         body: JSON.stringify({ roll_call_id: rollCallId })
                     });
                 
-                    const newSrc = "Website Assets/BookmarkOn.png?" + new Date().getTime();
-                    const img = new Image();
-                    img.onload = () => {
-                        bookmarkButton.src = newSrc; // update after it’s loaded
-                    };
                     
-                    img.src = newSrc;
-                    bookmarkButton.dataset.bookmarked = "true";
 
                 } else {
                     // REMOVE BOOKMARK
