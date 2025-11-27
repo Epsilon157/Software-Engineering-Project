@@ -97,8 +97,15 @@ async function displayMeasures(voteIds, resetPage = false){
                         body: JSON.stringify({ roll_call_id: rollCallId })
                     });
                 
-                    bookmarkButton.src = "Website Assets/BookmarkOn.png?" + new Date().getTime();
+                    const newSrc = "Website Assets/BookmarkOn.png?" + new Date().getTime();
+                    const img = new Image();
+                    img.onload = () => {
+                        bookmarkButton.src = newSrc; // update after it’s loaded
+                    };
+                    
+                    img.src = newSrc;
                     bookmarkButton.dataset.bookmarked = "true";
+
                 } else {
                     // REMOVE BOOKMARK
                     await fetch("https://soonerview.org/query", {
