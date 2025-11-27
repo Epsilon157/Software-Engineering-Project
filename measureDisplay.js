@@ -75,6 +75,8 @@ async function displayMeasures(voteIds, resetPage = false){
             bookmarkButton.addEventListener("click", async (e) => {
                 e.stopPropagation(); // prevent the measure button from triggering
 
+                const buttonToUpdate = e.currentTarget;
+
                 const user = auth.currentUser;
                 if (!user) {
                     alert("You must be logged in to bookmark.");
@@ -83,8 +85,8 @@ async function displayMeasures(voteIds, resetPage = false){
             
                 const token = await user.getIdToken();
             
-                const bookmarked = bookmarkButton.dataset.bookmarked === "true";
-                const rollCallId = bookmarkButton.dataset.rollCallId;
+                const bookmarked = buttonToUpdate.dataset.bookmarked === "true";
+                const rollCallId = buttonToUpdate.dataset.rollCallId;
             
                 if (!bookmarked) {
 
@@ -97,22 +99,10 @@ async function displayMeasures(voteIds, resetPage = false){
                         },
                         body: JSON.stringify({ roll_call_id: rollCallId })
                     });
-                
-                    const newSrc = "Website Assets/BookmarkOn.png";
 
                     // Create a new input element with the updated image
-                    const newButton = document.createElement("input");
-                    newButton.type = "image";
-                    newButton.src = newSrc;
-                    newButton.className = bookmarkButton.className; // copy classes
-                    newButton.dataset.rollCallId = bookmarkButton.dataset.rollCallId;
-                    newButton.dataset.bookmarked = "true";
-                                    
-                    // Copy the click handler
-                    newButton.addEventListener("click", bookmarkButton.onclick || bookmarkButton._clickHandler);
-                                    
-                    // Replace old button in the DOM
-                    bookmarkButton.parentNode.replaceChild(newButton, bookmarkButton);
+                    buttonToUpdate.src = "Website Assets/BookmarkOn.png";
+                    buttonToUpdate.dataset.bookmarked = "true";
 
                 } else {
                     // REMOVE BOOKMARK
@@ -125,8 +115,8 @@ async function displayMeasures(voteIds, resetPage = false){
                         body: JSON.stringify({ roll_call_id: rollCallId })
                     });
                 
-                    bookmarkButton.src = "Website Assets/BookmarkOff.png?" + new Date().getTime();
-                    bookmarkButton.dataset.bookmarked = "false";
+                    buttonToUpdate.src = "Website Assets/BookmarkOff.png";
+                    buttonToUpdate.dataset.bookmarked = "false";
                 }
             });
 
