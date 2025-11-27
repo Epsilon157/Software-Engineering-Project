@@ -38,7 +38,7 @@ export async function onRequestPost({ request, env }) {
   }
 
   const { roll_call_id } = await request.json();
-  return new Response(`${roll_call_id}, ${userId}`, { status: 401 });
+  //return new Response(`${roll_call_id}, ${userId}`, { status: 401 });
   await env.DB.prepare(
     `INSERT OR IGNORE INTO user_info (user_id, roll_call_id) VALUES (?, ?)`
   )
