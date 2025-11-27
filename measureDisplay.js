@@ -87,14 +87,6 @@ async function displayMeasures(voteIds, resetPage = false){
                 const rollCallId = bookmarkButton.dataset.rollCallId;
             
                 if (!bookmarked) {
-                    const newSrc = "Website Assets/BookmarkOn.png?" + new Date().getTime();
-                    const img = new Image();
-                    img.onload = () => {
-                        bookmarkButton.src = newSrc; // update after it’s loaded
-                    };
-                    
-                    img.src = newSrc;
-                    bookmarkButton.dataset.bookmarked = "true";
 
                     // ADD BOOKMARK
                     await fetch("https://soonerview.org/query", {
@@ -106,7 +98,21 @@ async function displayMeasures(voteIds, resetPage = false){
                         body: JSON.stringify({ roll_call_id: rollCallId })
                     });
                 
-                    
+                    const newSrc = "Website Assets/BookmarkOn.png";
+
+                    // Create a new input element with the updated image
+                    const newButton = document.createElement("input");
+                    newButton.type = "image";
+                    newButton.src = newSrc;
+                    newButton.className = bookmarkButton.className; // copy classes
+                    newButton.dataset.rollCallId = bookmarkButton.dataset.rollCallId;
+                    newButton.dataset.bookmarked = "true";
+                                    
+                    // Copy the click handler
+                    newButton.addEventListener("click", bookmarkButton.onclick || bookmarkButton._clickHandler);
+                                    
+                    // Replace old button in the DOM
+                    bookmarkButton.parentNode.replaceChild(newButton, bookmarkButton);
 
                 } else {
                     // REMOVE BOOKMARK
