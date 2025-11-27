@@ -25,13 +25,9 @@ export async function onRequestPost({ request, env }) {
   if (!auth || !auth.startsWith("Bearer ")) {
     return new Response("Missing token", { status: 401 });
   }
-
   
-
   const token = auth.split(" ")[1];
   const userId = await verifyFirebaseToken(token, env);
-
-  
 
   if (!userId) {
     return new Response("Invalid token", { status: 401 });

@@ -97,7 +97,7 @@ async function displayMeasures(voteIds, resetPage = false){
                         body: JSON.stringify({ roll_call_id: rollCallId })
                     });
                 
-                    bookmarkButton.src = "Website Assets/BookmarkOn.png";
+                    bookmarkButton.src = "Website Assets/BookmarkOn.png?" + new Date().getTime();
                     bookmarkButton.dataset.bookmarked = "true";
                 } else {
                     // REMOVE BOOKMARK
@@ -110,7 +110,7 @@ async function displayMeasures(voteIds, resetPage = false){
                         body: JSON.stringify({ roll_call_id: rollCallId })
                     });
                 
-                    bookmarkButton.src = "Website Assets/BookmarkOff.png";
+                    bookmarkButton.src = "Website Assets/BookmarkOff.png?" + new Date().getTime();
                     bookmarkButton.dataset.bookmarked = "false";
                 }
             });
