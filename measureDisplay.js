@@ -70,10 +70,10 @@ async function displayMeasures(voteIds, resetPage = false){
             bookmarkButton.type = "image";
             bookmarkButton.src = "Website Assets/BookmarkOff.png";
 
+            bookmarkButton.dataset.rollCallId = rollCallID;
+
             bookmarkButton.addEventListener("click", async (e) => {
                 e.stopPropagation(); // prevent the measure button from triggering
-
-                const rollCallId = bookmarkButton.dataset.rollCallId;
 
                 const user = auth.currentUser;
                 if (!user) {
@@ -84,6 +84,7 @@ async function displayMeasures(voteIds, resetPage = false){
                 const token = await user.getIdToken();
             
                 const bookmarked = bookmarkButton.dataset.bookmarked === "true";
+                const rollCallId = bookmarkButton.dataset.rollCallId;
             
                 if (!bookmarked) {
                     // ADD BOOKMARK
