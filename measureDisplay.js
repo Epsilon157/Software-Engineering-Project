@@ -339,6 +339,6 @@ async function loadSearchPage(changePage){
     //}
 }
 
-onAuthStateChanged(auth, (user) => {
-    loadSearchPage(0);
+onAuthStateChanged(auth, async (user) => {
+    await loadSearchPage(0);
 });
