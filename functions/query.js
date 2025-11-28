@@ -68,6 +68,7 @@ export async function onRequestDelete({ request, env }){
   return Response.json({ success: true });
 }
 
+/*
 export async function onRequestGet({ request, env }) {
   const url = new URL(request.url);
   if (url.searchParams.has("vote_id")) {
@@ -93,7 +94,7 @@ export async function onRequestGet({ request, env }) {
 
     return Response.json({ bookmarked: !!result });
   }
-}
+}*/
 
 const url = new URL(request.url);
 
