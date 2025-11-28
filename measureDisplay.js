@@ -319,7 +319,7 @@ async function loadSearchPage(changePage){
     const user = auth.currentUser;
     if (user) {
         const token = await user.getIdToken();
-        const res = await fetch("query?bookmarks", {
+        const res = await fetch("https://soonerview.org/query?bookmarks", {
             headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
