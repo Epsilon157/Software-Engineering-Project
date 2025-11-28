@@ -324,9 +324,9 @@ async function loadSearchPage(changePage){
             headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
-        userBookmarkedIds = data.results.map(r => r.roll_call_id);
+        userBookmarks = data.results.map(r => r.roll_call_id);
     } else {
-        userBookmarkedIds = [];
+        userBookmarks = [];
     }
     //const res = await fetch(`query?search`);
     //const data = await res.json();
