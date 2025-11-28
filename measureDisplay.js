@@ -53,6 +53,7 @@ async function displayMeasures(voteIds, resetPage = false){
                     Authorization: `Bearer ${token}`
                 }
             }));
+        }
     }
 
     
