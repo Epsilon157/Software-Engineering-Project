@@ -16,6 +16,8 @@ let allVoteData = [];
 let filteredVoteIds = [];
 
 async function displayMeasures(voteIds, resetPage = false){
+    const user = auth.currentUser;
+
     if(resetPage){
         page = 1;
     }
@@ -31,6 +33,7 @@ async function displayMeasures(voteIds, resetPage = false){
     }
 
     const votePromises = [];
+    const bookmarkPromises = [];
     const startIndex = (page - 1) * 20;
     const endIndex = Math.min(page * 20, voteIds.length);
     //Disable arrows if can't go far enough
@@ -41,10 +44,21 @@ async function displayMeasures(voteIds, resetPage = false){
 
     for(let i = startIndex; i < endIndex; i++){
         votePromises.push(fetch(`query?vote_id=${voteIds[i]}`));
+
+        if(user) {
+            const token = await user.getIdToken();
+            bookmarkPromises.push(fetch(`query?vote_id=${voteIds[i]}`, { 
+                method: "OPTIONS", 
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }));
     }
 
     
     const voteResponses = await Promise.all(votePromises);
+    const bookmarkResponses = await Promise.all(bookmarkPromises);
+
     for(let i = 0; i < voteResponses.length; i++){
         const voteData = await voteResponses[i].json();
         
@@ -76,7 +90,6 @@ async function displayMeasures(voteIds, resetPage = false){
 
                 const buttonToUpdate = e.currentTarget;
 
-                const user = auth.currentUser;
                 if (!user) {
                     alert("You must be logged in to bookmark.");
                     return;
@@ -119,7 +132,7 @@ async function displayMeasures(voteIds, resetPage = false){
                 }
             });
             
-            const user = auth.currentUser;
+            /*
             if (user) {
                 const token = await user.getIdToken();
         
@@ -133,6 +146,20 @@ async function displayMeasures(voteIds, resetPage = false){
                 bookmarkButton.dataset.bookmarked = data.bookmarked ? "true" : "false";
 
                 if (data.bookmarked) {
+                    bookmarkButton.src = "Website Assets/BookmarkOn.png";
+                } else {
+                    bookmarkButton.src = "Website Assets/BookmarkOff.png";
+                }
+            }
+            else {
+                bookmarkButton.src = "Website Assets/BookmarkOff.png";
+            }*/
+
+            const bookmarkResponse = bookmarkResponses[i];
+            if (user && bookmarkResponse.ok) {
+                const bookmarkData = await bookmarkResponse.json();
+                bookmarkButton.dataset.bookmarked = bookmarkData.bookmarked ? "true" : "false";
+                if (bookmarkData.bookmarked) {
                     bookmarkButton.src = "Website Assets/BookmarkOn.png";
                 } else {
                     bookmarkButton.src = "Website Assets/BookmarkOff.png";
