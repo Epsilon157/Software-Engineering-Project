@@ -26,13 +26,9 @@
     <div class="container">
         <div class="section" style="flex-grow: 2; border: 0px;">
             <div style="display: flex; margin: auto; width: 80%; align-items: flex-start;">
-                <input type="text" placeholder="Search Bills" id="searchbar" style="height: 30px; flex-grow: 1;">
+                <input type="text" placeholder="Search Measures" id="searchbar" style="height: 30px; flex-grow: 1;">
                 <select id="searchby" style="height: 35px;">
-                    <!--<option value="title">Title</option>
-                    <option value="topic">Topic</option>
-                    <option value="date">Date</option>
-                    <option value="id">ID</option>
-                    <option value="keyword">Keyword</option>-->
+                    <!--Filter and search dropdown options; Only bottom two use searchbar-->
                     <option value="dateAsc">Date - Asc</option>
                     <option value="dateDesc">Date - Desc</option>
                     <option value="chamberHouse">Chamber - House</option>
@@ -47,7 +43,7 @@
             <div class="center" id="measure-list">
                 <script type="module" src="../measureDisplay.js"></script>
             </div>
-
+            <!--Arrows to "scroll" through measure list-->
             <div style = "display: flex; justify-content: space-around; width: 80%; margin: auto;">
                 <button id="farleft" class="left-right-button" onclick="loadSearchPage(-10)">&#60;&#60;</button>
                 <button id="left" class="left-right-button" onclick="loadSearchPage(-1)">&#60;</button>

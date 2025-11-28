@@ -11,7 +11,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 let page = 1;
-
+//Arrays that store all relevant data from votes tables - saves queries - and stores the filtered and searched data from that array
 let allVoteData = [];
 let filteredVoteIds = [];
 
@@ -130,14 +130,16 @@ async function displayMeasures(voteIds, resetPage = false){
 async function getBookmark(rollCallID) {
     
 }
-
+//Function for filtering; Date, chamber, or passed
 async function filter(){
+    //Get user selection from dropdown menu
     const searchby = document.getElementById("searchby");
     const selectedOption = searchby.options[searchby.selectedIndex];
     const filterValue = selectedOption ? selectedOption.textContent : '';
 
+    //Will hold data to be returned 
     let filteredIds = [...allVoteData.map(v => v.roll_call_id)];
-
+    //
     if(filterValue === "Date - Asc"){
         const sorted = [...allVoteData].sort((a, b) => {
             return new Date(a.date) - new Date(b.date);
@@ -162,10 +164,11 @@ async function filter(){
     else if(filterValue === "Passed - No"){
         filteredIds = allVoteData.filter(v => v.nay_votes > v.yea_votes).map(v => v.roll_call_id);
     }
+    //Returns filtered data
     filteredVoteIds = filteredIds;
     await displayMeasures(filteredVoteIds, true);
 }
-
+//Function for searching; Measure name/number and author name
 async function search(){
     const searchby = document.getElementById("searchby");
     const selectedOption = searchby.options[searchby.selectedIndex];

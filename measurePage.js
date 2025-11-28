@@ -83,9 +83,8 @@ async function loadMeasurePage() {
         ? JSON.parse(row.coauthors) 
         : row.coauthors;
         const coauthorsNames = coauthorsArray.map(coauthor => coauthor.name).join(', ');
-
+        //Bolding and new lining the titles
         document.getElementById('coauthors').innerHTML = `<strong>Coauthors:</strong><br> ${coauthorsNames}`;
-        
         document.getElementById('author').innerHTML = `<strong>Author:</strong><br> ${row.primary_author_name}`;
         document.getElementById('date').innerHTML = `<strong>Date:</strong><br> ${row.date}`;
         document.getElementById('desc').innerHTML = `<strong>Description:</strong><br> ${row.desc}`;
@@ -120,7 +119,7 @@ async function loadMeasurePage() {
         }
     });
 }
-
+//Function for displaying the yea and nay votes; red for republican, blue for democrat; number and individuals
 async function loadYeaNay() {
     const districtPromises = [];
 

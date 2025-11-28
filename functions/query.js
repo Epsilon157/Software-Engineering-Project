@@ -78,7 +78,7 @@ const url = new URL(request.url);
     district = district.replace(/[^0-9]/g, '');
 
     let districtResult;
-
+    //If and Else: Get district data from table votes_1 and/or votes_2; district data is split between the two
     if(Number(district) < 49){
       const district_query = `SELECT v1.District_${district} as district_result, v1.date, v1.chamber
                               FROM votes_1 AS v1 
@@ -99,7 +99,7 @@ const url = new URL(request.url);
 
     const date = districtResult.results[0].date;
     const chamber = districtResult.results[0].chamber;
-
+    //SQL query to retrieve legislator term information
     const term_query = `SELECT t.party, t.district, t.start_date, t.end_date, t.people_id, l.name, t.chamber
                         FROM terms AS t
                         INNER JOIN legislators AS l
@@ -114,6 +114,7 @@ const url = new URL(request.url);
       termResult: termResult.results
     });
   }
+  //If URL has vote_id in it (when search param has district), return info on particular measure
   else if(url.searchParams.has("vote_id")){
     const id = url.searchParams.get("vote_id");
 
@@ -130,8 +131,7 @@ const url = new URL(request.url);
     .all();
     return Response.json(result);
   }
-  //If search parameter in url then activate search query
-  //-------TODO: Allow different parameters to search by. As easy as getting the parameters and updating the query I think
+  //If search parameter is in the url then activate search query
   else if(url.searchParams.has("search")){
     const searchType = url.searchParams.get("search");
 
@@ -139,7 +139,7 @@ const url = new URL(request.url);
     const searchAuthor = url.searchParams.get("searchAuthor");
 
     let search_query;
-
+    //SQL query for when the user searches by measure name(such as HB1002) - returns data necessary for measure page
     if(searchId){
       search_query = `SELECT v1.roll_call_id, v1.bill_id, v1.desc, v1.date, v1.yea_votes, v1.nay_votes, v1.chamber, m.measure_number, m.measure_type, m.primary_author 
                           FROM votes_1 AS v1 
@@ -150,6 +150,7 @@ const url = new URL(request.url);
       .all();
       return Response.json(result);
     }
+    // SQL query for when the user searches by author name - returns data necessary for measure page
     else if(searchAuthor){
       search_query = `SELECT v1.roll_call_id, v1.bill_id, v1.desc, v1.date, v1.yea_votes, v1.nay_votes, v1.chamber, m.measure_number, m.measure_type, m.primary_author, l2.name AS primary_author_name 
                           FROM votes_1 AS v1 
@@ -161,7 +162,7 @@ const url = new URL(request.url);
       .all();
       return Response.json(result);
     }
-    //Default
+    //Default SQL query - gets the roll call ID, date, chamber, and yea and nay votes
     else{
       search_query = `SELECT DISTINCT v1.roll_call_id, v1.date, v1.chamber, v1.yea_votes, v1.nay_votes 
                           FROM votes_1 AS v1 
