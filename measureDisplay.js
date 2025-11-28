@@ -68,7 +68,6 @@ async function displayMeasures(voteIds, resetPage = false){
             var bookmarkButton = document.createElement("INPUT");
             bookmarkButton.classList.add('bookmark-button');
             bookmarkButton.type = "image";
-            bookmarkButton.src = "Website Assets/BookmarkOff.png";
 
             bookmarkButton.dataset.rollCallId = rollCallID;
 
@@ -84,7 +83,7 @@ async function displayMeasures(voteIds, resetPage = false){
                 }
             
                 const token = await user.getIdToken();
-            
+
                 const bookmarked = buttonToUpdate.dataset.bookmarked === "true";
                 const rollCallId = buttonToUpdate.dataset.rollCallId;
             
@@ -119,6 +118,29 @@ async function displayMeasures(voteIds, resetPage = false){
                     buttonToUpdate.dataset.bookmarked = "false";
                 }
             });
+
+            const user = auth.currentUser;
+            if (user) {
+                const token = await user.getIdToken();
+        
+                const response = await fetch(`https://soonerview.org/query?vote_id=${buttonToUpdate.dataset.rollCallId}`, {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+                buttonToUpdate.dataset.bookmarked = data.bookmarked ? "true" : "false";
+
+                if (data.bookmarked) {
+                    buttonToUpdate.src = "Website Assets/BookmarkOn.png";
+                } else {
+                    buttonToUpdate.src = "Website Assets/BookmarkOff.png";
+                }
+            }
+            else {
+                bookmarkButton.src = "Website Assets/BookmarkOff.png";
+            }
 
             document.getElementById("measure-list").appendChild(div);
             div.appendChild(measureButton);
