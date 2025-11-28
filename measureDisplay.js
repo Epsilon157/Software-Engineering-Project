@@ -91,6 +91,8 @@ async function displayMeasures(voteIds, resetPage = false){
 
                 const buttonToUpdate = e.currentTarget;
 
+                const user = auth.currentUser;
+                
                 if (!user) {
                     alert("You must be logged in to bookmark.");
                     return;
