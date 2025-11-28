@@ -273,6 +273,22 @@ async function loadSearchPage(changePage){
     document.getElementById("farright")
     .addEventListener("click", () => loadSearchPage(10));
 
+    const user = auth.currentUser;
+    if (user) {
+        const token = await user.getIdToken();
+        const res = await fetch("https://soonerview.org/query?bookmarks", {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+        const data = await res.json();
+        userBookmarks = data.results.map(r => r.roll_call_id);
+    } else {
+        userBookmarks = [];
+    }
+
     if(allVoteData.length === 0){
         const res = await fetch(`query?search`);
         const data = await res.json();
@@ -313,21 +329,7 @@ async function loadSearchPage(changePage){
     }
     await displayMeasures(filteredVoteIds.length > 0 ? filteredVoteIds : allVoteData.map(v => v.roll_call_id), false);
 
-    const user = auth.currentUser;
-    if (user) {
-        const token = await user.getIdToken();
-        const res = await fetch("https://soonerview.org/query?bookmarks", {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }
-        );
-        const data = await res.json();
-        userBookmarks = data.results.map(r => r.roll_call_id);
-    } else {
-        userBookmarks = [];
-    }
+    
     //const res = await fetch(`query?search`);
     //const data = await res.json();
     //document.getElementById("right").disabled = page >= Math.ceil(data.results.length / 20);
