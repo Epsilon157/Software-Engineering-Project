@@ -180,9 +180,6 @@ async function displayMeasures(voteIds, resetPage = false){
     }
 }
 
-async function getBookmark(rollCallID) {
-    
-}
 //Function for filtering; Date, chamber, or passed
 async function filter(){
     //Get user selection from dropdown menu
@@ -321,7 +318,11 @@ async function loadSearchPage(changePage){
         const token = await user.getIdToken();
         const res = await fetch("https://soonerview.org/query?bookmarks", {
             method: "OPTIONS",
-            headers: { Authorization: `Bearer ${token}` }
+            headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ roll_call_id: rollCallId })
         });
         const data = await res.json();
         userBookmarks = data.results.map(r => r.roll_call_id);
