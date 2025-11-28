@@ -321,8 +321,7 @@ async function loadSearchPage(changePage){
             headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify({ roll_call_id: rollCallId })
+            }
         });
         const data = await res.json();
         userBookmarks = data.results.map(r => r.roll_call_id);
