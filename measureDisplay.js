@@ -205,6 +205,18 @@ async function loadSearchPage(changePage){
         }
     }
 
+    document.getElementById("right")
+    .addEventListener("click", () => loadSearchPage(1));
+
+    document.getElementById("left")
+    .addEventListener("click", () => loadSearchPage(-1));
+
+    document.getElementById("farleft")
+    .addEventListener("click", () => loadSearchPage(-10));
+
+    document.getElementById("farright")
+    .addEventListener("click", () => loadSearchPage(10));
+
     if(allVoteData.length === 0){
         const res = await fetch(`query?search`);
         const data = await res.json();
