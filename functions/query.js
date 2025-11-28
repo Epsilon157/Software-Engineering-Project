@@ -1,3 +1,4 @@
+/*
 async function verifyFirebaseToken(token, env) {
   //const projectId = env.FIREBASE_PROJECT_ID;
 
@@ -66,7 +67,7 @@ export async function onRequestDelete({ request, env }){
     .run();
 
   return Response.json({ success: true });
-}
+}*/
 
 const url = new URL(request.url);
 
