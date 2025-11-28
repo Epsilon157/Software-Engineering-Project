@@ -87,7 +87,7 @@ export async function onRequestOptions({ request, env }) {
     }
 
     const result = await env.DB.prepare(
-      `SELECT 1 FROM bookmarks WHERE user_id = ? AND roll_call_id = ?`
+      `SELECT 1 FROM user_info WHERE user_id = ? AND roll_call_id = ?`
     )
       .bind(userId, roll_call_id)
       .first();
