@@ -217,6 +217,6 @@ export async function onRequestGet({ request, env }) {
       .bind(userId)
       .all();
     
-    return Response.json(result);
+    return Response.json({results: result.results});
   }
 }
