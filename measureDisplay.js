@@ -118,7 +118,7 @@ async function displayMeasures(voteIds, resetPage = false){
                     buttonToUpdate.dataset.bookmarked = "false";
                 }
             });
-
+            /*
             const user = auth.currentUser;
             if (user) {
                 const token = await user.getIdToken();
@@ -140,7 +140,7 @@ async function displayMeasures(voteIds, resetPage = false){
             }
             else {
                 bookmarkButton.src = "Website Assets/BookmarkOff.png";
-            }
+            }*/
 
             document.getElementById("measure-list").appendChild(div);
             div.appendChild(measureButton);
