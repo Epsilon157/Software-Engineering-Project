@@ -1,4 +1,4 @@
-/*
+
 async function verifyFirebaseToken(token, env) {
   //const projectId = env.FIREBASE_PROJECT_ID;
 
@@ -67,9 +67,37 @@ export async function onRequestDelete({ request, env }){
     .run();
 
   return Response.json({ success: true });
-}*/
+}
 
-const url = new URL(request.url);
+export async function onRequestOptions({ request, env }) {
+  const url = new URL(request.url);
+  if (url.searchParams.has("vote_id")) {
+    const roll_call_id = url.searchParams.get("vote_id");
+
+    const auth = request.headers.get("Authorization");
+    if (!auth || !auth.startsWith("Bearer ")) {
+      return new Response("Missing token", { status: 401 });
+    }
+
+    const token = auth.split(" ")[1];
+    const userId = await verifyFirebaseToken(token, env);
+
+    if (!userId) {
+      return new Response("Invalid token", { status: 401 });
+    }
+
+    const result = await env.DB.prepare(
+      `SELECT 1 FROM bookmarks WHERE user_id = ? AND roll_call_id = ?`
+    )
+      .bind(userId, roll_call_id)
+      .first();
+
+    return Response.json({ bookmarked: !!result });
+  }
+}
+
+export async function onRequestGet({ request, env }) {
+  const url = new URL(request.url);
 
   if(url.searchParams.has("district")){
     const id = url.searchParams.get("vote_id");
@@ -172,4 +200,4 @@ const url = new URL(request.url);
       return Response.json(result);
     }
   }
-
+}

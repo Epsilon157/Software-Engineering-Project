@@ -118,13 +118,13 @@ async function displayMeasures(voteIds, resetPage = false){
                     buttonToUpdate.dataset.bookmarked = "false";
                 }
             });
-            /*
+            
             const user = auth.currentUser;
             if (user) {
                 const token = await user.getIdToken();
         
                 const response = await fetch(`https://soonerview.org/query?vote_id=${buttonToUpdate.dataset.rollCallId}`, {
-                    method: "GET",
+                    method: "OPTIONS",
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -140,7 +140,7 @@ async function displayMeasures(voteIds, resetPage = false){
             }
             else {
                 bookmarkButton.src = "Website Assets/BookmarkOff.png";
-            }*/
+            }
 
             document.getElementById("measure-list").appendChild(div);
             div.appendChild(measureButton);
