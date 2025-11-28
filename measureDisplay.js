@@ -123,19 +123,19 @@ async function displayMeasures(voteIds, resetPage = false){
             if (user) {
                 const token = await user.getIdToken();
         
-                const response = await fetch(`https://soonerview.org/query?vote_id=${buttonToUpdate.dataset.rollCallId}`, {
+                const response = await fetch(`https://soonerview.org/query?vote_id=${bookmarkButton.dataset.rollCallId}`, {
                     method: "OPTIONS",
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
                 const data = await response.json();
-                buttonToUpdate.dataset.bookmarked = data.bookmarked ? "true" : "false";
+                bookmarkButton.dataset.bookmarked = data.bookmarked ? "true" : "false";
 
                 if (data.bookmarked) {
-                    buttonToUpdate.src = "Website Assets/BookmarkOn.png";
+                    bookmarkButton.src = "Website Assets/BookmarkOn.png";
                 } else {
-                    buttonToUpdate.src = "Website Assets/BookmarkOff.png";
+                    bookmarkButton.src = "Website Assets/BookmarkOff.png";
                 }
             }
             else {
