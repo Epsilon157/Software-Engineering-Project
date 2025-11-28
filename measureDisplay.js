@@ -14,6 +14,7 @@ let page = 1;
 //Arrays that store all relevant data from votes tables - saves queries - and stores the filtered and searched data from that array
 let allVoteData = [];
 let filteredVoteIds = [];
+let userBookmarks = [];
 
 async function displayMeasures(voteIds, resetPage = false){
     const user = auth.currentUser;
@@ -92,7 +93,7 @@ async function displayMeasures(voteIds, resetPage = false){
                 const buttonToUpdate = e.currentTarget;
 
                 const user = auth.currentUser;
-                
+
                 if (!user) {
                     alert("You must be logged in to bookmark.");
                     return;
@@ -216,6 +217,9 @@ async function filter(){
     else if(filterValue === "Passed - No"){
         filteredIds = allVoteData.filter(v => v.nay_votes > v.yea_votes).map(v => v.roll_call_id);
     }
+    else if(filterValue === "Bookmarked"){
+        filteredIds = allVoteData.filter(v => userBookmarks.includes(v.roll_call_id)).map(v => v.roll_call_id);
+    }
     //Returns filtered data
     filteredVoteIds = filteredIds;
     await displayMeasures(filteredVoteIds, true);
@@ -311,6 +315,18 @@ async function loadSearchPage(changePage){
         });
     }
     await displayMeasures(filteredVoteIds.length > 0 ? filteredVoteIds : allVoteData.map(v => v.roll_call_id), false);
+
+    const user = auth.currentUser;
+    if (user) {
+        const token = await user.getIdToken();
+        const res = await fetch("query?bookmarks", {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        userBookmarkedIds = data.results.map(r => r.roll_call_id);
+    } else {
+        userBookmarkedIds = [];
+    }
     //const res = await fetch(`query?search`);
     //const data = await res.json();
     //document.getElementById("right").disabled = page >= Math.ceil(data.results.length / 20);

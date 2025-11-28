@@ -94,6 +94,26 @@ export async function onRequestOptions({ request, env }) {
 
     return Response.json({ bookmarked: !!result });
   }
+  else if(url.searchParams.has("bookmarks")){
+    const auth = request.headers.get("Authorization");
+    if (!auth || !auth.startsWith("Bearer ")) {
+      return new Response("Missing token", { status: 401 });
+    }
+
+    const token = auth.split(" ")[1];
+    const userId = await verifyFirebaseToken(token, env);
+    if (!userId) {
+      return new Response("Invalid token", { status: 401 });
+    }
+    const result = await env.DB.prepare(
+      `SELECT roll_call_id FROM user_info WHERE user_id = ?`
+    )
+      .bind(userId)
+      .all();
+    
+    return Response.json(result);
+  }
+
 }
 
 export async function onRequestGet({ request, env }) {

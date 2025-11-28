@@ -28,15 +28,17 @@
             <div style="display: flex; margin: auto; width: 80%; align-items: flex-start;">
                 <input type="text" placeholder="Search Measures" id="searchbar" style="height: 30px; flex-grow: 1;">
                 <select id="searchby" style="height: 35px;">
-                    <!--Filter and search dropdown options; Only bottom two use searchbar-->
+                    <!--Filter and search dropdown options; Only top two use searchbar-->
+                    <option value="measureNumber">Measure Number</option>
+                    <option value="authorName">Author Name</option>
                     <option value="dateAsc">Date - Asc</option>
                     <option value="dateDesc">Date - Desc</option>
                     <option value="chamberHouse">Chamber - House</option>
                     <option value="chamberSenate">Chamber - Senate</option>
                     <option value="passedYes">Passed - Yes</option>
                     <option value="passedNo">Passed - No</option>
-                    <option value="authorName">Author Name</option>
-                    <option value="measureNumber">Measure Number</option>
+                    <option value="bookmarked">Bookmarked</option>
+                    
                 </select>
             </div>
 
