@@ -94,7 +94,8 @@ hr{
   text-decoration: none;
   margin: 4px 2px;
   cursor: pointer;
-  width: 5%;
+  width: 100px;
+  height: 100px;
 }
 
 .left-right-button{
