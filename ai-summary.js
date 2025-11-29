@@ -8,7 +8,7 @@ async function extractTextFromPDF(pdfUrl) {
         const pdf = await loadingTask.promise;
         
         let fullText = '';
-        const maxPages = Math.min(pdf.numPages, 5);
+        const maxPages = Math.min(pdf.numPages, 80);
         
         console.log(`Processing ${maxPages} pages...`);
         
@@ -120,7 +120,7 @@ async function processBillWithAI() {
         console.error('Process error:', error);
         document.getElementById('ai-overview').innerHTML = `
             <div style="background: #f8d7da; padding: 15px; border-radius: 5px; border: 1px solid #f5c6cb;">
-                <p>❌ Error processing bill: ${error.message}</p>
+                <p> Error processing bill: ${error.message}</p>
             </div>
         `;
     }
@@ -130,3 +130,4 @@ async function processBillWithAI() {
 document.addEventListener('DOMContentLoaded', function() {
     processBillWithAI();
 });
+
