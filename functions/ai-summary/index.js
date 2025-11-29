@@ -17,8 +17,7 @@ export async function onRequestPost({ request, env }) {
         const messages = [
             {
                 role: 'system',
-                content: `Create a bullet-point summary for the following legislative bill focusing on its potential impacts
-                and keep it around 250 words.`
+                content: `Create a short summary of this legaslative bill and keep it at 1300 characters.`
             },
             {
                 role: 'user',
