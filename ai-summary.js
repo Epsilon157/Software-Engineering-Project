@@ -64,7 +64,7 @@ async function generateAISummary(billText) {
                 <h4 style="margin-top: 0; color: #661616;">AI Analysis</h4>
                 <div style="white-space: pre-wrap; line-height: 1.6;">${data.summary}</div>
                 <p style="margin-top: 15px; padding: 8px; background: #e8f5e8; border-radius: 4px; font-size: 12px;">
-                    ✅ Powered by Cloudflare AI
+                     Powered by Cloudflare AI
                 </p>
             </div>
         `;
@@ -130,4 +130,5 @@ async function processBillWithAI() {
 document.addEventListener('DOMContentLoaded', function() {
     processBillWithAI();
 });
+
 
