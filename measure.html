@@ -6,6 +6,9 @@
      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
      crossorigin=""/>
 
+<!-- Add PDF.js library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+     
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -49,7 +52,10 @@
         <hr>
 
         <h3>AI Overview: </h3>
-
+        <div id="ai-overview">
+            <p>Generating AI summary...</p>
+        </div>
+         
         <h3>Bill Text: </h3>
         <div id="billtext"></div>
     </div>
@@ -64,6 +70,112 @@
                 x.className = "topnav";
             }
         }
+
+        //PDF text extraction and Summary
+         async function extractTextFromPDF(pdfUrl) {
+              pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            
+            try {
+                console.log('Loading PDF from:', pdfUrl);
+                const loadingTask = pdfjsLib.getDocument(pdfUrl);
+                const pdf = await loadingTask.promise;
+                
+                let fullText = '';
+                const maxPages = Math.min(pdf.numPages, 10);
+                
+                console.log(`Processing ${maxPages} pages...`);
+                
+                for (let i = 1; i <= maxPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    const pageText = textContent.items.map(item => item.str).join(' ');
+                    fullText += pageText + '\n\n';
+                    
+                    document.getElementById('ai-overview').innerHTML = 
+                        `<p>Processing page ${i}/${maxPages}...</p>`;
+                }
+                
+                console.log('Extracted text length:', fullText.length);
+                return fullText;
+                
+            } catch (error) {
+                console.error('PDF extraction error:', error);
+                throw new Error('Failed to extract text from PDF');
+            }
+        }
+
+        async function generateAISummary(billText) {
+            const aiOverview = document.getElementById('ai-overview');
+            
+            try {
+                aiOverview.innerHTML = '<p>Generating AI analysis...</p>';
+                
+                const response = await fetch('/ai-summary', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        bill_text: billText
+                    })
+                });
+
+                if (!response.ok) throw new Error('AI service failed');
+
+                const data = await response.json();
+                
+                aiOverview.innerHTML = `
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #007bff;">
+                        <h4 style="margin-top: 0; color: #0056b3;">AI Analysis</h4>
+                        <div style="white-space: pre-wrap; line-height: 1.6;">${data.summary}</div>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('AI Analysis Error:', error);
+                aiOverview.innerHTML = `
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 5px; border: 1px solid #ffeaa7;">
+                        <p>⚠️ Unable to generate AI analysis at this time.</p>
+                        <p><small>Error: ${error.message}</small></p>
+                    </div>
+                `;
+            }
+        }
+
+        async function processBillWithAI() {
+            const params = new URLSearchParams(window.location.search);
+            const vote_id = params.get("vote_id");
+            
+            if (!vote_id) {
+                document.getElementById('ai-overview').innerHTML = '<p>No bill ID provided.</p>';
+                return;
+            }
+
+            const pdfUrl = `https://raw.githubusercontent.com/Epsilon157/Software-Engineering-Project/main/Website%20Assets/BillStoragePDFs/${vote_id}.pdf`;
+            
+            try {
+                document.getElementById('ai-overview').innerHTML = '<p>Extracting text from PDF...</p>';
+                const extractedText = await extractTextFromPDF(pdfUrl);
+                
+                if (extractedText && extractedText.length > 100) {
+                    await generateAISummary(extractedText);
+                } else {
+                    throw new Error('Insufficient text extracted from PDF');
+                }
+
+            } catch (error) {
+                console.error('Process error:', error);
+                document.getElementById('ai-overview').innerHTML = `
+                    <div style="background: #f8d7da; padding: 15px; border-radius: 5px; border: 1px solid #f5c6cb;">
+                        <p> Error processing bill: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            processBillWithAI();
+        });
     </script>
 
     <!--run Leaflet setup script-->
