@@ -285,7 +285,7 @@ async function loadSearchPage(changePage){
             }
         );
         const data = await res.json();
-        userBookmarks = data.results.map(r => String(r.roll_call_id));
+        userBookmarks = data.results.map(r => parseInt(r.roll_call_id));
     } else {
         userBookmarks = [];
     }
