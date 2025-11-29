@@ -1,106 +1,132 @@
-export async function onRequestPost({ request, env }) {
-    console.log('=== AI SERVICE DIAGNOSTIC ===');
+// PDF Text Extraction
+async function extractTextFromPDF(pdfUrl) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     
     try {
-        // Test 1: Check if we can receive the request
-        console.log('1. Received request');
-        const requestBody = await request.text();
-        console.log('Request body:', requestBody.substring(0, 200));
+        console.log('Loading PDF from:', pdfUrl);
+        const loadingTask = pdfjsLib.getDocument(pdfUrl);
+        const pdf = await loadingTask.promise;
         
-        let jsonData;
-        try {
-            jsonData = JSON.parse(requestBody);
-            console.log('2. JSON parsed successfully');
-        } catch (parseError) {
-            console.log('JSON parse error:', parseError.message);
-            return new Response(JSON.stringify({ 
-                error: 'Invalid JSON', 
-                details: parseError.message 
-            }), { 
-                status: 400, 
-                headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } 
-            });
-        }
-
-        const { bill_text } = jsonData;
+        let fullText = '';
+        const maxPages = Math.min(pdf.numPages, 5);
         
-        if (!bill_text) {
-            console.log('3. Missing bill_text');
-            return new Response(JSON.stringify({ error: 'Missing bill_text' }), {
-                status: 400,
-                headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
-            });
-        }
-
-        console.log('4. Bill text received, length:', bill_text.length);
-
-        // Test 2: Check if AI binding exists
-        console.log('5. Checking AI binding...');
-        if (!env.AI) {
-            console.log('ERROR: AI binding not found in env');
-            return new Response(JSON.stringify({ 
-                error: 'AI binding not configured',
-                details: 'The AI binding is missing from environment variables'
-            }), {
-                status: 500,
-                headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
-            });
-        }
-        console.log('AI binding found');
-
-        // Test 3: Try to use AI
-        console.log('6. Attempting to call AI model...');
+        console.log(`Processing ${maxPages} pages...`);
         
-        const messages = [
-            {
-                role: 'system',
-                content: 'You are a helpful assistant. Respond with "AI is working" if you receive this message.'
-            },
-            {
-                role: 'user',
-                content: 'Hello, please respond with "AI is working" to confirm everything is working.'
-            }
-        ];
-
-        console.log('7. Calling env.AI.run...');
-        const response = await env.AI.run('@cf/meta/llama-2-7b-chat-int8', { messages });
-        console.log('8. AI response received:', response);
-
-        return new Response(JSON.stringify({ 
-            success: true,
-            summary: response.response,
-            diagnostic: 'AI service is working correctly'
-        }), {
-            headers: { 
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            }
-        });
-
+        for (let i = 1; i <= maxPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map(item => item.str).join(' ');
+            fullText += pageText + '\n\n';
+            
+            document.getElementById('ai-overview').innerHTML = 
+                `<p>Processing page ${i}/${maxPages}...</p>`;
+        }
+        
+        console.log('Extracted text length:', fullText.length);
+        return fullText;
+        
     } catch (error) {
-        console.log('=== FINAL ERROR ===');
-        console.log('Error name:', error.name);
-        console.log('Error message:', error.message);
-        console.log('Error stack:', error.stack);
-        
-        return new Response(JSON.stringify({ 
-            error: 'AI service failed',
-            details: error.message,
-            type: error.name,
-            diagnostic: 'Failed at AI model execution'
-        }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
-        });
+        console.error('PDF extraction error:', error);
+        throw new Error('Failed to extract text from PDF');
     }
 }
 
-export async function onRequestOptions() {
-    return new Response(null, {
-        headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type',
-        },
-    });
+// AI Analysis using Cloudflare Worker
+async function generateAISummary(billText) {
+    const aiOverview = document.getElementById('ai-overview');
+    
+    try {
+        aiOverview.innerHTML = '<p>Generating AI analysis with Cloudflare AI...</p>';
+        console.log('Sending to Cloudflare Worker...');
+        
+        const response = await fetch('/ai-summary', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                bill_text: billText.substring(0, 8000)
+            })
+        });
+
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('AI analysis received:', data);
+        
+        aiOverview.innerHTML = `
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #661616;">
+                <h4 style="margin-top: 0; color: #661616;">AI Analysis</h4>
+                <div style="white-space: pre-wrap; line-height: 1.6;">${data.summary}</div>
+                <p style="margin-top: 15px; padding: 8px; background: #e8f5e8; border-radius: 4px; font-size: 12px;">
+                    ✅ Powered by Cloudflare AI
+                </p>
+            </div>
+        `;
+
+    } catch (error) {
+        console.error('AI Analysis Error:', error);
+        aiOverview.innerHTML = `
+            <div style="background: #fff3cd; padding: 15px; border-radius: 5px; border: 1px solid #ffeaa7;">
+                <h4 style="margin-top: 0; color: #856404;">Cloudflare AI Service Error</h4>
+                <p><strong>Error:</strong> ${error.message}</p>
+                <p>Please check:</p>
+                <ul>
+                    <li>Worker is deployed with <code>wrangler deploy</code></li>
+                    <li>AI binding is configured in wrangler.jsonc</li>
+                    <li>Functions directory exists with ai-summary/index.js</li>
+                </ul>
+                <button onclick="retryAI()" style="padding: 8px 16px; background: #661616; color: white; border: none; border-radius: 4px;">Retry</button>
+            </div>
+        `;
+    }
 }
+
+function retryAI() {
+    const params = new URLSearchParams(window.location.search);
+    const vote_id = params.get("vote_id");
+    if (vote_id) {
+        processBillWithAI();
+    }
+}
+
+async function processBillWithAI() {
+    const params = new URLSearchParams(window.location.search);
+    const vote_id = params.get("vote_id");
+    
+    if (!vote_id) {
+        document.getElementById('ai-overview').innerHTML = '<p>No bill ID provided.</p>';
+        return;
+    }
+
+    const pdfUrl = `https://raw.githubusercontent.com/Epsilon157/Software-Engineering-Project/main/Website%20Assets/BillStoragePDFs/${vote_id}.pdf`;
+    
+    try {
+        document.getElementById('ai-overview').innerHTML = '<p>Extracting text from PDF...</p>';
+        const extractedText = await extractTextFromPDF(pdfUrl);
+        
+        if (extractedText && extractedText.length > 100) {
+            await generateAISummary(extractedText);
+        } else {
+            throw new Error('Insufficient text extracted from PDF');
+        }
+
+    } catch (error) {
+        console.error('Process error:', error);
+        document.getElementById('ai-overview').innerHTML = `
+            <div style="background: #f8d7da; padding: 15px; border-radius: 5px; border: 1px solid #f5c6cb;">
+                <p>❌ Error processing bill: ${error.message}</p>
+            </div>
+        `;
+    }
+}
+
+// Start processing when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    processBillWithAI();
+});
