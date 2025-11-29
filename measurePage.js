@@ -169,7 +169,7 @@ async function loadYeaNay() {
         }
         else if(Number(voteData.district_result) == 2){
             document.getElementById("nay").appendChild(p);
-            partyOpacity = 0.4;
+            partyOpacity = 0.3;
         }
         else{
             partyOpacity = 0.0;
