@@ -5,7 +5,7 @@ const id = urlParams.get('vote_id');
 
 var map = L.map('map', {
     maxBounds: [
-        [37.2, -94.4],  // north, west
+        [37.2, -93.4],  // north, west
         [33.6, -103.1]  // south, east
     ],
     maxBoundsViscosity: 1.0,
@@ -19,7 +19,7 @@ var geoLayer = L.geoJSON(null, {style: style, onEachFeature: onEachFeature}).add
 
 function style() {
     return {
-        fillColor: "#696969ff",
+        fillColor: "#5a5a5aff",
         weight: 2,
         opacity: 1,
         color: 'white',
@@ -152,7 +152,7 @@ async function loadYeaNay() {
         if(voteData == null || termData == null) continue;
 
         let partyColor = "#696969ff";
-        let partyOpacity = 1.0;
+        let partyOpacity = 0.8;
 
         if(termData.party == 'Republican'){
             partyColor = "#9e2020ff";
@@ -169,7 +169,7 @@ async function loadYeaNay() {
         }
         else if(Number(voteData.district_result) == 2){
             document.getElementById("nay").appendChild(p);
-            partyOpacity = 0.5;
+            partyOpacity = 0.4;
         }
         else{
             partyOpacity = 0.0;
