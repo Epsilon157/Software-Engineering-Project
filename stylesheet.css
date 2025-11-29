@@ -83,6 +83,7 @@ hr{
   margin: 4px 2px;
   cursor: pointer;
   width: 95%;
+  height: 100px;
 }
 
 .bookmark-button{
@@ -94,7 +95,6 @@ hr{
   margin: 4px 2px;
   cursor: pointer;
   width: 5%;
-  aspect-ratio: 1 / 1;
 }
 
 .left-right-button{
