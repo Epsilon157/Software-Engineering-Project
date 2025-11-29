@@ -17,7 +17,7 @@ export async function onRequestPost({ request, env }) {
         const messages = [
             {
                 role: 'system',
-                content: `Create a short summary of this legaslative bill and keep it at less than 2000 characters. Do not include any other information but the summary in your reply.'
+                content: `Create a short summary of this legaslative bill and keep it at less than 2000 characters. Do not include any other information but the summary in your reply.`
             },
             {
                 role: 'user',
