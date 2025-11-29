@@ -20,9 +20,5 @@
 
     "ai": {
         "binding": "AI"
-    },
-
-    "routes": [
-        { "pattern": "soonerview.org/ai-summary", "custom_domain": true }
-    ]
+    }
 }
