@@ -3,7 +3,18 @@
 const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get('vote_id');
 
-var map = L.map('map').setView([35,-97.9], 7);
+var map = L.map('map', {
+    maxBounds: [
+        [37.2, -94.4],  // north, west
+        [33.6, -103.1]  // south, east
+    ],
+    maxBoundsViscosity: 1.0,
+    minZoom: 7
+}).setView([35,-97.9], 7);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
 var geoLayer = L.geoJSON(null, {style: style, onEachFeature: onEachFeature}).addTo(map);
 
 function style() {
