@@ -121,6 +121,8 @@ async function displayMeasures(voteIds, resetPage = false){
                     buttonToUpdate.src = "Website Assets/BookmarkOn.png";
                     buttonToUpdate.dataset.bookmarked = "true";
 
+                    await updateBookmarks();
+
                 } else {
                     // REMOVE BOOKMARK
                     await fetch("https://soonerview.org/query", {
@@ -134,6 +136,8 @@ async function displayMeasures(voteIds, resetPage = false){
                 
                     buttonToUpdate.src = "Website Assets/BookmarkOff.png";
                     buttonToUpdate.dataset.bookmarked = "false";
+
+                    await updateBookmarks();
                 }
             });
             
@@ -274,6 +278,7 @@ async function loadSearchPage(changePage){
     document.getElementById("farright")
     .addEventListener("click", () => loadSearchPage(10));
     
+    /*
     const user = auth.currentUser;
     if (user) {
         const token = await user.getIdToken();
@@ -288,7 +293,9 @@ async function loadSearchPage(changePage){
         userBookmarks = data.results.map(r => parseInt(r.roll_call_id));
     } else {
         userBookmarks = [];
-    }
+    }*/
+
+    await updateBookmarks();
 
     if(allVoteData.length === 0){
         const res = await fetch(`query?search`);
@@ -337,6 +344,24 @@ async function loadSearchPage(changePage){
     //for(let i=(page-1)*20; i<page*20 && i<data.results.length; i++){
     //    votePromises.push(fetch(`query?vote_id=${data.results[i].roll_call_id}`));
     //}
+}
+
+async function updateBookmarks() {
+    const user = auth.currentUser;
+    if (user) {
+        const token = await user.getIdToken();
+        const res = await fetch("https://soonerview.org/query?bookmarks", {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+        const data = await res.json();
+        userBookmarks = data.results.map(r => parseInt(r.roll_call_id));
+    } else {
+        userBookmarks = [];
+    }
 }
 
 onAuthStateChanged(auth, async (user) => {
