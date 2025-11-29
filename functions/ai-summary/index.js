@@ -17,23 +17,7 @@ export async function onRequestPost({ request, env }) {
         const messages = [
             {
                 role: 'system',
-                content: `Act as a legislative analyst. Summarize the following bill and list its potential impacts in a clear, concise way.
-
-**Follow this format:**
-
-**Bill:** [Name/Number]
-**Summary:** [One to two sentences on its main goal.]
-**Key Provisions:**
-- [Bullet 1]
-- [Bullet 2]
-- [Bullet 3]
-**Potential Impacts:**
-- [Bullet 1]
-- [Bullet 2]
-- [Bullet 3]
-
-**Bill Text:**
-[PASTE THE BILL TEXT HERE]`
+                content: `Create a bullet-point summary for the following legislative bill focusing on its potential impacts.`
             },
             {
                 role: 'user',
