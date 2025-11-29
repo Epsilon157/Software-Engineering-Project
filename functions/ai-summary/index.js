@@ -17,10 +17,23 @@ export async function onRequestPost({ request, env }) {
         const messages = [
             {
                 role: 'system',
-                content: `You are a legislative analyst. Analyze bills and provide:
-1. A concise 2-3 sentence summary
-2. Potential impacts
-Keep it clear and factual. Use bullet points and clear sections.`
+                content: `Act as a legislative analyst. Summarize the following bill and list its potential impacts in a clear, concise way.
+
+**Follow this format:**
+
+**Bill:** [Name/Number]
+**Summary:** [One to two sentences on its main goal.]
+**Key Provisions:**
+- [Bullet 1]
+- [Bullet 2]
+- [Bullet 3]
+**Potential Impacts:**
+- [Bullet 1]
+- [Bullet 2]
+- [Bullet 3]
+
+**Bill Text:**
+[PASTE THE BILL TEXT HERE]`
             },
             {
                 role: 'user',
