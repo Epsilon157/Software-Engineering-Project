@@ -2,6 +2,8 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import {onAuthStateChanged}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
+window.isLoading = false;
+
 const firebaseConfig = {
     apiKey: "AIzaSyAwIf4z7Yc0rgtHm1BwF9HIaoAJxS5RD_k",
     authDomain: "soonerview-3bdcd.firebaseapp.com",
@@ -259,6 +261,14 @@ async function search(){
 }
 
 async function loadSearchPage(changePage){
+
+    if(isLoading){
+        return;
+    }
+    else{
+        isLoading = true;
+    }
+
     if(changePage){
         page += changePage;
         if(page < 1){
@@ -344,6 +354,7 @@ async function loadSearchPage(changePage){
     //for(let i=(page-1)*20; i<page*20 && i<data.results.length; i++){
     //    votePromises.push(fetch(`query?vote_id=${data.results[i].roll_call_id}`));
     //}
+    isLoading = false;
 }
 
 async function updateBookmarks() {
