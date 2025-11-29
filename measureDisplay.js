@@ -53,10 +53,11 @@ async function displayMeasures(voteIds, resetPage = false){
     const startIndex = (page - 1) * 20;
     const endIndex = Math.min(page * 20, voteIds.length);
     //Disable arrows if can't go far enough
-    //document.getElementById("left").disabled = page <= 1;
-    //document.getElementById("farleft").disabled = page <= 10;
-    //document.getElementById("right").disabled = page >= Math.ceil(voteIds.length / 20);
-    //document.getElementById("farright").disabled = page >= Math.ceil(voteIds.length / 200);
+    document.getElementById("left").disabled = page <= 1;
+    document.getElementById("farleft").disabled = page <= 10;
+    
+    document.getElementById("right").disabled = page >= Math.ceil(voteIds.length / 20);
+    document.getElementById("farright").disabled = page >= Math.ceil(voteIds.length / 200);
 
     for(let i = startIndex; i < endIndex; i++){
         votePromises.push(fetch(`query?vote_id=${voteIds[i]}`));
