@@ -19,6 +19,18 @@ let allVoteData = [];
 let filteredVoteIds = [];
 let userBookmarks = [];
 
+document.getElementById("right")
+.addEventListener("click", () => loadSearchPage(1));
+
+document.getElementById("left")
+.addEventListener("click", () => loadSearchPage(-1));
+
+document.getElementById("farleft")
+.addEventListener("click", () => loadSearchPage(-10));
+
+document.getElementById("farright")
+.addEventListener("click", () => loadSearchPage(10));
+
 async function displayMeasures(voteIds, resetPage = false){
     const user = auth.currentUser;
 
@@ -278,6 +290,7 @@ async function loadSearchPage(changePage){
         }
     }
 
+    /*
     document.getElementById("right")
     .addEventListener("click", () => loadSearchPage(1));
 
@@ -289,7 +302,7 @@ async function loadSearchPage(changePage){
 
     document.getElementById("farright")
     .addEventListener("click", () => loadSearchPage(10));
-    
+    */
     /*
     const user = auth.currentUser;
     if (user) {
