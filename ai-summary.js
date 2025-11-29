@@ -9,21 +9,21 @@ export async function onRequestPost({ request, env }) {
             });
         }
 
+        // Use Cloudflare AI to generate summary
         const messages = [
             {
                 role: 'system',
-                content: `You are an expert legislative analyst. Analyze the provided bill text and create a comprehensive overview with these sections:
+                content: `You are a legislative analyst. Analyze this bill and provide:
+1. A concise summary (2-3 sentences)
+2. Key provisions (3-5 bullet points)
+3. Potential impacts
+4. Main stakeholders affected
 
-1. **Executive Summary**: 2-3 sentence overview of the bill's main purpose
-2. **Potential Impacts**: Who and what will be affected
-
-Format your response using clear section headers and bullet points. Be objective and factual.`
+Keep it clear and factual.`
             },
             {
                 role: 'user',
-                content: `Please analyze this legislative bill text:
-
-${bill_text.substring(0, 10000)}` // Limit to first 10k characters
+                content: `Please analyze this legislative bill:\n\n${bill_text.substring(0, 12000)}`
             }
         ];
 
@@ -34,17 +34,27 @@ ${bill_text.substring(0, 10000)}` // Limit to first 10k characters
         }), {
             headers: { 
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type'
             }
         });
 
     } catch (error) {
-        console.error('AI Analysis Error:', error);
-        return new Response(JSON.stringify({ 
-            error: 'AI service temporarily unavailable. Please try again later.'
-        }), {
+        console.error('AI Summary Error:', error);
+        return new Response(JSON.stringify({ error: 'Failed to generate summary' }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
         });
     }
+}
+
+export async function onRequestOptions({ request }) {
+    return new Response(null, {
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+        },
+    });
 }
