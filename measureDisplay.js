@@ -263,7 +263,9 @@ async function search(){
 async function loadSearchPage(changePage){
 
     if(isLoading){
-        return;
+        while(isLoading){
+            console.log("Waiting");
+        }
     }
     else{
         isLoading = true;
