@@ -86,6 +86,8 @@ hr{
     height: 100px;
     white-space: normal;
     overflow-wrap: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .bookmark-button{
