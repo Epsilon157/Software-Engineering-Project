@@ -1,9 +1,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import {onAuthStateChanged}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-
-//window.isLoading = false;
-
+//Firebase API key and relevant info ; For login and bookmarking
 const firebaseConfig = {
     apiKey: "AIzaSyAwIf4z7Yc0rgtHm1BwF9HIaoAJxS5RD_k",
     authDomain: "soonerview-3bdcd.firebaseapp.com",
@@ -19,18 +17,17 @@ let allVoteData = [];
 let filteredVoteIds = [];
 let userBookmarks = [];
 
+//Make arrows change the page by +-1 or +-10 when clicked
 document.getElementById("right")
 .addEventListener("click", () => loadSearchPage(1));
-
 document.getElementById("left")
 .addEventListener("click", () => loadSearchPage(-1));
-
 document.getElementById("farleft")
 .addEventListener("click", () => loadSearchPage(-10));
-
 document.getElementById("farright")
 .addEventListener("click", () => loadSearchPage(10));
 
+//
 async function displayMeasures(voteIds, resetPage = false){
     const user = auth.currentUser;
 
@@ -57,7 +54,6 @@ async function displayMeasures(voteIds, resetPage = false){
     document.getElementById("farleft").disabled = page <= 10;
 
     document.getElementById("right").disabled = page >= Math.ceil(voteIds.length / 20);
-    //document.getElementById("farright").disabled = page >= (Math.ceil(voteIds.length / 200) - 9);
     document.getElementById("farright").disabled = page >= (Math.ceil(voteIds.length / 20) - 8);
 
     for(let i = startIndex; i < endIndex; i++){
@@ -76,19 +72,20 @@ async function displayMeasures(voteIds, resetPage = false){
     
     const voteResponses = await Promise.all(votePromises);
     const bookmarkResponses = await Promise.all(bookmarkPromises);
-
+    //For every item in voteResponses, create a new button and show info, like chamber, measure number, date, and yea and nay numbers
     for(let i = 0; i < voteResponses.length; i++){
         const voteData = await voteResponses[i].json();
         
         if(voteData.results && voteData.results.length > 0){
             var div = document.createElement("DIV");
             div.classList.add('measure-div');
-
+            //Create button and add information
             var measureButton = document.createElement("BUTTON");
             measureButton.classList.add('measure-button');
             measureButton.innerHTML = `2025 Session > ${voteData.results[0].chamber} > ${voteData.results[0].measure_number} <br>Date: ${voteData.results[0].date} <br>Yea: ${voteData.results[0].yea_votes} Nay: ${voteData.results[0].nay_votes} <br>${voteData.results[0].desc}`;
 
             const rollCallID = voteIds[startIndex + i];
+            //Make button responsive
             measureButton.addEventListener('click', () => {
                 const url = new URL('https://soonerview.org/measure');
 
@@ -96,13 +93,13 @@ async function displayMeasures(voteIds, resetPage = false){
 
                 window.location.href = url.toString();
             });
-        
+            //Add bookmark button to current measure button of iteration
             var bookmarkButton = document.createElement("INPUT");
             bookmarkButton.classList.add('bookmark-button');
             bookmarkButton.type = "image";
 
             bookmarkButton.dataset.rollCallId = rollCallID;
-
+            //Make bookmark button responsive
             bookmarkButton.addEventListener("click", async (e) => {
                 e.stopPropagation(); // prevent the measure button from triggering
 
@@ -122,7 +119,7 @@ async function displayMeasures(voteIds, resetPage = false){
             
                 if (!bookmarked) {
 
-                    // ADD BOOKMARK
+                    //Add bookmark by sending a post query with a user token for authentication.
                     await fetch("https://soonerview.org/query", {
                         method: "POST",
                         headers: {
@@ -139,7 +136,7 @@ async function displayMeasures(voteIds, resetPage = false){
                     await updateBookmarks();
 
                 } else {
-                    // REMOVE BOOKMARK
+                    //Remove bookmark by sending a delete query with a user token for authentication.
                     await fetch("https://soonerview.org/query", {
                         method: "DELETE",
                         headers: {
@@ -186,7 +183,7 @@ async function filter(){
 
     //Will hold data to be returned 
     let filteredIds = [...allVoteData.map(v => v.roll_call_id)];
-    //
+    //Determine which type of filtering to do - puts filtered data into "sorted" array and maps it to the filteredIds array
     if(filterValue === "Date - Asc"){
         const sorted = [...allVoteData].sort((a, b) => {
             return new Date(a.date) - new Date(b.date);
@@ -226,7 +223,7 @@ async function search(){
     const searchValue = document.getElementById("searchbar").value.trim();
 
     let searchUrl = 'query?search';
-
+    //Adds to the search url depending on what user selects
     if(filterValue === "Measure Number"){
         searchUrl += `&searchID=${encodeURIComponent(searchValue)}`;
     }
@@ -249,7 +246,7 @@ async function search(){
         filteredVoteIds = [];
     }
 }
-
+//Function to load the search/home page - changepage is the number of pages to increment or decrement: +-1 or +- 10
 async function loadSearchPage(changePage){
 
     if(changePage){
@@ -275,6 +272,7 @@ async function loadSearchPage(changePage){
             const filterValue = selectedOption ? selectedOption.textContent : '';
 
             const searchbar = document.getElementById("searchbar");
+            //If user is searching by measure number or author name then they use the searchbar, otherwise it is disabled
             if(filterValue === "Measure Number" || filterValue === "Author Name"){
                 searchbar.disabled = false;
                 searchbar.placeholder = filterValue === "Measure Number" ? "Enter measure number" : "Enter author name";
@@ -287,6 +285,7 @@ async function loadSearchPage(changePage){
             }
 
         });
+        //If user presses enter in the searchbar, the search function will execute
         document.getElementById("searchbar").addEventListener("keypress", function(e){
             if(e.key === "Enter"){
                 const searchby = document.getElementById("searchby");
@@ -302,6 +301,7 @@ async function loadSearchPage(changePage){
     await displayMeasures(filteredVoteIds.length > 0 ? filteredVoteIds : allVoteData.map(v => v.roll_call_id), false);
 }
 
+//Get current state of bookmark from the database
 async function updateBookmarks() {
     const user = auth.currentUser;
     if (user) {
@@ -320,6 +320,7 @@ async function updateBookmarks() {
     }
 }
 
+//Load page only after authentication change has happened. This prevents errors with loading bookmark information.
 onAuthStateChanged(auth, async (user) => {
 
     await loadSearchPage(0);
