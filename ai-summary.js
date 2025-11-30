@@ -61,7 +61,7 @@ async function generateAISummary(billText) {
         
         aiOverview.innerHTML = `
             <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #661616;">
-                <h4 style="margin-top: 0; color: #661616;">AI Analysis</h4>
+                <h4 style="margin-top: 0; color: #661616;">AI Overview</h4>
                 <div style="white-space: pre-wrap; line-height: 1.6;">${data.summary}</div>
                 <p style="margin-top: 15px; padding: 8px; background: #e8f5e8; border-radius: 4px; font-size: 12px;">
                      Powered by Cloudflare AI

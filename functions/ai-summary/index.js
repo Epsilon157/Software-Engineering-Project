@@ -18,7 +18,8 @@ export async function onRequestPost({ request, env }) {
             {
                 role: 'system',
                 content: `Create a short summary of this legaslative bill and keep it at less than 250 words. 
-                Do not include any other information but the summary in your reply and do not preface the summary with an introduction.
+                Do not include any other information but the summary in your reply and do not preface the summary with an introduction. 
+                Try to include any important numbers as well
                 `
                 
             },
