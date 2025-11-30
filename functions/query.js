@@ -106,16 +106,21 @@ export async function onRequestOptions({ request, env }) {
   }
 }*/
 
+//This function handles all GET requests depending on the search parameters present in the URL.
 export async function onRequestGet({ request, env }) {
   const url = new URL(request.url);
 
+  //If URL has district in it, return info on particular district's vote. 
+  //Info includes what districts voted which way and the people associated with each of those districts.
+  //Used in the yea/nay section in measurePage.js as well as the map loading section.
   if(url.searchParams.has("district")){
-    const id = url.searchParams.get("vote_id");
-    let district = url.searchParams.get("district");
-    district = district.replace(/[^0-9]/g, '');
+    const id = url.searchParams.get("vote_id"); //Get roll_call_id from URL
+    let district = url.searchParams.get("district"); //Get district number from URL
+    district = district.replace(/[^0-9]/g, ''); //Remove any non-numeric characters from district string. This is to help prevent SQL injection.
 
     let districtResult;
-    //If and Else: Get district data from table votes_1 and/or votes_2; district data is split between the two
+
+    //If and Else: Get district data from table votes_1 and/or votes_2; district data is split between the two because of database size limitations.
     if(Number(district) < 49){
       const district_query = `SELECT v1.District_${district} as district_result, v1.date, v1.chamber
                               FROM votes_1 AS v1 
@@ -136,7 +141,8 @@ export async function onRequestGet({ request, env }) {
 
     const date = districtResult.results[0].date;
     const chamber = districtResult.results[0].chamber;
-    //SQL query to retrieve legislator term information
+
+    //SQL query to retrieve legislator term information for the specified district at the time of the vote.
     const term_query = `SELECT t.party, t.district, t.start_date, t.end_date, t.people_id, l.name, t.chamber
                         FROM terms AS t
                         INNER JOIN legislators AS l
@@ -146,6 +152,7 @@ export async function onRequestGet({ request, env }) {
     .bind(`${Number(district)}`, `${date}`, `${date}`, `${chamber}`)
     .all();
 
+    //Return both district vote result and legislator term information joined in a single JSON response.
     return Response.json({
       districtResult: districtResult.results,
       termResult: termResult.results
@@ -210,10 +217,23 @@ export async function onRequestGet({ request, env }) {
       return Response.json(result);
     }
   }
+  //If URL has bookmarks in it, return bookmark info for the user associated with the token in the Authorization header.
   else if(url.searchParams.has("bookmarks")){
+
+    const auth = request.headers.get("Authorization");
+    if (!auth || !auth.startsWith("Bearer ")) {
+      return new Response("Missing token", { status: 401 });
+    }
+    const token = auth.split(" ")[1];
+    const userId = await verifyFirebaseToken(token, env);
+    if (!userId) {
+      return new Response("Invalid token", { status: 401 });
+    }
+
     if(url.searchParams.get("vote_id")){
       const roll_call_id = url.searchParams.get("vote_id");
-
+      
+      /*
       const auth = request.headers.get("Authorization");
       if (!auth || !auth.startsWith("Bearer ")) {
         return new Response("Missing token", { status: 401 });
@@ -224,7 +244,7 @@ export async function onRequestGet({ request, env }) {
 
       if (!userId) {
         return new Response("Invalid token", { status: 401 });
-      }
+      }*/
 
       const result = await env.DB.prepare(
         `SELECT 1 FROM user_info WHERE user_id = ? AND roll_call_id = ?`
@@ -235,6 +255,7 @@ export async function onRequestGet({ request, env }) {
       return Response.json({ bookmarked: !!result });
     } 
     else{
+      /*
       const auth = request.headers.get("Authorization");
       if (!auth || !auth.startsWith("Bearer ")) {
         return new Response("Missing token", { status: 401 });
@@ -244,7 +265,8 @@ export async function onRequestGet({ request, env }) {
       const userId = await verifyFirebaseToken(token, env);
       if (!userId) {
         return new Response("Invalid token", { status: 401 });
-      }
+      }*/
+
       const result = await env.DB.prepare(
         `SELECT roll_call_id FROM user_info WHERE user_id = ?`
       )
