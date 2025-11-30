@@ -73,42 +73,44 @@ hr{
 }
 
 .measure-button{
-  background-color: #ffffff;
-  border: none;
-  color: rgb(0, 0, 0);
-  padding: 15px 32px;
-  text-align: left;
-  text-decoration: none;
-  font-size: clamp(9px, 2.5vw, 16px);
-  margin: 4px 2px;
-  cursor: pointer;
-  width: 95%;
-  height: 100px;
+    background-color: #ffffff;
+    border: none;
+    color: rgb(0, 0, 0);
+    padding: 15px 32px;
+    text-align: left;
+    text-decoration: none;
+    font-size: clamp(9px, 2.5vw, 16px);
+    margin: 4px 2px;
+    cursor: pointer;
+    width: 95%;
+    height: 100px;
+    white-space: normal;
+    overflow-wrap: break-word;
 }
 
 .bookmark-button{
-  border: none;
-  background-color: #ffffff;
-  padding: 32px 32px;
-  text-align: left;
-  text-decoration: none;
-  margin: 4px 2px;
-  cursor: pointer;
-  width: 36px;
-  height: 36px;
+    border: none;
+    background-color: #ffffff;
+    padding: 32px 32px;
+    text-align: left;
+    text-decoration: none;
+    margin: 4px 2px;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
 }
 
 .left-right-button{
-  background-color: #ffffff;
-  border: none;
-  color: rgb(0, 0, 0);
-  /*padding: 15px 32px;*/
-  text-align: center;
-  text-decoration: none;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
-  width: 5%;
+    background-color: #ffffff;
+    border: none;
+    color: rgb(0, 0, 0);
+    /*padding: 15px 32px;*/
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    width: 5%;
 }
 
 .container {
@@ -129,9 +131,9 @@ hr{
 }
 
 #map { 
-  height: 600px;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+    height: 600px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
 }
 
 
