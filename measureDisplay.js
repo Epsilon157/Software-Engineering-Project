@@ -252,51 +252,12 @@ async function search(){
 
 async function loadSearchPage(changePage){
 
-    /*if(isLoading){
-        while(isLoading){
-            console.log("Waiting");
-        }
-    }
-    else{
-        isLoading = true;
-    }
-    */
     if(changePage){
         page += changePage;
         if(page < 1){
             page = 1;
         }
     }
-
-    /*
-    document.getElementById("right")
-    .addEventListener("click", () => loadSearchPage(1));
-
-    document.getElementById("left")
-    .addEventListener("click", () => loadSearchPage(-1));
-
-    document.getElementById("farleft")
-    .addEventListener("click", () => loadSearchPage(-10));
-
-    document.getElementById("farright")
-    .addEventListener("click", () => loadSearchPage(10));
-    */
-    /*
-    const user = auth.currentUser;
-    if (user) {
-        const token = await user.getIdToken();
-        const res = await fetch("https://soonerview.org/query?bookmarks", {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }
-        );
-        const data = await res.json();
-        userBookmarks = data.results.map(r => parseInt(r.roll_call_id));
-    } else {
-        userBookmarks = [];
-    }*/
 
     await updateBookmarks();
 
@@ -339,15 +300,6 @@ async function loadSearchPage(changePage){
         });
     }
     await displayMeasures(filteredVoteIds.length > 0 ? filteredVoteIds : allVoteData.map(v => v.roll_call_id), false);
-
-    
-    //const res = await fetch(`query?search`);
-    //const data = await res.json();
-    //document.getElementById("right").disabled = page >= Math.ceil(data.results.length / 20);
-    //for(let i=(page-1)*20; i<page*20 && i<data.results.length; i++){
-    //    votePromises.push(fetch(`query?vote_id=${data.results[i].roll_call_id}`));
-    //}
-    //isLoading = false;
 }
 
 async function updateBookmarks() {

@@ -1,16 +1,20 @@
 
-//Get URL parameters
+//Get URL parameter for vote_id which relates to roll_call_id in database.
+//This id is used to fetch and display information about specific votes.
 const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get('vote_id');
 
+//Initialize Leaflet map centered on Oklahoma with specific bounds and zoom levels.
 var map = L.map('map', {
     maxBounds: [
-        [37.2, -93.4],  // north, west
-        [33.6, -103.1]  // south, east
+        [37.2, -93.4],  //North and west bounds
+        [33.6, -103.1]  //South and east bounds
     ],
     maxBoundsViscosity: 1.0,
     minZoom: 7
-}).setView([35,-97.9], 7);
+}).setView([35,-97.9], 7); //Initial view and zoom level
+
+//Add OpenStreetMap tile layer with specified max zoom, opacity, and attribution to the map.
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     opacity: 0.5,
@@ -18,6 +22,7 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 var geoLayer = L.geoJSON(null, {style: style, onEachFeature: onEachFeature}).addTo(map);
 
+//Function to define the style of the geoJSON layer on the map.
 function style() {
     return {
         fillColor: "#5a5a5aff",
@@ -29,6 +34,7 @@ function style() {
     };
 }
 
+//This function thickens the border to highlight the district when hovered over with the mouse cursor.
 function highlightFeature(e) {
     var layer = e.target;
 
@@ -43,6 +49,7 @@ function highlightFeature(e) {
     info.update(layer.feature.properties);
 }
 
+//This function resets the border style of the district when the mouse cursor leaves the district area.
 function resetHighlight(e) {
     var layer = e.target;
 
@@ -56,20 +63,23 @@ function resetHighlight(e) {
     info.update();
 }
 
+//This control adds a legend to the map to explain the colors of each district.
 var legend = L.control({position: 'bottomright'});
 legend.onAdd = function () {
 
     var div = L.DomUtil.create('div', 'info legend');
-    div.innerHTML += '<i style="background: #9e2020ff"></i><span>Republican Yea</span><br>';
-    div.innerHTML += '<i style="background: #bd7e7e"></i><span>Republican Nay</span><br>';
-    div.innerHTML += '<i style="background: #282bb3ff"></i><span>Democratic Yea</span><br>';
-    div.innerHTML += '<i style="background: #8284c8"></i><span>Democratic Nay</span><br>';
-    div.innerHTML += '<i style="background: #dddddd"></i><span>No vote/Absent</span><br>';
+    div.innerHTML += '<i style="background: #9e2020ff"></i><span>Republican Yea</span><br>'; //Republican Yea
+    div.innerHTML += '<i style="background: #bd7e7e"></i><span>Republican Nay</span><br>'; //Republican Nay
+    div.innerHTML += '<i style="background: #282bb3ff"></i><span>Democratic Yea</span><br>'; //Democratic Yea
+    div.innerHTML += '<i style="background: #8284c8"></i><span>Democratic Nay</span><br>'; //Democratic Nay
+    div.innerHTML += '<i style="background: #dddddd"></i><span>No vote/Absent</span><br>'; //No vote/Absent
 
     return div;
 };
 legend.addTo(map);
 
+//This control adds an information box to the map to display details about the district when hovered over.
+//Information includes district number and representative name.
 var info = L.control();
 info.onAdd = function (map) {
     this._div = L.DomUtil.create('div', 'info');
@@ -77,12 +87,14 @@ info.onAdd = function (map) {
     return this._div;
 };
 
+//Adds previously created highlight event listeners to the geoJSON layer.
 function onEachFeature(feature, layer) {
     layer.on({
         mouseover: highlightFeature,
         mouseout: resetHighlight,
     });
 }
+
 
 async function loadMeasurePage() {
 

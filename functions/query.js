@@ -3,7 +3,7 @@
 //Tokens are used to ensure that only authenticated users can add or remove bookmarks.
 async function verifyFirebaseToken(token, env) {
 
-  //This is Google’s public token verifier endpoint
+  //Google’s public token verifier
   const verifyUrl = `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${env.FIREBASE_API_KEY}`;
 
   const res = await fetch(verifyUrl, {
@@ -78,34 +78,6 @@ export async function onRequestDelete({ request, env }){
   return Response.json({ success: true });
 }
 
-/*
-export async function onRequestOptions({ request, env }) {
-  const url = new URL(request.url);
-  if (url.searchParams.has("vote_id")) {
-    const roll_call_id = url.searchParams.get("vote_id");
-
-    const auth = request.headers.get("Authorization");
-    if (!auth || !auth.startsWith("Bearer ")) {
-      return new Response("Missing token", { status: 401 });
-    }
-
-    const token = auth.split(" ")[1];
-    const userId = await verifyFirebaseToken(token, env);
-
-    if (!userId) {
-      return new Response("Invalid token", { status: 401 });
-    }
-
-    const result = await env.DB.prepare(
-      `SELECT 1 FROM user_info WHERE user_id = ? AND roll_call_id = ?`
-    )
-      .bind(userId, roll_call_id)
-      .first();
-
-    return Response.json({ bookmarked: !!result });
-  }
-}*/
-
 //This function handles all GET requests depending on the search parameters present in the URL.
 export async function onRequestGet({ request, env }) {
   const url = new URL(request.url);
@@ -158,7 +130,9 @@ export async function onRequestGet({ request, env }) {
       termResult: termResult.results
     });
   }
-  //If URL has vote_id in it (when search param has district), return info on particular measure
+  //If URL has vote_id in it (and not bookmarks), return info on particular vote.
+  //Returned info includes bill number and description, date, yea and nay votes, chamber, measure number and type, primary author and coauthors.
+  //Used to display information on both measurePage.js and measureDisplay.js.
   else if(url.searchParams.has("vote_id") && !url.searchParams.has("bookmarks")){
     const id = url.searchParams.get("vote_id");
 
@@ -217,34 +191,25 @@ export async function onRequestGet({ request, env }) {
       return Response.json(result);
     }
   }
-  //If URL has bookmarks in it, return bookmark info for the user associated with the token in the Authorization header.
+  //If URL has bookmarks in it, return bookmark info for the user if the user is authenticated.
   else if(url.searchParams.has("bookmarks")){
 
+    //Use Firebase token to authenticate user and get user ID
     const auth = request.headers.get("Authorization");
     if (!auth || !auth.startsWith("Bearer ")) {
       return new Response("Missing token", { status: 401 });
     }
+
     const token = auth.split(" ")[1];
     const userId = await verifyFirebaseToken(token, env);
     if (!userId) {
       return new Response("Invalid token", { status: 401 });
     }
 
+    //If vote_id is also present, check if that specific measure is bookmarked by the user
+    //This is used to determine the initial state of the bookmark button on measureDisplay.js
     if(url.searchParams.get("vote_id")){
       const roll_call_id = url.searchParams.get("vote_id");
-      
-      /*
-      const auth = request.headers.get("Authorization");
-      if (!auth || !auth.startsWith("Bearer ")) {
-        return new Response("Missing token", { status: 401 });
-      }
-
-      const token = auth.split(" ")[1];
-      const userId = await verifyFirebaseToken(token, env);
-
-      if (!userId) {
-        return new Response("Invalid token", { status: 401 });
-      }*/
 
       const result = await env.DB.prepare(
         `SELECT 1 FROM user_info WHERE user_id = ? AND roll_call_id = ?`
@@ -254,19 +219,9 @@ export async function onRequestGet({ request, env }) {
 
       return Response.json({ bookmarked: !!result });
     } 
+    //If vote_id is not present, return all bookmarked measures for the user.
+    //This is used to get the list of bookmarked measures on measureDisplay.js when the user selects bookmarks from the search dropdown.
     else{
-      /*
-      const auth = request.headers.get("Authorization");
-      if (!auth || !auth.startsWith("Bearer ")) {
-        return new Response("Missing token", { status: 401 });
-      }
-
-      const token = auth.split(" ")[1];
-      const userId = await verifyFirebaseToken(token, env);
-      if (!userId) {
-        return new Response("Invalid token", { status: 401 });
-      }*/
-
       const result = await env.DB.prepare(
         `SELECT roll_call_id FROM user_info WHERE user_id = ?`
       )
