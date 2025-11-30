@@ -1,4 +1,8 @@
-// PDF Text Extraction
+/*
+PDF TEXT EXTRACTION -
+ extracts text from a URL storing the bill data and returns it as a concatednated string
+ by using PDF.js library. 
+*/
 async function extractTextFromPDF(pdfUrl) {
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     
@@ -31,7 +35,13 @@ async function extractTextFromPDF(pdfUrl) {
     }
 }
 
-// AI Analysis using Cloudflare Worker
+/*
+GENERATES AI SUMMARY-
+1. Collects a refernece to the AI overview display elements and switches to a loading state.
+2. Sends a POST request to /ai-summary with the billText
+3. Checks for HTTP response and parses JSON response data
+4. Updates UI with the proper format 
+*/
 async function generateAISummary(billText) {
     const aiOverview = document.getElementById('ai-overview');
     
@@ -95,7 +105,14 @@ function retryAI() {
     }
 }
 
+/*
+    PROCESSING BILL WITH AI-
+    1. Finds the vote_id for the currently selected measure
+    2. Extracts raw text using extractTextFromPDF() after directly referencing github to find the PDF corrosponding with the vote_id
+    3. Generates the AI summary using generateAISummary()
+*/
 async function processBillWithAI() {
+    
     const params = new URLSearchParams(window.location.search);
     const vote_id = params.get("vote_id");
     
@@ -130,6 +147,7 @@ async function processBillWithAI() {
 document.addEventListener('DOMContentLoaded', function() {
     processBillWithAI();
 });
+
 
 
 
