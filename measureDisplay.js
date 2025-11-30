@@ -58,7 +58,7 @@ async function displayMeasures(voteIds, resetPage = false){
 
     document.getElementById("right").disabled = page >= Math.ceil(voteIds.length / 20);
     //document.getElementById("farright").disabled = page >= (Math.ceil(voteIds.length / 200) - 9);
-    document.getElementById("farright").disabled = page >= (Math.ceil(voteIds.length / 20) - 9);
+    document.getElementById("farright").disabled = page >= (Math.ceil(voteIds.length / 20) - 8);
 
     for(let i = startIndex; i < endIndex; i++){
         votePromises.push(fetch(`query?vote_id=${voteIds[i]}`));
