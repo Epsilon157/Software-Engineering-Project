@@ -8,15 +8,15 @@ While many people pay attention to federal politics, state politics often falls 
 
 Features
 
-- **Measure Search & Filtering**: Search measures by number, author name, or filter by date, chamber, and passage status
-- **Interactive District Maps**: Visualize voting patterns across Oklahoma House and Senate districts using Leaflet maps
-- **Vote Details**: View detailed information about each measure including:
+- Measure Search & Filtering: Search measures by number, author name, or filter by date, chamber, and passage status
+- Interactive District Maps: Visualize voting patterns across Oklahoma House and Senate districts using Leaflet maps
+- Vote Details: View detailed information about each measure including:
   - Vote counts (Yea/Nay)
   - Primary author and coauthors
   - Measure descriptions
   - Full bill text (PDF format)
 - User Accounts: Firebase-powered authentication with bookmarking functionality
-- **AI-Powered Summaries: Cloudflare AI integration to generate concise summaries of legislative bills
+- AI-Powered Summaries: Cloudflare AI integration to generate concise summaries of legislative bills
 - Responsive Design: Mobile-friendly interface with modern UI/UX
 
 Tech Stack
@@ -83,12 +83,12 @@ Installation
    - Update `wrangler.jsonc` with your Cloudflare account ID and database IDs
    - Set up D1 database bindings
 
-3. **Set up Firebase**
+3. Set up Firebase
    - Create a Firebase project
    - Update Firebase configuration in `account.html` and `measureDisplay.js`
    - Configure Firebase API key in `wrangler.jsonc`
 
-4. **Deploy to Cloudflare**
+4. Deploy to Cloudflare
    ```bash
    cd Software-Engineering-Project
    wrangler deploy
@@ -171,12 +171,12 @@ This project was developed as part of a Software Engineering course at Oklahoma 
 
  License & Attributions
 
-- **LegiScan Data**: © LegiScan. Licensed under CC BY 4.0
-- **Map Data**: © OpenStreetMap contributors
-- **Oklahoma Legislative Districts**: Oklahoma State House of Representatives GIS Services
-- **Firebase**: Google Firebase
-- **Leaflet**: Open source mapping library
-- **Cloudflare**: Hosting and serverless infrastructure
+- LegiScan Data: © LegiScan. Licensed under CC BY 4.0
+- ap Data: © OpenStreetMap contributors
+- Oklahoma Legislative Districts**: Oklahoma State House of Representatives GIS Services
+- Firebase: Google Firebase
+- Leaflet: Open source mapping library
+- Cloudflare: Hosting and serverless infrastructure
 
  Live Site
 
