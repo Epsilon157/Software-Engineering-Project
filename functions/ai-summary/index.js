@@ -25,7 +25,7 @@ export async function onRequestPost({ request, env }) {
             },
             {
                 role: 'user',
-                content: `Please analyze this legislative bill:\n\n${bill_text.substring(0, 8000)}`
+                content: `Please analyze this legislative bill:\n\n${bill_text.substring(0, 160000)}`
             }
         ];
 
