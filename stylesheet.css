@@ -84,7 +84,7 @@ hr{
     cursor: pointer;
     width: 95%;
     height: 100px;
-    white-space: normal;
+    white-space: nowrap;
     overflow-wrap: break-word;
     overflow: hidden;
     text-overflow: ellipsis;
