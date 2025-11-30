@@ -19,9 +19,9 @@ Instructions:
 5. color codes from voting: red = republican yea, lighter red = republican Nay, dark blue = democratic Yea, light blue = Democratic Nay, Grey = no vote/absent.
 
 Authors:
-Jace Bormann \n
-Aaron Daugherty
-Aiden Maner 
-Malik Melendez
+Jace Bormann, 
+Aaron Daugherty, 
+Aiden Maner, 
+Malik Melendez, 
 Ryan Price
 
