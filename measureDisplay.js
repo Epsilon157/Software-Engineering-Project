@@ -65,8 +65,7 @@ async function displayMeasures(voteIds, resetPage = false){
 
         if(user) {
             const token = await user.getIdToken();
-            bookmarkPromises.push(fetch(`query?vote_id=${voteIds[i]}`, { 
-                method: "OPTIONS", 
+            bookmarkPromises.push(fetch(`query?vote_id=${voteIds[i]}&bookmarks`, { 
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -156,29 +155,6 @@ async function displayMeasures(voteIds, resetPage = false){
                     await updateBookmarks();
                 }
             });
-            
-            /*
-            if (user) {
-                const token = await user.getIdToken();
-        
-                const response = await fetch(`https://soonerview.org/query?vote_id=${bookmarkButton.dataset.rollCallId}`, {
-                    method: "OPTIONS",
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                const data = await response.json();
-                bookmarkButton.dataset.bookmarked = data.bookmarked ? "true" : "false";
-
-                if (data.bookmarked) {
-                    bookmarkButton.src = "Website Assets/BookmarkOn.png";
-                } else {
-                    bookmarkButton.src = "Website Assets/BookmarkOff.png";
-                }
-            }
-            else {
-                bookmarkButton.src = "Website Assets/BookmarkOff.png";
-            }*/
 
             const bookmarkResponse = bookmarkResponses[i];
             if (user && bookmarkResponse.ok) {

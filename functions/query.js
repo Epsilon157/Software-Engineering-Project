@@ -1,8 +1,9 @@
-
+//This function is used for verifying Firebase tokens that are sent from the client in the measureDisplay script. Used for verifying user identity for bookmarking measures.
+//Returns the Firebase UID if the token is valid, otherwise returns null, input is the user token.
+//Tokens are used to ensure that only authenticated users can add or remove bookmarks.
 async function verifyFirebaseToken(token, env) {
-  //const projectId = env.FIREBASE_PROJECT_ID;
 
-  // This is Google’s public token verifier endpoint
+  //This is Google’s public token verifier endpoint
   const verifyUrl = `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${env.FIREBASE_API_KEY}`;
 
   const res = await fetch(verifyUrl, {
@@ -17,11 +18,14 @@ async function verifyFirebaseToken(token, env) {
     return null;
   }
 
-  return data.users[0].localId; // Firebase UID
+  return data.users[0].localId; //Firebase UID
 }
 
+//Function for adding a bookmark to the database upon recieveing a POST request from measureDisplay.
+//Input is the roll_call_id of the measure to be bookmarked and the Firebase token in the Authorization header.
+//Returns a success message upon successful addition to the database.
 export async function onRequestPost({ request, env }) {
-  
+  //Veryfying the token from the Authorization header to get the user ID
   const auth = request.headers.get("Authorization");
   if (!auth || !auth.startsWith("Bearer ")) {
     return new Response("Missing token", { status: 401 });
@@ -34,8 +38,9 @@ export async function onRequestPost({ request, env }) {
     return new Response("Invalid token", { status: 401 });
   }
 
+  //Using the roll_call_id from the request to add the bookmark to the database if it doesn't already exist under that user ID.
+  //userID and roll_call_id form a composite primary key in the user_info table so duplicates are not allowed.
   const { roll_call_id } = await request.json();
-  //return new Response(`${roll_call_id}, ${userId}`, { status: 401 });
   await env.DB.prepare(
     `INSERT OR IGNORE INTO user_info (user_id, roll_call_id) VALUES (?, ?)`
   )
@@ -45,7 +50,11 @@ export async function onRequestPost({ request, env }) {
   return Response.json({ success: true });
 }
 
+//Function for removing a bookmark from the database upon recieveing a DELETE request from measureDisplay.
+//Input is the roll_call_id of the measure to be removed and the Firebase token in the Authorization header.
+//Returns a success message upon successful removal from the database.
 export async function onRequestDelete({ request, env }){
+  //Veryfying the token from the Authorization header to get the user ID
   const auth = request.headers.get("Authorization");
   if (!auth || !auth.startsWith("Bearer ")) {
     return new Response("Missing token", { status: 401 });
@@ -58,8 +67,8 @@ export async function onRequestDelete({ request, env }){
     return new Response("Invalid token", { status: 401 });
   }
 
+  //Using the roll_call_id from the request to remove the bookmark from the database for that user ID.
   const { roll_call_id } = await request.json();
-
   await env.DB.prepare(
     `DELETE FROM user_info WHERE user_id = ? AND roll_call_id = ?`
   )
@@ -69,6 +78,7 @@ export async function onRequestDelete({ request, env }){
   return Response.json({ success: true });
 }
 
+/*
 export async function onRequestOptions({ request, env }) {
   const url = new URL(request.url);
   if (url.searchParams.has("vote_id")) {
@@ -94,7 +104,7 @@ export async function onRequestOptions({ request, env }) {
 
     return Response.json({ bookmarked: !!result });
   }
-}
+}*/
 
 export async function onRequestGet({ request, env }) {
   const url = new URL(request.url);
@@ -142,7 +152,7 @@ export async function onRequestGet({ request, env }) {
     });
   }
   //If URL has vote_id in it (when search param has district), return info on particular measure
-  else if(url.searchParams.has("vote_id")){
+  else if(url.searchParams.has("vote_id") && !url.searchParams.has("bookmarks")){
     const id = url.searchParams.get("vote_id");
 
     const vote_id_query = `SELECT v1.bill_id, v1.desc, v1.date, v1.yea_votes, v1.nay_votes, v1.chamber, m.measure_number, m.measure_type, m.primary_author, l2.name AS primary_author_name, json_group_array(json_object('coauthor_id', c.people_id, 'name', l.name)) AS coauthors 
@@ -201,22 +211,47 @@ export async function onRequestGet({ request, env }) {
     }
   }
   else if(url.searchParams.has("bookmarks")){
-    const auth = request.headers.get("Authorization");
-    if (!auth || !auth.startsWith("Bearer ")) {
-      return new Response("Missing token", { status: 401 });
-    }
+    if(url.searchParams.get("vote_id")){
+      const roll_call_id = url.searchParams.get("vote_id");
 
-    const token = auth.split(" ")[1];
-    const userId = await verifyFirebaseToken(token, env);
-    if (!userId) {
-      return new Response("Invalid token", { status: 401 });
+      const auth = request.headers.get("Authorization");
+      if (!auth || !auth.startsWith("Bearer ")) {
+        return new Response("Missing token", { status: 401 });
+      }
+
+      const token = auth.split(" ")[1];
+      const userId = await verifyFirebaseToken(token, env);
+
+      if (!userId) {
+        return new Response("Invalid token", { status: 401 });
+      }
+
+      const result = await env.DB.prepare(
+        `SELECT 1 FROM user_info WHERE user_id = ? AND roll_call_id = ?`
+      )
+        .bind(userId, roll_call_id)
+        .first();
+
+      return Response.json({ bookmarked: !!result });
+    } 
+    else{
+      const auth = request.headers.get("Authorization");
+      if (!auth || !auth.startsWith("Bearer ")) {
+        return new Response("Missing token", { status: 401 });
+      }
+
+      const token = auth.split(" ")[1];
+      const userId = await verifyFirebaseToken(token, env);
+      if (!userId) {
+        return new Response("Invalid token", { status: 401 });
+      }
+      const result = await env.DB.prepare(
+        `SELECT roll_call_id FROM user_info WHERE user_id = ?`
+      )
+        .bind(userId)
+        .all();
+
+      return Response.json({results: result.results});
     }
-    const result = await env.DB.prepare(
-      `SELECT roll_call_id FROM user_info WHERE user_id = ?`
-    )
-      .bind(userId)
-      .all();
-    
-    return Response.json({results: result.results});
   }
 }
