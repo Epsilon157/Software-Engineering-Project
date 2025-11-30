@@ -36,7 +36,7 @@ async function generateAISummary(billText) {
     const aiOverview = document.getElementById('ai-overview');
     
     try {
-        aiOverview.innerHTML = '<p>Generating AI analysis with Cloudflare AI...</p>';
+        aiOverview.innerHTML = '<p>Generating AI summary with Cloudflare AI...</p>';
         console.log('Sending to Cloudflare Worker...');
         
         const response = await fetch('/ai-summary', {
@@ -130,5 +130,6 @@ async function processBillWithAI() {
 document.addEventListener('DOMContentLoaded', function() {
     processBillWithAI();
 });
+
 
 
