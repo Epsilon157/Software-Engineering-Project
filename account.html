@@ -286,7 +286,13 @@
             document.getElementById('authMessage').style.display = 'none';
         }
 
-        async function resendVerification() {
+        /*
+        RESEND VERIFICATION - resends the verification by 
+        first: verifying if the user is logged in 
+        second: sending a verification email
+        third - displaying messages for success or failure
+        */
+        async function resendVerification() { 
             const user = window.auth.currentUser;
             if (!user) {
                 showMessage('Please log in to resend verification email.', 'error');
@@ -315,7 +321,13 @@
             }
         }
 
-        // SIMPLE LOGIN - Check verification and show appropriate page
+        /* 
+        SIMPLE LOGIN - Check verification and show appropriate page
+        1. prevents default form submission and gathers user credentials.
+        2. Authenticates the user using firebase API
+        3. Checks for the user verification status and routes the user depending on their status
+        4. Resets the UI and handles errors upon failure.
+        */
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
@@ -358,9 +370,17 @@
             }
         });
 
-        // REGISTRATION - Create account and show pending verification
+        /* 
+        REGISTRATION - Create account and show pending verification
+        1. Handles form submission with the registration form
+        2. Creates user accounts with the supplied email and password
+        3. Sends email verifcation
+        4. redirects to a verification pending screen
+        NOTE: Firebase will auto verify some known domains such as: @okstate.edu
+        */
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+            e.preventDefault();    
+
             const email = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
 
@@ -370,13 +390,12 @@
             }
 
             try {
+                //Creates a new user with Firebase Authentication
                 const userCredential = await window.firebaseAuth.createUserWithEmailAndPassword(window.auth, email, password);
-                const user = userCredential.user;
+                const user = userCredential.user;    //Collects the user object.
                 
-                // Send verification email
                 await window.firebaseAuth.sendEmailVerification(user);
                 
-                // Show pending verification screen
                 showPendingVerification(user);
                 showMessage('Account created! Please verify your email.', 'success');
                 this.reset();
@@ -386,7 +405,13 @@
             }
         });
 
-        // FORGOT PASSWORD FORM
+        /* 
+        FORGOT PASSWORD FORM - sends password reset email
+        1. Collects the email address from the user 
+        2. Sends an email with a reset link that contains a unique token
+        3. Upon clicking the link, the user is sent to firebase's reset page
+        4. Firebase verifies the token and allows the user to submit a new password
+        */
         document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('forgotPasswordEmail').value;
@@ -401,7 +426,7 @@
             }
         });
 
-        async function logout() {
+        async function logout() {    //Logs out the current user
             try {
                 await window.firebaseAuth.signOut(window.auth);
                 showMessage('Logged out successfully', 'success');
